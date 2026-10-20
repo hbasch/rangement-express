@@ -200,6 +200,51 @@ i.l1{background:var(--bad)!important} i.l2{background:var(--mid)!important} i.l3
 .qr-hint{font-size:11px;color:#59626d}
 body.qr-open{overflow:hidden}
 @media print{body *{visibility:hidden}.qr-sheet,.qr-sheet *{visibility:visible}.qr-sheet{position:absolute;inset:0;overflow:visible;background:#fff;padding:0}.qr-tools{display:none}.qr-grid{grid-template-columns:repeat(2,1fr)}}
+.proto{background:var(--signal);color:#121212}
+.proto .wrap{display:flex;gap:12px 16px;align-items:center;padding-block:14px;flex-wrap:wrap}
+.proto-tag{font:700 13px var(--display);letter-spacing:.12em;text-transform:uppercase;background:#121212;color:var(--signal);padding:4px 9px;border-radius:6px;flex:none}
+.proto p{flex:1;min-width:240px;font-size:15px;font-weight:500}
+.proto .addr{font-family:var(--mono);font-weight:500;user-select:all;word-break:break-all}
+#demo-root{scroll-margin-top:72px}
+@media (max-width:560px){
+  .hero > .wrap{padding-block:24px 290px}
+  .hero h1{font-size:44px}
+  .hero .copy{gap:14px}
+  .hero .lead{font-size:16px}
+  .hero .btn{padding:11px 14px;font-size:14px}
+  .hud-card,.strip{display:none}
+  section.s{padding-block:52px}
+  .s-head{margin-bottom:24px;gap:10px}
+  .s-head h2{font-size:34px}
+  .s-head p{font-size:15.5px}
+  .problem{font-size:28px}
+  .facts{margin-top:28px}.fact{padding:16px}
+  .step,.mcard{padding:18px}
+  .acard{padding:20px}.acard .price{font-size:40px}
+  .proto .wrap{flex-direction:column;align-items:flex-start;gap:8px}.proto p{font-size:14px;min-width:0}
+  .demo-frame{border-radius:12px}.demo-frame .bar{height:5px}
+  .d-top{padding:8px;gap:6px}
+  .d-tabs{width:100%;margin-right:0}.d-tabs button{flex:1;padding:7px 4px;font-size:13px}
+  .d-top select{flex:1;font-size:13px;padding:6px 8px}
+  .demo .btn{font-size:12.5px;padding:6px 9px}
+  .d-main{grid-template-rows:360px auto}
+  .d-panel{padding:12px;gap:12px;max-height:470px}
+  .ph{font-size:20px}
+  .mastery{gap:10px}.ring{width:48px;height:48px}.ring span{width:38px;height:38px;font-size:12px}
+  .cof{padding:7px 0;grid-template-columns:32px minmax(0,1fr) 48px}.cof .code{font-size:16px}
+  .items{padding:0 0 8px 40px}.chip{font-size:11.5px}
+  .modecard{padding:8px 10px;grid-template-columns:30px minmax(0,1fr)}.modecard .ic{width:30px;height:30px}.modecard .ic svg{width:17px;height:17px}.modecard b{font-size:15px}.modecard span{font-size:12px}
+  .d-hud{left:6px;top:6px;width:calc(100% - 12px);padding:7px 9px;gap:3px;border-radius:10px}
+  .d-hud .eyebrow{font-size:10px}
+  .d-hud .target{font-size:20px}.d-hud .target.motif{font-size:16px}
+  .d-hud .timer{font-size:17px}
+  .d-hud .msg{font-size:12px;min-height:0}
+  .d-hud .btn{font-size:11.5px;padding:4px 8px}
+  .cklist{grid-template-columns:1fr 1fr;gap:2px 8px}.cklist li{font-size:12px;gap:5px}.cklist li::before{width:12px;height:12px}
+  .opts{gap:4px}.opt{font-size:12px;padding:6px 7px}
+  .d-corner{right:6px;bottom:6px}.d-corner .btn{font-size:11.5px;padding:4px 8px}
+  .kpis{gap:6px}.kpi b{font-size:15px}
+}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .opt{font:600 14px var(--body);text-align:left;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg2);color:var(--fg);cursor:pointer}
 .opt.ok{border-color:var(--ok);color:var(--ok)} .opt.bad{border-color:var(--bad);color:var(--bad)}
@@ -300,6 +345,8 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:16px 30px;align-items:center;justif
   <div class="strip"><div class="wrap"><b>Engins</b><span>VSAV</span><span>FPT</span><span>VSR</span><span>CCF</span><span>VTU</span><b>Pros</b><span>Fourgons techniciens</span><span>Ambulances</span></div></div>
 </section>
 
+<div class="proto" id="retours"><div class="wrap"><span class="proto-tag">Prototype</span><p>Rangement Express est un prototype en construction. Les modèles 3D sont un premier jet rapide et seront retravaillés, et l'outil doit être adapté à vos engins. Un avis, un bug, une idée, un engin à reproduire ? Écrivez-moi à <span class="addr">hadrienbasch@gmail.com</span>. Chaque retour m'aide énormément.</p></div></div>
+
 <section class="s">
   <div class="wrap">
     <p class="problem">Au bip, chaque seconde passée <em>à chercher dans un coffre</em> est une seconde de moins pour la victime.</p>
@@ -324,7 +371,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:16px 30px;align-items:center;justif
 
 <section class="s" id="demo">
   <div class="wrap">
-    <div class="s-head"><span class="eyebrow">Démo</span><h2>Essaie maintenant.</h2><p>C'est la vraie application. Choisis un engin, ouvre les coffres, puis passe en « S'entraîner » et lance le chrono.</p></div>
+    <div class="s-head"><span class="eyebrow">Démo</span><h2>Essaie maintenant.</h2><p>C'est la vraie application. Choisis un engin, ouvre les coffres, puis passe en « S'entraîner » et lance le chrono. C'est un prototype, modèles 3D compris : <a href="#retours">dis-moi ce qui manque</a>.</p></div>
     <div class="demo-frame">
       <div class="bar" aria-hidden="true"></div>
       <div class="demo" id="demo-root">
@@ -428,7 +475,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:16px 30px;align-items:center;justif
   </div>
 </section>
 
-<footer><div class="wrap"><a class="logo" href="#top" style="margin:0;font-size:18px"><span class="chev" aria-hidden="true" style="width:22px;height:22px"></span>Rangement Express</a><span>Projet indépendant. Non affilié à un SDIS ni à la FNSPF.</span></div></footer>
+<footer><div class="wrap"><a class="logo" href="#top" style="margin:0;font-size:18px"><span class="chev" aria-hidden="true" style="width:22px;height:22px"></span>Rangement Express</a><span>Prototype, projet indépendant. Non affilié à un SDIS ni à la FNSPF. Retours : hadrienbasch@gmail.com</span></div></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
