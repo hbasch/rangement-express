@@ -392,7 +392,7 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
 <header class="nav">
   <div class="wrap">
     <a class="logo" href="#top"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Rangement Express</a>
-    <nav aria-label="Sections"><a href="#demo">Démo</a><a href="#modes">Modes</a><a href="#publics">Gratuit</a><a href="#pilote">Pilote</a><a href="#faq">Questions</a></nav>
+    <nav aria-label="Sections"><a href="#demo">Démo</a><a href="#modes">Modes</a><a href="#publics">Gratuit</a><a href="#pilote">Pilote</a><a href="#faq">Questions</a><a href="de/" lang="de">DE</a></nav>
     <a class="btn primary" href="#demo">Essayer<span class="hide-s">la démo</span></a>
   </div>
 </header>
@@ -563,7 +563,7 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
   </div>
 </section>
 
-<footer><div class="wrap"><a class="logo" href="#top"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Rangement Express</a><span>Prototype, projet indépendant, non affilié à un SDIS ni à la FNSPF · hadrienbasch@gmail.com · <a href="pro/" style="color:#dfe3e1">Entreprises</a></span></div></footer>
+<footer><div class="wrap"><a class="logo" href="#top"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Rangement Express</a><span>Prototype, projet indépendant, non affilié à un SDIS ni à la FNSPF · hadrienbasch@gmail.com · <a href="pro/" style="color:#dfe3e1">Entreprises</a> · <a href="de/" lang="de" style="color:#dfe3e1">Deutsch</a></span></div></footer>
 
 <script>window.RX_SITE={presets:["vsav","fpt"],hero:["vsav","fpt"],key:"rangement-express-v3"}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -743,7 +743,7 @@ function DEFAULT(P, n){ return hardcase(P, pick(n, ['#2f6db3', '#5b6168', '#c816
 window.RXItems = {
   build(name, sw, sh, depth, tagTex, labels){
     const g = new THREE.Group(), inner = new THREE.Group(); g.add(inner);
-    const P = kit(inner), n = ' ' + name.toLowerCase() + ' ';
+    const AL = window.RX_ALIAS || {}, key = AL[name.toLowerCase()] || name, P = kit(inner), n = ' ' + key.toLowerCase() + ' ';
     let spec = null;
     for (const [re, fn] of LIB) if (re.test(n)) { spec = fn(P, n); break; }
     if (!spec) spec = DEFAULT(P, n);
@@ -794,6 +794,7 @@ const PRESETS = {
     {code:'AR',name:'Porte arrière',side:'B',weight:1,shelves:[['Touret de câble'],['Cônes de chantier','Panneau travaux']]}
   ]}
 };
+if (window.RX_EXTRA_PRESETS) Object.assign(PRESETS, window.RX_EXTRA_PRESETS);
 Object.values(PRESETS).forEach(p => p.coffres.forEach((c, i) => c.id = c.id || ('p' + i + c.code)));
 const SCEN = {"vsav": ["SAP | Arrêt cardio-respiratoire, homme 60 ans, à domicile | DSA, Sac oxygénothérapie, Aspirateur de mucosités, Sac PS", "SAP | Chute d'échelle, suspicion de trauma du rachis | Colliers cervicaux, Matelas immobilisateur, Plan dur, Sac PS", "SAP | Accouchement inopiné à domicile | Kit accouchement, Couvertures, Sac PS", "SAP | Brûlure étendue, accident domestique | Kit brûlés, Draps, Sac oxygénothérapie", "SAP | Fracture de jambe sur la voie publique | Attelles à dépression, Cônes de balisage, Gilets haute visibilité, Sac PS", "SAP | Malaise dans un 4e étage sans ascenseur | Chaise portoir, Sac PS, Sac oxygénothérapie"], "fpt": ["INC | Feu d'appartement au 3e étage, fumées | ARI 1, ARI 2, Tuyaux 45 mm, Lances 500 L/min, Caméra thermique", "INC | Feu de véhicule sur un parking | Lance à mousse, Émulseur (bidons), Tuyaux 45 mm, ARI 1", "DIV | Odeur de gaz dans un immeuble | Détecteur multigaz, Lot gaz, Ventilateur", "INC | Alimentation sur poteau incendie | Clé de poteau, Tuyaux 70 mm, Clé tricoise", "DIV | Personne bloquée derrière une porte | Pied de biche, Hache, Lot de sauvetage", "INC | Feu de cave, fumée épaisse | ARI 1, ARI 2, Ventilateur, Projecteurs, Caméra thermique"], "plombier": ["DEP | Fuite sous évier, cuisine inondée | Siphons, Joints, Clé à molette, Aspirateur eau", "DEP | Canalisation bouchée | Furet déboucheur, Bâche de protection", "POSE | Remplacement de chauffe-eau | Raccords laiton, Chalumeau, Pompe d'épreuve, Coupe-tube"], "fibre": ["RAC | Raccordement d'un abonné | Soudeuse fibre, Cliveuse, Boîtiers PTO, Kit nettoyage fibre", "SAV | Panne réseau, mesure de ligne | Réflectomètre, Photomètre, Jarretières", "RES | Intervention en chambre sur trottoir | Cônes de chantier, Panneau travaux, Casque, Tire-câble"]};
 Object.entries(SCEN).forEach(([k, l]) => { if (PRESETS[k]) PRESETS[k].scenarios = l; });
@@ -821,7 +822,7 @@ function chevronDoorTex(code, w, h){
   rr(x, cw*0.38, ch*0.76, cw*0.24, ch*0.09, 10); x.fillStyle = 'rgba(255,255,255,0.94)'; x.fill(); x.fillStyle = '#16191d'; x.fillText(code, cw/2, ch*0.805);
   return tex(c); }
 function plateTex(){ const [c, x] = cv(520, 112); rr(x, 2, 2, 516, 108, 10); x.fillStyle = '#f7f7f4'; x.fill(); x.fillStyle = '#1d3f9a'; x.fillRect(4, 4, 56, 104); x.fillRect(460, 4, 56, 104);
-  x.fillStyle = '#f2d43a'; x.font = `700 26px ${DF}`; x.textAlign = 'center'; x.fillText('F', 32, 96); x.fillStyle = '#16191d'; x.font = `700 74px ${DF}`; x.fillText('SP-118-RX', 260, 82); return tex(c); }
+  const PL = window.RX_PLATE || {c:'F', t:'SP-118-RX'}; x.fillStyle = '#f2d43a'; x.font = `700 26px ${DF}`; x.textAlign = 'center'; x.fillText(PL.c, 32, 96); x.fillStyle = '#16191d'; x.font = `700 74px ${DF}`; x.fillText(PL.t, 260, 82); return tex(c); }
 function shadowTexF(){ const [c, x] = cv(256, 128); x.filter = 'blur(14px)'; x.fillStyle = 'rgba(0,0,0,1)'; rr(x, 30, 28, 196, 72, 26); x.fill(); return new THREE.CanvasTexture(c); }
 function letterTex(text, light){ const [c, x] = cv(1024, 128); let fs = 96; x.font = `700 ${fs}px ${DF}`;
   while (x.measureText(text.toUpperCase()).width > 960 && fs > 30) { fs -= 4; x.font = `700 ${fs}px ${DF}`; }
@@ -1701,7 +1702,7 @@ const THUMB = {
   box:'<svg viewBox="0 0 58 26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 20V5h36v15M38 20V10h8l8 5v5z"/><path d="M40 11h5l5 4h-10z"/><circle cx="12" cy="21" r="3" fill="#fff"/><circle cx="45" cy="21" r="3" fill="#fff"/><path d="M2 15h36" stroke="#c8102e" stroke-width="2"/><path d="M18 8v5M15.5 10.5h5" stroke="#c8102e"/></svg>',
   van:'<svg viewBox="0 0 58 26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 20V7q0-2 2-2h32l12 8h5v7z"/><path d="M38 6l9 7h-9z"/><circle cx="14" cy="21" r="3" fill="#fff"/><circle cx="44" cy="21" r="3" fill="#fff"/><path d="M3 14h35" stroke="#1f4e79" stroke-width="2"/></svg>'
 };
-const thumbOf = k => k === 'fpt' ? THUMB.truck : (k === 'vsav' || k === 'shared') ? THUMB.box : THUMB.van;
+const thumbOf = k => { const b = (PRESETS[k] && PRESETS[k].body) || {}; return b.cab === 'truck' ? THUMB.truck : (b.casquette || b.rearWindows) ? THUMB.box : THUMB.van; };
 function paintCards(){ const box = root.querySelector('#d-cards'); if (!box) return;
   box.innerHTML = Object.entries(PRESETS).map(([k, p]) => `<button class="vcard" data-preset="${k}" aria-pressed="${k === store.current}" id="d-card-${k}">${thumbOf(k)}<span>${esc(store.vehicles[k] && store.vehicles[k].name || p.label)}<small>${esc(p.group || '')} · ${(store.vehicles[k] || p).coffres.length} coffres</small></span></button>`).join(''); }
 root.querySelector('#d-cards').addEventListener('click', e => { const b = e.target.closest('[data-preset]'); if (b && b.dataset.preset !== store.current) loadPreset(b.dataset.preset); });
