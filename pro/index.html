@@ -860,10 +860,11 @@ function createEngine(opts){
   if (controls) { controls.enableDamping = true; controls.dampingFactor = 0.08; controls.maxPolarAngle = Math.PI*0.47; controls.minDistance = 1.5; controls.maxDistance = 26; }
 
   const LIGHT = opts.theme === 'light';
-  scene.add(new THREE.HemisphereLight(0xffffff, LIGHT ? 0x9aa09c : 0x1a1c20, LIGHT ? 0.55 : 0.2));
+  scene.add(new THREE.HemisphereLight(0xffffff, LIGHT ? 0x8a8f8c : 0x1a1c20, LIGHT ? 0.3 : 0.2));
   const key = new THREE.SpotLight(0xfff1de, 1.7, 45, 0.6, 0.85, 1.2); key.position.set(-6, 12, 9); key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0004; key.shadow.camera.near = 2; key.shadow.camera.far = 45; scene.add(key); scene.add(key.target);
-  const rim = new THREE.DirectionalLight(0x8fb4ff, 1.0); rim.position.set(8, 5, -9); scene.add(rim);
+  if (LIGHT) key.intensity = 1.35;
+  const rim = new THREE.DirectionalLight(LIGHT ? 0xdfe8ff : 0x8fb4ff, LIGHT ? 0.55 : 1.0); rim.position.set(8, 5, -9); scene.add(rim);
   const kick = new THREE.DirectionalLight(0xffd2b0, 0.4); kick.position.set(9, 3, 6); scene.add(kick);
 
   const floorMat = new THREE.MeshStandardMaterial({color:col(opts.floor || (LIGHT ? '#d9dcd8' : '#0f1215')), roughness:LIGHT ? 0.95 : 0.55, metalness:LIGHT ? 0 : 0.2, envMapIntensity:LIGHT ? 0.2 : 0.35, transparent:true});
@@ -920,7 +921,7 @@ function createEngine(opts){
       const pivot = new THREE.Group(); pivot.userData.dynamic = true; pivot.position.set(hingeX, 0, 0.012); g.add(pivot);
       const door = new THREE.Mesh(RBox(lw, h*0.985, 0.024, 0.012), doorMat); door.position.x = -sign*lw/2; door.castShadow = true; pivot.add(door);
       if (withCode || chev) { const lab = new THREE.Mesh(new THREE.PlaneGeometry(lw*0.94, h*0.94), new THREE.MeshBasicMaterial({map:codeTex, transparent:true, toneMapped:false})); lab.position.z = 0.016; door.add(lab); lab.userData = {type:'door', coffreId:c.id}; E.pickables.push(lab); }
-      if (opt.windows) { const gl = new THREE.Mesh(RBox(lw*0.62, h*0.26, 0.008, 0.02), mats.frosted); gl.position.set(0, h*0.06, 0.013); door.add(gl); }
+      if (opt.windows) { const fr = new THREE.Mesh(RBox(lw*0.62 + 0.05, h*0.26 + 0.05, 0.008, 0.03), mats.seal); fr.position.set(0, h*0.06, 0.012); door.add(fr); const gl = new THREE.Mesh(RBox(lw*0.62, h*0.26, 0.008, 0.02), mats.frosted); gl.position.set(0, h*0.06, 0.016); door.add(gl); }
       const hx = -sign*(lw/2 - 0.09);
       const rp = new THREE.Mesh(RBox(0.07, 0.18, 0.01, 0.004), recess); rp.position.set(hx, -h*0.05, 0.013); door.add(rp);
       const lv = new THREE.Mesh(RBox(0.03, 0.13, 0.028, 0.008), chromeM); lv.position.set(hx, -h*0.05, 0.026); door.add(lv);
@@ -998,7 +999,7 @@ function createEngine(opts){
                       : {R:0.35, tw:0.225, dual:false, fo:0.84, Lc:2.15, Hc:2.27, Wc:2.07, gap:0.06, bot:0.5, front:0.06, ra:0.43};
     const light = lum(b.color) > 0.5;
     const std = (hex, r, m, extra) => new THREE.MeshStandardMaterial(Object.assign({color:col(hex), roughness:r, metalness:m}, extra || {}));
-    const paint = hex => new THREE.MeshPhysicalMaterial({color:col(hex), roughness:0.3, metalness:0.08, clearcoat:1, clearcoatRoughness:0.06, envMapIntensity:1});
+    const paint = hex => new THREE.MeshPhysicalMaterial({color:col(hex), roughness:0.34, metalness:0.05, clearcoat:1, clearcoatRoughness:0.1, envMapIntensity:LIGHT ? 0.6 : 1});
     const doorHex = b.door || b.color, metal = b.doorStyle === 'rideau';
     const mats = {
       body: paint(b.color), door: metal ? std(doorHex, 0.3, 0.88) : paint(doorHex),
@@ -1006,7 +1007,7 @@ function createEngine(opts){
       chrome: std('#e6e9ec', 0.1, 1), alu: std('#c4c9ce', 0.32, 0.9), liner: std('#0b0c0d', 0.95, 0, {side:THREE.DoubleSide}),
       lamp: std('#fffbe8', 0.1, 0, {emissive:col('#fff3cc'), emissiveIntensity:1.6}), drl: std('#ffffff', 0.1, 0, {emissive:col('#ffffff'), emissiveIntensity:2.2}),
       amber: std('#ffa531', 0.2, 0, {emissive:col('#ff8a00'), emissiveIntensity:0.9}), tail: std('#7a0b0e', 0.2, 0, {emissive:col('#ff1a1a'), emissiveIntensity:1.1}),
-      frosted: new THREE.MeshPhysicalMaterial({color:col('#dfe6ea'), roughness:0.6, metalness:0, transparent:true, opacity:0.85}),
+      frosted: new THREE.MeshPhysicalMaterial({color:col('#c9d2d8'), roughness:0.18, metalness:0, clearcoat:1, clearcoatRoughness:0.05, envMapIntensity:1.3}),
       shelf: std('#b9bfc5', 0.35, 0.75), interior: new THREE.MeshStandardMaterial({color:col('#a7aeb5'), roughness:0.85, side:THREE.BackSide})
     };
     const add = (geo, mat, x, y, z, parent = truck, shadow = true) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = shadow; parent.add(m); return m; };
@@ -1027,6 +1028,7 @@ function createEngine(opts){
       cab.traverse(o => { if (!o.isMesh) return; o.castShadow = true; o.userData.sharedGeo = true;
         const mn = o.material && o.material.name;
         if (mn === 'Paint') { o.material = mats.body; }
+        if (mn && /glass/i.test(mn) && o.material) { o.material = o.material.clone(); o.material.roughness = 0.04; o.material.envMapIntensity = 1.6; if (o.material.metalness != null) o.material.metalness = 0.1; o.userData.sharedMat = false; }
         else o.userData.sharedMat = true;
         if (mn === 'Lamp' || mn === 'DRL') { o.material = mats.lamp; o.userData.sharedMat = false; }
         if (mn === 'BumperMat' && b.frontYellow) { o.material = new THREE.MeshPhysicalMaterial({color:col('#d6e61a'), roughness:0.35, clearcoat:0.8}); o.userData.sharedMat = false; }
@@ -1110,8 +1112,11 @@ function createEngine(opts){
       if (ax1 < xBF) add(new THREE.BoxGeometry(xBF - ax1, 0.04, W - 0.04), mats.dark, (ax1 + xBF)/2, bot + 0.02, 0, truck, false);
       add(new THREE.BoxGeometry(ax1 - ax0, 0.04, 2*innerZ), mats.dark, xA2, bot + 0.02, 0, truck, false); }
     add(new THREE.BoxGeometry(0.04, top - bot, W), mats.body, xBF + 0.02 - 0.04, (top + bot)/2, 0);
-    [[xBF, 1], [xBF, -1], [xBR, 1], [xBR, -1]].forEach(([x, sz]) => add(RBox(0.07, top - bot, 0.07, 0.03), isTruck ? mats.alu : mats.body, x + (x === xBF ? -0.01 : 0.01), (top + bot)/2, sz*(W/2 - 0.005)));
-    if (isTruck) [1, -1].forEach(sz => add(RBox(BL + 0.06, 0.06, 0.05, 0.015), mats.alu, xbc, top - 0.04, sz*(W/2 + 0.005), truck, false));
+    [[xBF, 1], [xBF, -1], [xBR, 1], [xBR, -1]].forEach(([x, sz]) => add(RBox(0.075, top - bot, 0.075, 0.03), mats.alu, x + (x === xBF ? -0.01 : 0.01), (top + bot)/2, sz*(W/2 - 0.005)));
+    [1, -1].forEach(sz => add(RBox(BL + 0.06, 0.06, 0.05, 0.015), mats.alu, xbc, top - 0.04, sz*(W/2 + 0.005), truck, false));
+    add(RBox(0.05, 0.06, W + 0.04, 0.015), mats.alu, xBR + 0.005, top - 0.04, 0, truck, false);
+    [1, -1].forEach(sz => add(RBox(BL - 0.02, 0.045, 0.035, 0.012), mats.trim, xbc, bot + 0.02, sz*(W/2 + 0.004), truck, false));
+    if (!isTruck) { const rf = add(new THREE.PlaneGeometry(BL, W - 0.02), std('#e8ebec', 0.45, 0.05), xbc, top + 0.022, 0, truck, false); rf.rotation.x = -Math.PI/2; rf.receiveShadow = true; }
     if (isTruck) { const dm = new THREE.MeshStandardMaterial({map:diamondTex(), color:col('#c9ced3'), roughness:0.38, metalness:0.85}); dm.map.wrapS = dm.map.wrapT = THREE.RepeatWrapping; dm.map.repeat.set((BL - 0.1)/0.5, (W - 0.15)/0.5);
       const rp = add(new THREE.PlaneGeometry(BL - 0.1, W - 0.15), dm, xbc, top + 0.023, 0, truck, false); rp.rotation.x = -Math.PI/2; rp.receiveShadow = true; }
     // passages de roue arrière
@@ -1158,14 +1163,15 @@ function createEngine(opts){
     }
     if (b.hoseReels && isTruck) {
       const red = new THREE.MeshPhysicalMaterial({color:col('#b3121b'), roughness:0.35, clearcoat:0.6}), hose = new THREE.MeshStandardMaterial({color:col('#e9e6dc'), roughness:0.85});
-      [1, -1].forEach(sz => { const g = new THREE.Group(); g.position.set(xBR - 0.4, 0.66, sz*0.6); truck.add(g);
-        const R0 = 0.42, wd = 0.4;
+      [1, -1].forEach(sz => { const g = new THREE.Group(); g.position.set(xBR - 0.3, 0.8, sz*0.58); truck.add(g);
+        const R0 = 0.34, wd = 0.38;
         [-1, 1].forEach(e => { const rim = new THREE.Mesh(new THREE.TorusGeometry(R0, 0.022, 8, 48), red); rim.position.z = e*wd/2; g.add(rim);
           for (let k = 0; k < 6; k++) { const sp = new THREE.Mesh(new THREE.BoxGeometry(0.03, R0*2, 0.02), red); sp.rotation.z = k*Math.PI/6; sp.position.z = e*wd/2; g.add(sp); } });
         const coil = new THREE.Mesh(new THREE.CylinderGeometry(R0*0.82, R0*0.82, wd - 0.04, 40, 1, false), hose); coil.rotation.x = Math.PI/2; g.add(coil);
         for (let k = -3; k <= 3; k++) { const r = new THREE.Mesh(new THREE.TorusGeometry(R0*0.82, 0.018, 6, 40), hose); r.position.z = k*(wd - 0.06)/6; g.add(r); }
         const ax = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, wd + 0.2, 12), mats.alu); ax.rotation.x = Math.PI/2; g.add(ax);
-        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.5), mats.alu); arm.position.set(0.25, 0, 0); g.add(arm);
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.06, 0.06), mats.alu); arm.position.set(0.16, 0, sz*(wd/2 + 0.08)); g.add(arm);
+        const noz = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.045, 0.3, 12), mats.chrome); noz.rotation.z = Math.PI/2; noz.position.set(-0.05, R0*0.86, 0); g.add(noz);
         g.traverse(o => { if (o.isMesh) o.castShadow = true; }); });
     }
     // casquette au-dessus de la cabine (VSAV)
@@ -1740,7 +1746,7 @@ const engines = [];
 
 /* ---------- Héro ---------- */
 const hc = document.getElementById('hero-canvas'), heroEl = document.querySelector('.hero .fig');
-const H = RX.createEngine({canvas:hc, background:'#eceeeb', theme:'light', exposure:0.95});
+const H = RX.createEngine({canvas:hc, background:'#eceeeb', theme:'light', exposure:0.78});
 if (H.controls) H.controls.enabled = false;
 H.beaconsOn = true; H.doorSpeed = 4;
 const seq = (window.RX_SITE && window.RX_SITE.hero) || ['vsav', 'fpt'];
@@ -1786,7 +1792,7 @@ const droot = document.getElementById('demo-root'), dview = droot.querySelector(
 let D = null, demo = null, demoVisible = false;
 function initDemo(){
   if (D) return;
-  D = RX.createEngine({canvas:document.getElementById('demo-canvas'), background:'#eceeeb', theme:'light', exposure:0.95});
+  D = RX.createEngine({canvas:document.getElementById('demo-canvas'), background:'#eceeeb', theme:'light', exposure:0.78});
   demo = RXDemo(droot, D);
   const rs = () => { const r = dview.getBoundingClientRect(); D.resize(r.width, r.height); };
   new ResizeObserver(rs).observe(dview); rs(); demo.start();
