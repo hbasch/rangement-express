@@ -1305,10 +1305,20 @@ function createEngine(opts){
     for (const h of ray.intersectObjects(E.pickables, false)) {
       const d = h.object.userData; if (!h.object.visible) continue;
       if (d.type === 'item') { if (!d.group.visible) continue; if (E.objs[d.coffreId].p > 0.6) return {kind:'item', ...d}; continue; }
-      if (d.type === 'door') return {kind:'door', coffreId:d.coffreId};
+      if (d.type === 'door') { if (facingCam(d.coffreId)) return {kind:'door', coffreId:d.coffreId}; break; }
     }
-    return null;
+    return faceHit();
   };
+  const facingCam = id => { const o = E.objs[id]; if (!o) return false; const p = new THREE.Vector3(), q = new THREE.Quaternion(); o.g.getWorldPosition(p); o.g.getWorldQuaternion(q);
+    return new THREE.Vector3(0, 0, 1).applyQuaternion(q).dot(camera.position.clone().sub(p)) > 0; };
+  /* clic entre deux battants, sur une poignée ou un joint : on retrouve le coffre par sa façade */
+  const faceHit = () => { let best = null, bd = 1e9; const inv = new THREE.Matrix4(), lp = new THREE.Vector3();
+    for (const [id, o] of Object.entries(E.objs)) { if (o.p > 0.3 || !facingCam(id)) continue; o.g.updateMatrixWorld();
+      const p = new THREE.Vector3(), q = new THREE.Quaternion(); o.g.getWorldPosition(p); o.g.getWorldQuaternion(q);
+      const pl = new THREE.Plane().setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 0, 1).applyQuaternion(q), p), hit = new THREE.Vector3();
+      if (!ray.ray.intersectPlane(pl, hit)) continue; inv.copy(o.g.matrixWorld).invert(); lp.copy(hit).applyMatrix4(inv);
+      if (Math.abs(lp.x) <= (o.w || 1)/2 && Math.abs(lp.y) <= (o.h || 1)/2) { const dd = hit.distanceTo(camera.position); if (dd < bd) { bd = dd; best = id; } } }
+    return best ? {kind:'door', coffreId:best} : null; };
   E.resize = (w, h) => { if (!w || !h) return; renderer.setSize(w, h, false); camera.aspect = w/h; E.aspect = w/h; camera.updateProjectionMatrix(); };
   E.update = dt => {
     E.time += dt;
@@ -1709,7 +1719,7 @@ const thumbOf = k => k === 'fpt' ? THUMB.truck : (k === 'vsav' || k === 'shared'
 function paintCards(){ const box = root.querySelector('#d-cards'); if (!box) return;
   box.innerHTML = Object.entries(PRESETS).map(([k, p]) => `<button class="vcard" data-preset="${k}" aria-pressed="${k === store.current}" id="d-card-${k}">${thumbOf(k)}<span>${esc(store.vehicles[k] && store.vehicles[k].name || p.label)}<small>${esc(p.group || '')} · ${(store.vehicles[k] || p).coffres.length} coffres</small></span></button>`).join(''); }
 root.querySelector('#d-cards').addEventListener('click', e => { const b = e.target.closest('[data-preset]'); if (b && b.dataset.preset !== store.current) loadPreset(b.dataset.preset); });
-function paintTop(){ const n = root.querySelector('#d-vname'); if (n) n.textContent = vName();
+function paintTop(){ const n = root.querySelector('#d-vname'); if (n) n.textContent = vName(); const cn = root.querySelector('#d-card-' + store.current + ' span'); if (cn && cn.firstChild) cn.firstChild.textContent = vName();
   const m = vehicleMastery(), bar = root.querySelector('#d-chip-bar'), val = root.querySelector('#d-chip-v'); if (bar) bar.style.width = m + '%'; if (val) val.textContent = m + ' %'; }
 const coBox = root.querySelector('.d-callouts'); let coEls = {};
 const showCallouts = () => state.mode !== 'train';
@@ -1723,7 +1733,7 @@ coBox.addEventListener('click', e => { const b = e.target.closest('button[data-i
 function moveCallouts(){ if (!showCallouts()) return; const r = viewport.getBoundingClientRect(), W = r.width, H = r.height, placed = [];
   const list = Object.entries(coEls).map(([id, el]) => ({id, el, p:E.project(id)})).sort((a, b) => (a.p ? a.p.x : 0) - (b.p ? b.p.x : 0));
   for (const {el, p} of list) {
-    const vis = p && p.facing > 0.18 && p.z < 1 && p.x > 0.02 && p.x < 0.98 && p.y > 0.05 && p.y < 0.95 && p.dist > (W < H ? 8.5 : 6);
+    const vis = p && p.facing > 0.18 && p.z < 1 && p.x > 0.02 && p.x < 0.98 && p.y > 0.05 && p.y < 0.95 && p.dist > (W < H ? 8.5 : 7);
     if (!vis) { el.style.display = 'none'; continue; } el.style.display = '';
     const btn = el.querySelector('button'), bw = btn.offsetWidth || 160, x = Math.min(W - bw/2 - 6, Math.max(bw/2 + 6, p.x*W)), y = p.y*H;
     let ty = Math.max(34, p.ty*H - 14);
