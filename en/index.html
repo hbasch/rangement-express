@@ -565,7 +565,7 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
 
 <footer><div class="wrap"><a class="logo" href="#top"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Rangement Express</a><span>Prototype, independent project from France · hadrienbasch@gmail.com · <a href="../" lang="fr" style="color:#dfe3e1">Version française</a> · <a href="../de/" lang="de" style="color:#dfe3e1">Deutsch</a></span></div></footer>
 
-<script>window.RX_SITE={presets:["pump","amb"],hero:["pump","amb"],key:"rangement-express-en-v1",cap:"lockers opened one by one"}</script>
+<script>window.RX_SITE={presets:["pump","amb"],hero:["pump","amb"],key:"rangement-express-en-v1",base:"https://hbasch.github.io/rangement-express/en/",cap:"lockers opened one by one"}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
@@ -1585,6 +1585,36 @@ function coffreRow(c, withItems){
     <span class="code">${esc(c.code)}</span><span class="nm">${esc(c.name)}<small>${SIDE[c.side]} · ${its.length} item${its.length > 1 ? 's' : ''}</small></span><span class="bar"><i style="width:${m}%"></i></span></button>
     ${withItems ? `<div class="items">${its.map(n => `<span class="chip"><i class="l${level(mastery(n))}"></i>${esc(n)}</span>`).join('')}</div>` : ''}`;
 }
+/* Import d'un inventaire collé (Excel, CSV ou texte libre) : renvoie une liste de coffres */
+/* Hors ligne (fichier ouvert depuis l'ordi) : les liens et QR codes pointent vers le site en ligne */
+function pageBase(){ return location.protocol === 'file:' && SITE.base ? SITE.base : location.href.split('#')[0]; }
+function parseList(txt){
+  const BACK = /(^|\s)(arri[eè]re|ar|heck|gr|rear|r|a\d*|s|saloon|cellule|patientenraum)(\s|$)/i;
+  const out = [], byKey = new Map(); let cur = null;
+  const get = label => { label = label.replace(/\s*:\s*$/, '').trim(); if (!label) return null; const k = label.toLowerCase(); if (byKey.has(k)) return byKey.get(k);
+    const solo = /^[A-Za-z]{1,3}\d{0,2}$/.test(label) && /\d|^[A-Z]{1,3}$/.test(label), m = solo ? [label, label, label] : label.match(/^([A-Za-zÄÖÜäöü]{0,3}\d{0,2}[A-Za-z]?)\s*[-–:.]?\s+(.+)$/), code = m && m[1] && m[1].length <= 4 && /\d|^[A-Z]{1,3}$/.test(m[1]) ? m[1] : null;
+    const c = {id:uid(), code:(code || '').toUpperCase(), name:code ? m[2].trim() : label, side:null, weight:1, items:[], shelfIdx:{}}; byKey.set(k, c); out.push(c); return c; };
+  const add = (c, item, shelf) => { item = item.replace(/^[-*•☐\s]+/, '').trim(); if (!c || !item) return; c.items.push([item, shelf]); };
+  txt.split(/\r?\n/).forEach((raw, i) => { const line = raw.replace(/\s+$/, ''); if (!line.trim()) return;
+    const cols = line.includes('\t') ? line.split('\t') : line.includes(';') ? line.split(';') : null;
+    if (cols && cols.length >= 2 && cols[1].trim()) { const [cf, it, sh] = cols.map(s => s.trim()); if (i === 0 && /objet|mat[ée]riel|item|ger[äa]t|kit|equipment|inhalt/i.test(it)) return;
+      if (cf) cur = get(cf); add(cur, it, sh && /^\d+$/.test(sh) ? +sh : null); return; }
+    const ci = line.indexOf(':');
+    if (ci > 0) { cur = get(line.slice(0, ci)); line.slice(ci + 1).split(',').forEach(s => add(cur, s)); return; }
+    if (/^\s*[-*•☐]/.test(line) && cur) { line.split(',').forEach(s => add(cur, s)); return; }
+    cur = get(line); });
+  let alt = 0; const frG = out.some(c => /^D\d/.test(c.code));
+  return out.filter(c => c.items.length).map(c => {
+    const f = c.code[0], gde = f === 'G' && /^G\d/.test(c.code);
+    c.side = BACK.test(c.code) || BACK.test(c.name) ? 'B' : f === 'N' || (gde && (frG || /[13579]$/.test(c.code))) ? 'L' : f === 'D' || f === 'O' || gde ? 'R' : (alt++ % 2 ? 'R' : 'L');
+    if (!c.code) c.code = '?';
+    const withShelf = c.items.some(([, s]) => s);
+    let shelves;
+    if (withShelf) { const m = new Map(); c.items.forEach(([it, s]) => { const n = s || 1; if (!m.has(n)) m.set(n, []); m.get(n).push(it); }); shelves = [...m.keys()].sort((x, y) => x - y).map(n => m.get(n)); }
+    else { shelves = []; c.items.forEach(([it], i) => { if (i % 3 === 0) shelves.push([]); shelves[shelves.length - 1].push(it); }); }
+    return {id:c.id, code:c.code.slice(0, 4), name:c.name, side:c.side, weight:Math.min(2, Math.max(0.8, Math.max(...shelves.map(r => r.length)) / 3 + 0.4)), shelves};
+  });
+}
 function renderPanel(){
   const v = state.v; paintTop();
   if (state.mode === 'learn') {
@@ -1648,6 +1678,11 @@ function renderPanel(){
           <input type="file" id="d-c-photo" accept="image/*" hidden>${c.photo ? '<button class="btn danger" data-action="nophoto" id="d-nophoto">Remove</button>' : ''}</div></div>
         <div class="row"><button class="btn" data-action="move" data-dir="-1" id="d-fwd">Move forward</button><button class="btn" data-action="move" data-dir="1" id="d-rear">Move back</button>
           <button class="btn danger" data-action="del" id="d-del">${state.confirmDel ? 'Confirm delete' : 'Delete'}</button></div></div>` : ''}
+      <div class="sec"><h4>Import a list</h4>
+        <p class="small muted">Paste your station's stowage list, from Excel (columns locker then item) or as text (one line per locker: code name: item, item). The current lockers are replaced.</p>
+        <textarea id="d-list" rows="5" placeholder="N1 Breathing apparatus: BA set 1, BA set 2, Thermal imaging camera&#10;O1 Water supply: 70mm hose, Standpipe"></textarea>
+        <div class="row"><button class="btn primary" data-action="importlist" id="d-importlist">Create the lockers</button></div>
+        <p class="small" id="d-list-msg" aria-live="polite"></p></div>
       <div class="sec"><h4>QR codes and sharing</h4>
         <p class="small muted">Print one QR code per locker and stick it inside the real locker: a scan with a phone shows what should be in it. The share link gives the whole watch the complete appliance.</p>
         <div class="row"><button class="btn primary" data-action="qrsheet" id="d-qrsheet">QR code sheet</button><button class="btn" data-action="sharelink" id="d-sharelink">Copy appliance link</button></div>
@@ -1689,8 +1724,13 @@ panel.addEventListener('click', e => {
       o.coffres.forEach(c => { c.id = c.id || uid(); c.side = SIDE[c.side] ? c.side : 'L'; c.shelves = Array.isArray(c.shelves) ? c.shelves : [[]]; c.code = c.code || '?'; c.name = c.name || 'Coffre'; });
       state.v = fixBody(o); state.sel = null; E.objs = {}; changed(); E.overview(); renderPanel(); $('#d-io-msg').textContent = 'Appliance loaded.'; }
     catch(err) { msg.textContent = 'Unreadable text: paste the full text copied from Rangement Express.'; } }
+  if (act === 'importlist') { const msg = $('#d-list-msg'), cs = parseList($('#d-list').value);
+    if (!cs.length) { msg.textContent = 'Nothing readable: one line per locker, for example “N1 BA: BA set 1, BA set 2”.'; return; }
+    const ids = {}; cs.forEach(c => { ids[c.code] = (ids[c.code] || 0) + 1; if (c.code === '?' || ids[c.code] > 1) c.code = ({L:'G', R:'D', B:'A'}[c.side]) + (cs.filter(x => x.side === c.side).indexOf(c) + 1); });
+    v.coffres = cs; state.sel = null; E.objs = {}; changed(); E.overview(); renderPanel();
+    $('#d-list-msg').textContent = `${cs.length} locker(s) and ${cs.reduce((n, c) => n + c.shelves.flat().length, 0)} item(s) created. Check the sides and names above.`; }
   if (act === 'qrclose') { state.qr = null; E.overview(); renderPanel(); }
-  if (act === 'sharelink') { const msg = $('#d-share-msg'); RX.packVehicle(state.v, true).then(p => { const url = location.href.split('#')[0] + '#v=' + p;
+  if (act === 'sharelink') { const msg = $('#d-share-msg'); RX.packVehicle(state.v, true).then(p => { const url = pageBase() + '#v=' + p;
       const done = () => msg.textContent = 'Link copied. Send it to your watch: it opens this appliance directly.';
       try { navigator.clipboard.writeText(url).then(done, () => { msg.textContent = url; }); } catch (e) { msg.textContent = url; } }); }
   if (act === 'qrsheet') openQrSheet();
@@ -1781,7 +1821,7 @@ function moveCallouts(){ if (!showCallouts()) return; const r = viewport.getBoun
 /* ---------- feuille de QR codes imprimable ---------- */
 async function openQrSheet(){
   if (typeof qrcode !== 'function') { const m = $('#d-share-msg'); if (m) m.textContent = 'The QR code generator could not load.'; return; }
-  const payload = await RX.packVehicle(state.v, false), base = location.href.split('#')[0];
+  const payload = await RX.packVehicle(state.v, false), base = pageBase();
   let ov = document.getElementById('qr-sheet'); if (!ov) { ov = document.createElement('div'); ov.id = 'qr-sheet'; ov.className = 'qr-sheet'; document.body.appendChild(ov); }
   const cards = sortedCoffres().map(c => { const q = qrcode(0, 'L'); q.addData(base + '#q=' + payload + '&c=' + encodeURIComponent(c.code)); q.make();
     const its = [...new Set(c.shelves.flat().filter(Boolean))];
