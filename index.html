@@ -659,6 +659,53 @@ function reel(P, R, w, drum, cable){
 const pick = (n, arr) => arr[hash(n) % arr.length];
 
 const LIB = [
+  /* ---- matériel sanitaire (ambulance, VSAV) ---- */
+  [/brancard principal/, P => { const A = P.M(...ALU), D = 1.9, W = 0.56;
+    [-W/2 + 0.03, W/2 - 0.03].forEach(x => P.cyl(0.018, D, A, x, 0.34, -D/2 - 0.02, 'z', 16));
+    [0.25, D - 0.25].forEach(z => { [-1, 1].forEach(s => P.cyl(0.016, 0.3, A, s*(W/2 - 0.06), 0.17, -z - 0.02)); P.cyl(0.016, W - 0.1, A, 0, 0.04, -z - 0.02, 'x', 12);
+      [-1, 1].forEach(s => P.cyl(0.04, 0.03, P.M('#1c1d20', 0.7), s*(W/2 - 0.06), 0.04, -z - 0.02, 'x', 18)); });
+    P.box(W - 0.04, 0.08, D - 0.55, P.M('#1f4e8c', 0.7), 0, 0.41, -0.04 - (D - 0.55)/2, 0.03, true);
+    const back = P.box(W - 0.04, 0.08, 0.62, P.M('#1f4e8c', 0.7), 0, 0.56, -D + 0.3, 0.03); back.rotation.x = 0.55;
+    P.box(W - 0.06, 0.012, D - 0.75, P.M('#f3f3ef', 0.85), 0, 0.455, -0.08 - (D - 0.75)/2, 0.004);
+    [-1, 1].forEach(s => { P.cyl(0.012, 0.9, A, s*(W/2), 0.55, -0.95, 'z', 12); [0.6, 1.3].forEach(z => P.cyl(0.012, 0.16, A, s*(W/2), 0.47, -z)); });
+    [0.75, 1.35].forEach(z => P.box(W + 0.02, 0.012, 0.05, P.M('#1c1d20', 0.6), 0, 0.455, -z, 0.004));
+    return {w: W + 0.04, h: 0.78, d: D + 0.04, front: 0, tagY: 0.62, tagW: 0.36}; }],
+  [/chaise portoir/, P => { const A = P.M(...ALU), B = P.M('#1f4e8c', 0.7);
+    [-0.2, 0.2].forEach(x => { P.cyl(0.014, 1.0, A, x, 0.5, -0.06); P.cyl(0.045, 0.03, P.M('#1c1d20', 0.7), x, 0.045, -0.12, 'x', 18); });
+    P.box(0.42, 0.04, 0.4, B, 0, 0.46, -0.22, 0.015, true); P.box(0.42, 0.5, 0.04, B, 0, 0.74, -0.04, 0.015);
+    P.cyl(0.012, 0.44, A, 0, 0.99, -0.06, 'x', 12); [-0.12, 0.12].forEach(x => P.box(0.05, 0.012, 0.1, P.M('#1c1d20', 0.6), x, 0.6, -0.02, 0.004));
+    return {w: 0.46, h: 1.02, d: 0.44, front: 0, tagY: 0.66, tagW: 0.3}; }],
+  [/insufflateur/, (P, n) => { const k = /pédia/.test(n) ? 0.72 : 1, clear = P.M('#e8eef2', 0.15, 0, {transparent:true, opacity:0.55});
+    const b = P.sph(0.075*k, P.M('#f0a020', 0.45, 0, {transparent:true, opacity:0.85}), 0, 0.08*k, -0.16*k); b.scale.set(1.9, 1, 1); P.main = b;
+    P.cyl(0.03*k, 0.07*k, clear, 0.2*k, 0.08*k, -0.16*k, 'x', 16); P.cone(0.06*k, 0.07*k, clear, 0.27*k, 0.08*k, -0.16*k).rotation.z = Math.PI/2;
+    const r = P.sph(0.06*k, P.M('#2f8a4a', 0.4, 0, {transparent:true, opacity:0.45}), -0.22*k, 0.08*k, -0.16*k); r.scale.set(1.3, 0.9, 0.9);
+    return {w: 0.6*k, h: 0.17*k, d: 0.32*k, front: 0, tagY: 0.08*k, tagW: 0.3*k}; }],
+  [/masques haute|lunettes à oxyg/, (P, n) => { P.box(0.26, 0.05, 0.2, P.M('#dfe8ee', 0.1, 0, {transparent:true, opacity:0.45}), 0, 0.025, -0.1, 0.01, true);
+    if (/masque/.test(n)) { const m = P.sph(0.06, P.M('#3fb36b', 0.25, 0, {transparent:true, opacity:0.7}), -0.05, 0.05, -0.1, true); m.scale.set(1, 0.8, 1.3); }
+    P.tor(0.06, 0.008, P.M('#cfe9d8', 0.3, 0, {transparent:true, opacity:0.8}), 0.06, 0.054, -0.1, Math.PI*2, Math.PI/2);
+    return {w: 0.26, h: 0.1, d: 0.2, front: 0, tagY: 0.05, tagW: 0.2}; }],
+  [/ffp2/, P => { P.box(0.22, 0.12, 0.16, P.M('#f4f5f2', 0.7), 0, 0.06, -0.08, 0.006, true); P.box(0.222, 0.03, 0.162, P.M('#2f6db3', 0.6), 0, 0.09, -0.08, 0.004); return {w: 0.22, h: 0.12, d: 0.16, front: 0, tagY: 0.05, tagW: 0.18}; }],
+  [/tensiomètre manuel/, P => { P.box(0.2, 0.06, 0.14, P.M('#1c1d20', 0.8), 0, 0.03, -0.07, 0.02, true); P.cyl(0.045, 0.02, P.M('#f1f1ee', 0.3), 0.05, 0.07, -0.07); P.sph(0.03, P.M('#1c1d20', 0.6), -0.06, 0.08, -0.07); return {w: 0.2, h: 0.11, d: 0.14, front: 0, tagY: 0.05, tagW: 0.18}; }],
+  [/tensiomètre/, P => { P.box(0.16, 0.1, 0.12, P.M('#f1f1ee', 0.4), 0, 0.05, -0.06, 0.015, true); P.box(0.08, 0.04, 0.004, P.M('#1b2a3d', 0.2), 0, 0.07, 0.001, 0.004); P.box(0.18, 0.04, 0.12, P.M('#2f6db3', 0.8), 0.02, 0.12, -0.06, 0.015); return {w: 0.2, h: 0.14, d: 0.12, front: 0, tagY: 0.05, tagW: 0.16}; }],
+  [/oxymètre/, P => { P.box(0.07, 0.12, 0.04, P.M('#f1f1ee', 0.4), 0, 0.06, -0.02, 0.012, true); P.box(0.05, 0.035, 0.004, P.M('#1b2a3d', 0.2), 0, 0.085, 0.001, 0.003); P.box(0.04, 0.03, 0.04, P.M('#2f6db3', 0.5), 0, 0.135, -0.02, 0.01); return {w: 0.12, h: 0.15, d: 0.05, front: 0, tagY: 0.04, tagW: 0.12}; }],
+  [/thermomètre/, P => { P.box(0.05, 0.15, 0.04, P.M('#f1f1ee', 0.4), 0, 0.075, -0.02, 0.015, true); P.box(0.03, 0.02, 0.004, P.M('#1b2a3d', 0.2), 0, 0.1, 0.001, 0.003); P.cyl(0.006, 0.04, P.M('#c2c7cc', 0.3, 0.8), 0, 0.17, -0.02); return {w: 0.1, h: 0.19, d: 0.05, front: 0, tagY: 0.04, tagW: 0.1}; }],
+  [/stéthoscope/, P => { P.tor(0.08, 0.008, P.M('#1c1d20', 0.6), 0, 0.012, -0.1, Math.PI*2, Math.PI/2); P.main = P.g.children[0]; P.cyl(0.03, 0.015, P.M(...CHROME()), 0.1, 0.012, -0.05); P.tor(0.04, 0.005, P.M(...CHROME()), -0.04, 0.012, -0.16, Math.PI, Math.PI/2); return {w: 0.24, h: 0.03, d: 0.2, front: 0, tagY: 0.02, tagW: 0.16, tagFlat: false}; }],
+  [/glycémie/, P => { P.box(0.16, 0.05, 0.11, P.M('#2b2f34', 0.8), 0, 0.025, -0.055, 0.02, true); P.box(0.05, 0.08, 0.02, P.M('#f1f1ee', 0.4), 0.03, 0.09, -0.04, 0.008); return {w: 0.16, h: 0.13, d: 0.11, front: 0, tagY: 0.03, tagW: 0.14}; }],
+  [/compresses|pansements/, (P, n) => { const c = /pansem/.test(n) ? '#3fa36b' : '#2f6db3'; for (let i = 0; i < 3; i++) P.box(0.16, 0.08, 0.12, P.M('#f4f5f2', 0.7), (i - 1)*0.17, 0.04, -0.06, 0.006, i === 1); [-0.17, 0, 0.17].forEach(x => P.box(0.162, 0.018, 0.122, P.M(c, 0.6), x, 0.06, -0.06, 0.003)); return {w: 0.52, h: 0.08, d: 0.12, front: 0, tagY: 0.04, tagW: 0.2}; }],
+  [/sacs vomitoires|daom|haricot/, (P, n) => stack(P, /daom/.test(n) ? ['#2b2d31', '#3a3d42', '#2b2d31'] : /haricot/.test(n) ? ['#c9ced3', '#b8bec4', '#c9ced3'] : ['#5b9bd5', '#4a8ac4', '#5b9bd5', '#4a8ac4'], 0.24, 0.16, 0.025)],
+  [/bassin|urinal/, (P, n) => { if (/urinal/.test(n)) { P.box(0.12, 0.2, 0.08, P.M('#e9ecef', 0.4, 0, {transparent:true, opacity:0.85}), 0, 0.1, -0.04, 0.03, true); P.cyl(0.02, 0.06, P.M('#e9ecef', 0.4), 0.06, 0.2, -0.04, 'x'); return {w: 0.18, h: 0.22, d: 0.08, front: 0, tagY: 0.08, tagW: 0.14}; }
+    P.box(0.36, 0.08, 0.28, P.M('#d9dde1', 0.45), 0, 0.04, -0.14, 0.04, true); P.box(0.12, 0.02, 0.06, P.M('#d9dde1', 0.45), 0.2, 0.06, -0.14, 0.008); return {w: 0.44, h: 0.08, d: 0.28, front: 0, tagY: 0.04, tagW: 0.18}; }],
+  [/coussin/, P => { P.box(0.4, 0.12, 0.3, P.M('#2f6db3', 0.85), 0, 0.06, -0.15, 0.05, true); return {w: 0.4, h: 0.12, d: 0.3, front: 0, tagY: 0.06, tagW: 0.2}; }],
+  [/matelas de transfert|tenues de protection/, (P, n) => stack(P, /tenue/.test(n) ? ['#9fc6e8', '#8bb8de', '#9fc6e8'] : ['#2b6cb0', '#255f9c', '#2b6cb0', '#255f9c'], 0.46, 0.3, 0.05)],
+  [/bouteille d'oxyg/, P => { const W = P.M('#f4f5f2', 0.35, 0.15); P.cyl(0.075, 0.5, W, 0, 0.27, -0.08); P.main = P.g.children[0]; P.sph(0.075, W, 0, 0.52, -0.08, true);
+    P.cyl(0.03, 0.06, P.M(...CHROME()), 0, 0.62, -0.08); P.box(0.07, 0.06, 0.05, P.M('#2f8a4a', 0.4), 0, 0.68, -0.08, 0.01); P.cyl(0.025, 0.02, P.M('#f1f1ee', 0.2), 0.045, 0.69, -0.08, 'x');
+    P.box(0.16, 0.24, 0.005, P.M('#ffffff', 0.6), 0, 0.3, -0.004, 0.003); return {w: 0.17, h: 0.72, d: 0.16, front: 0, tagY: 0.3, tagW: 0.15}; }],
+  [/détendeur|débitlitre/, P => { P.cyl(0.03, 0.12, P.M(...CHROME()), 0, 0.06, -0.04, 'y', 20); P.main = P.g.children[0]; P.cyl(0.035, 0.02, P.M('#f1f1ee', 0.2), 0, 0.09, 0.0, 'z', 20); P.cyl(0.02, 0.06, P.M('#2f8a4a', 0.4), 0.05, 0.08, -0.04, 'x'); return {w: 0.16, h: 0.13, d: 0.08, front: 0.01, tagY: 0.05, tagW: 0.12}; }],
+  [/support soluté|pied à perf/, P => { const A = P.M(...ALU); P.cyl(0.012, 0.8, A, 0, 0.4, -0.05); P.main = P.g.children[0]; P.tor(0.04, 0.006, A, 0, 0.82, -0.05, Math.PI*1.5); P.cyl(0.006, 0.12, A, 0, 0.78, -0.05, 'x'); return {w: 0.16, h: 0.86, d: 0.1, front: 0, tagY: 0.4, tagW: 0.14}; }],
+  [/coupe-ceinture/, P => { P.box(0.05, 0.14, 0.02, P.M('#f2c500', 0.5), 0, 0.07, -0.01, 0.01, true); P.box(0.04, 0.04, 0.022, P.M('#c8161d', 0.5), 0, 0.15, -0.01, 0.008); return {w: 0.1, h: 0.17, d: 0.03, front: 0, tagY: 0.05, tagW: 0.1}; }],
+  [/triangle/, P => { const tri = new THREE.Shape(); tri.moveTo(-0.25, 0); tri.lineTo(0.25, 0); tri.lineTo(0, 0.44); tri.lineTo(-0.25, 0); P.add(new THREE.ExtrudeGeometry(tri, {depth: 0.03, bevelEnabled:false}), P.M('#c8161d', 0.4), 0, 0.01, -0.05, true); return {w: 0.5, h: 0.45, d: 0.05, front: 0, tagY: 0.12, tagW: 0.2}; }],
+  [/kit aev/, P => bag(P, '#f2c500', 0.26, 0.16, 0.12)],
+  [/kit traitement des plaies/, P => bag(P, '#c3222a', 0.34, 0.2, 0.2)],
   [/dsa/, P => { const r = hardcase(P, '#1f8f4a', 0.3, 0.27, 0.15); P.box(0.11, 0.09, 0.004, '#f2f3f1', 0, 0.2, 0.008, 0.01); return r; }],
   [/sac ps|sac de premiers/, P => bag(P, '#c3222a')],
   [/oxyg/, P => { const r = bag(P, '#1d5fae', 0.58, 0.38, 0.3); P.cyl(0.045, 0.1, P.M('#f1f1ee', 0.3, 0.3), 0.2, 0.42, -0.15); return r; }],
@@ -754,13 +801,14 @@ window.RXItems = {
     let spec = null;
     for (const [re, fn] of LIB) if (re.test(n)) { spec = fn(P, n); break; }
     if (!spec) spec = DEFAULT(P, n);
-    const s = Math.min(1, (sw*0.92)/spec.w, (sh*0.9)/spec.h, (depth*0.92)/spec.d);
+    const fit = Math.min((sw*0.92)/spec.w, (sh*0.9)/spec.h, (depth*0.92)/spec.d), small = spec.h < 0.2 && spec.w < 0.3;
+    const s = Math.min(fit, small ? Math.min(2.2, Math.max(1, 0.24/spec.h, 0.2/spec.w)) : 1);
     inner.scale.setScalar(s);
     inner.position.z = -0.03 - (spec.front || 0)*s;
-    let tw = Math.min(sw*0.92, Math.max(0.22, spec.tagW*s*1.6)), th = tw*0.375;
+    let tw = small ? Math.min(sw*0.92, Math.max(0.17, spec.tagW*1.6)) : Math.min(sw*0.92, Math.max(0.22, spec.tagW*s*1.6)), th = tw*0.375;
     const tag = new THREE.Mesh(new THREE.PlaneGeometry(tw, th), new THREE.MeshBasicMaterial({map:tagTex(name), transparent:true, toneMapped:false}));
     if (spec.tagFlat) { tag.rotation.x = -Math.PI/2; tag.position.set(0, spec.h*s + 0.004, -0.03 - spec.d*s*0.35); }
-    else tag.position.set(0, Math.max(th/2 + 0.045, spec.tagY*s), -0.03 + 0.006);
+    else tag.position.set(0, small ? th/2 + 0.01 : Math.max(th/2 + 0.045, spec.tagY*s), -0.03 + 0.006 + (small ? 0.01 : 0));
     tag.visible = labels; g.add(tag);
     return {g, main: P.main, tag};
   }
@@ -1073,13 +1121,32 @@ function createEngine(opts){
       // cadre des portes arrière, bande bleue, rail central au sol, spots au plafond
       add(new THREE.BoxGeometry(0.06, H, 0.12), railM, x0, H/2, Wc/2 - 0.06, truck, false); add(new THREE.BoxGeometry(0.06, H, 0.12), railM, x0, H/2, -Wc/2 + 0.06, truck, false);
       add(new THREE.BoxGeometry(L, 0.06, 0.012), blueM, 0, 1.4, Wc/2 - 0.006, truck, false); add(new THREE.BoxGeometry(L, 0.06, 0.012), blueM, 0, 1.4, -Wc/2 + 0.006, truck, false);
-      add(new THREE.BoxGeometry(L - 0.5, 0.03, 0.22), railM, 0.1, 0.017, -0.3, truck, false); add(new THREE.BoxGeometry(L - 0.6, 0.12, 0.8), std('#dfe3e6', 0.6, 0.05), 0.15, 0.06, -0.3, truck, false);
+      add(new THREE.BoxGeometry(2.5, 0.03, 0.12), railM, -0.5, 0.017, -0.3, truck, false); add(new THREE.BoxGeometry(2.4, 0.05, 0.66), std('#c9ced3', 0.5, 0.3), -0.5, 0.03, -0.3, truck, false);
+      // sol antidérapant (texture), portes arrière ouvertes, prises d'oxygène murales, main courante au plafond
+      { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); x.fillStyle = '#5d636a'; x.fillRect(0, 0, 256, 256);
+        for (let i = 0; i < 2600; i++) { x.fillStyle = Math.random() < 0.5 ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.12)'; x.fillRect(Math.random()*256, Math.random()*256, 2, 2); }
+        const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(6, 3.5); if (THREE.sRGBEncoding) t.encoding = THREE.sRGBEncoding; floorM.map = t; floorM.color = col('#ffffff'); floorM.needsUpdate = true; }
+      add(new THREE.BoxGeometry(0.08, 0.03, Wc - 0.1), std('#d8dde2', 0.4, 0.6), x0 - 0.02, 0.015, 0, truck, false);
+      const doorM = std('#f4f5f6', 0.45, 0.05), chevA = std('#c8161d', 0.5, 0), chevB = std('#f2c500', 0.5, 0);
+      [1, -1].forEach(sd => { const d = new THREE.Group(); d.position.set(x0, 0, sd*(Wc/2 - 0.02)); d.rotation.y = sd*1.4; truck.add(d);
+        const leaf = new THREE.Mesh(new THREE.BoxGeometry(Wc/2 - 0.06, H - 0.08, 0.05), doorM); leaf.position.set(-(Wc/2 - 0.06)/2, H/2, 0); leaf.castShadow = true; d.add(leaf);
+        const win = new THREE.Mesh(new THREE.BoxGeometry(Wc/2 - 0.3, 0.55, 0.055), mats.frosted); win.position.set(-(Wc/2 - 0.06)/2, H - 0.55, 0); d.add(win);
+        for (let i = 0; i < 4; i++) { const st = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.7, 0.052), i % 2 ? chevB : chevA); st.position.set(-0.12 - i*0.27, 0.55, 0.004); st.rotation.z = 0.6; d.add(st); }
+        const inner = new THREE.Mesh(new THREE.PlaneGeometry(Wc/2 - 0.1, 0.9), std('#e3e7ea', 0.6, 0)); inner.position.set(-(Wc/2 - 0.06)/2, 0.75, -0.027); inner.rotation.y = Math.PI; d.add(inner); });
+      { const p = add(new THREE.BoxGeometry(0.5, 0.16, 0.02), std('#f7f8f8', 0.4, 0.05), 1.05, 1.08, Wc/2 - 0.01, truck, false);
+        [-0.15, 0, 0.15].forEach((dx, i) => { const o = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.03, 18), std(i < 2 ? '#2f8a4a' : '#f2c500', 0.35, 0.1)); o.rotation.x = Math.PI/2; o.position.set(1.05 + dx, 1.08, Wc/2 - 0.03); truck.add(o); }); }
+      { const rl = add(new THREE.CylinderGeometry(0.016, 0.016, 2.6, 12), railM, -0.5, H - 0.12, -0.3, truck, false); rl.rotation.z = Math.PI/2;
+        [-1.7, -0.5, 0.7].forEach(xx => add(new THREE.BoxGeometry(0.03, 0.12, 0.03), railM, xx, H - 0.06, -0.3, truck, false));
+        [-1.1, 0.1].forEach(xx => { const h = new THREE.Mesh(new THREE.TorusGeometry(0.03, 0.005, 8, 16, Math.PI*1.4), railM); h.position.set(xx, H - 0.17, -0.3); truck.add(h); }); }
       [-1.4, 0, 1.4].forEach(x => [0.55, -0.55].forEach(z => { const s = add(new THREE.CylinderGeometry(0.05, 0.05, 0.012, 16), ledM, x, H - 0.006, z, truck, false); }));
       const pl1 = new THREE.PointLight(0xffffff, 0.9, 6, 1.6); pl1.position.set(-0.6, H - 0.15, 0); truck.add(pl1);
       const pl2 = new THREE.PointLight(0xffffff, 0.7, 6, 1.6); pl2.position.set(1.0, H - 0.15, 0); truck.add(pl2);
       // siège du côté droit (décor)
       const seat = new THREE.Group(); seat.position.set(1.3, 0, Wc/2 - 0.34); truck.add(seat);
       [[0.5, 0.1, 0.5, 0, 0.48, 0], [0.5, 0.65, 0.1, 0, 0.85, -0.22], [0.08, 0.45, 0.4, 0.2, 0.24, -0.02], [0.08, 0.45, 0.4, -0.2, 0.24, -0.02]].forEach(([w, h, d, x, y, z]) => { const m = new THREE.Mesh(RBox(w, h, d, 0.03), seatM); m.position.set(x, y, z); seat.add(m); });
+      { const hr = new THREE.Mesh(RBox(0.3, 0.16, 0.08, 0.03), seatM); hr.position.set(0, 1.3, -0.23); seat.add(hr);
+        const belt = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.62, 0.012), std('#1c1d20', 0.8, 0)); belt.position.set(0.04, 0.86, -0.165); belt.rotation.z = 0.55; seat.add(belt);
+        const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.04, 0.02), std('#c2c7cc', 0.3, 0.85)); buckle.position.set(0.19, 0.6, -0.16); seat.add(buckle); }
       seat.rotation.y = Math.PI;
       // zones de rangement : chaque coffre a une zone (G = mur gauche, D = mur droit, A = avant, C = centre / sol)
       const Z = {
