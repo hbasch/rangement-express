@@ -565,7 +565,7 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
 
 <footer><div class="wrap"><a class="logo" href="#top"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Rangement Express</a><span>Prototype, projet indépendant, non affilié à un SDIS ni à la FNSPF · hadrienbasch@gmail.com · <a href="pro/" style="color:#dfe3e1">Entreprises</a> · <a href="de/" lang="de" style="color:#dfe3e1">Deutsch</a> · <a href="en/" lang="en" style="color:#dfe3e1">English</a></span></div></footer>
 
-<script>window.RX_SITE={presets:["vsav","fpt"],hero:["vsav","fpt"],key:"rangement-express-v3",base:"https://hbasch.github.io/rangement-express/"}</script>
+<script>window.RX_SITE={presets:["vsav","vsavi","fpt"],hero:["vsav","fpt"],key:"rangement-express-v3",base:"https://hbasch.github.io/rangement-express/"}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
@@ -773,6 +773,16 @@ const PRESETS = {
     {code:'D2',name:'Coffre extérieur arrière droit',side:'R',weight:1.2,shelves:[['Matelas immobilisateur'],['Plan dur','Chaise portoir']]},
     {code:'AR',name:'Cellule arrière',side:'B',weight:1,shelves:[['Brancard principal'],['Sacs DASRI','Désinfectant','Gants']]}
   ]},
+  vsavi: {label:'VSAV · cellule', group:'Secours', body:{length:3.9,width:2.2,height:2.45,color:'#b3121b',door:'#b3121b',doorStyle:'porte',stripe:true,beacons:true,cab:'van',casquette:true,rearWindows:true,rearChevrons:true,frontYellow:true,beltLine:true,lettering:'Sapeurs-pompiers',cabText:'VSAV',interior:true,accent:'#c8102e'}, coffres:[
+    {code:'H1',name:'Armoire haute gauche 1',zone:'G-haut',side:'L',weight:1,shelves:[['Kit accouchement','Kit brûlés']]},
+    {code:'H2',name:'Armoire haute gauche 2',zone:'G-haut',side:'L',weight:1,shelves:[['Colliers cervicaux','Kit membre']]},
+    {code:'R1',name:'Rail mural gauche',zone:'G-mur',side:'L',weight:1.4,shelves:[['Sac PS','DSA','Aspirateur de mucosités']]},
+    {code:'M1',name:'Meuble bas gauche',zone:'G-bas',side:'L',weight:1,shelves:[['Couvertures','Draps'],['Gants','Désinfectant']]},
+    {code:'H3',name:'Armoire haute droite',zone:'D-haut',side:'R',weight:1,shelves:[['Attelles à dépression','Attelles modulables']]},
+    {code:'A1',name:'Armoire avant',zone:'A-haut',side:'B',weight:1,shelves:[['Sac oxygénothérapie','Sacs DASRI']]},
+    {code:'T1',name:'Rangement bas avant',zone:'A-bas',side:'B',weight:1,shelves:[['Matelas immobilisateur'],['Plan dur','Chaise portoir']]},
+    {code:'BR',name:'Brancard',zone:'C',side:'B',weight:1,shelves:[['Brancard principal']]}
+  ]},
   fpt: {label:'FPT', group:'Secours', body:{length:4.3,width:2.5,height:2.5,color:'#b3121b',door:'#e8ebee',hoseReels:true,frontChevrons:true,beltLine:true,doorStyle:'rideau',stripe:true,beacons:true,cab:'truck',ladder:true,lettering:'Sapeurs-pompiers',cabText:'FPT'}, coffres:[
     {code:'G1',name:'Coffre ARI',side:'L',weight:1,shelves:[['ARI 1','ARI 2','ARI 3'],['Bouteilles ARI de réserve','Masques ARI de rechange'],['Lot de sauvetage','Caméra thermique']]},
     {code:'G2',name:'Coffre établissements',side:'L',weight:1.25,shelves:[['Tuyaux 45 mm','Lances 500 L/min'],['Division','Clé tricoise','Coudes d\'alimentation']]},
@@ -798,6 +808,7 @@ if (window.RX_EXTRA_PRESETS) Object.assign(PRESETS, window.RX_EXTRA_PRESETS);
 Object.values(PRESETS).forEach(p => p.coffres.forEach((c, i) => c.id = c.id || ('p' + i + c.code)));
 const SCEN = {"vsav": ["SAP | Arrêt cardio-respiratoire, homme 60 ans, à domicile | DSA, Sac oxygénothérapie, Aspirateur de mucosités, Sac PS", "SAP | Chute d'échelle, suspicion de trauma du rachis | Colliers cervicaux, Matelas immobilisateur, Plan dur, Sac PS", "SAP | Accouchement inopiné à domicile | Kit accouchement, Couvertures, Sac PS", "SAP | Brûlure étendue, accident domestique | Kit brûlés, Draps, Sac oxygénothérapie", "SAP | Fracture de jambe sur la voie publique | Attelles à dépression, Cônes de balisage, Gilets haute visibilité, Sac PS", "SAP | Malaise dans un 4e étage sans ascenseur | Chaise portoir, Sac PS, Sac oxygénothérapie"], "fpt": ["INC | Feu d'appartement au 3e étage, fumées | ARI 1, ARI 2, Tuyaux 45 mm, Lances 500 L/min, Caméra thermique", "INC | Feu de véhicule sur un parking | Lance à mousse, Émulseur (bidons), Tuyaux 45 mm, ARI 1", "DIV | Odeur de gaz dans un immeuble | Détecteur multigaz, Lot gaz, Ventilateur", "INC | Alimentation sur poteau incendie | Clé de poteau, Tuyaux 70 mm, Clé tricoise", "DIV | Personne bloquée derrière une porte | Pied de biche, Hache, Lot de sauvetage", "INC | Feu de cave, fumée épaisse | ARI 1, ARI 2, Ventilateur, Projecteurs, Caméra thermique"], "plombier": ["DEP | Fuite sous évier, cuisine inondée | Siphons, Joints, Clé à molette, Aspirateur eau", "DEP | Canalisation bouchée | Furet déboucheur, Bâche de protection", "POSE | Remplacement de chauffe-eau | Raccords laiton, Chalumeau, Pompe d'épreuve, Coupe-tube"], "fibre": ["RAC | Raccordement d'un abonné | Soudeuse fibre, Cliveuse, Boîtiers PTO, Kit nettoyage fibre", "SAV | Panne réseau, mesure de ligne | Réflectomètre, Photomètre, Jarretières", "RES | Intervention en chambre sur trottoir | Cônes de chantier, Panneau travaux, Casque, Tire-câble"]};
 Object.entries(SCEN).forEach(([k, l]) => { if (PRESETS[k]) PRESETS[k].scenarios = l; });
+if (PRESETS.vsav && PRESETS.vsavi) PRESETS.vsavi.scenarios = PRESETS.vsav.scenarios;
 
 const col = h => new THREE.Color(h).convertSRGBToLinear();
 const lum = hex => { const c = new THREE.Color(hex); return 0.2126*c.r + 0.7152*c.g + 0.0722*c.b; };
@@ -913,11 +924,11 @@ function createEngine(opts){
 
   /* ---------- coffre ---------- */
   function buildCoffre(frame, c, u0, u1, yb, yt, depth, mats, opt){
-    const w = u1 - u0, h = yt - yb, style = E.v.body.doorStyle || 'porte';
+    const w = u1 - u0, h = yt - yb, style = c.doorStyle || (opt.interiorDoor ? 'rideau' : E.v.body.doorStyle) || 'porte';
     const g = new THREE.Group(); g.position.set((u0 + u1)/2, (yb + yt)/2, 0); frame.add(g);
     const innerMat = mats.interior.clone(); innerMat.emissive = col('#dfe8f2'); innerMat.emissiveIntensity = 0;
     const inner = new THREE.Mesh(new THREE.BoxGeometry(w, h, depth), innerMat); inner.position.z = -depth/2; g.add(inner);
-    [[w + 0.04, 0.025, 0, h/2 + 0.0125], [w + 0.04, 0.025, 0, -h/2 - 0.0125], [0.025, h, -w/2 - 0.0125, 0], [0.025, h, w/2 + 0.0125, 0]].forEach(([a, b, x, y]) => {
+    if (!opt.open) [[w + 0.04, 0.025, 0, h/2 + 0.0125], [w + 0.04, 0.025, 0, -h/2 - 0.0125], [0.025, h, -w/2 - 0.0125, 0], [0.025, h, w/2 + 0.0125, 0]].forEach(([a, b, x, y]) => {
       const s = new THREE.Mesh(new THREE.BoxGeometry(a, b, 0.03), mats.seal); s.position.set(x, y, -0.005); g.add(s); });
     if (c.photo) { const img = new Image(); const ph = new THREE.Mesh(new THREE.PlaneGeometry(w*0.97, h*0.97), new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0.92, toneMapped:false}));
       ph.position.z = -depth + 0.006; g.add(ph); img.onload = () => { const t = new THREE.Texture(img); t.encoding = THREE.sRGBEncoding; t.needsUpdate = true; ph.material.map = t; ph.material.needsUpdate = true; }; img.src = c.photo; }
@@ -956,7 +967,8 @@ function createEngine(opts){
       return door;
     };
     let mainDoor;
-    if (style === 'rideau') {
+    if (opt.open) { inner.visible = false; }
+    else if (style === 'rideau') {
       const pivot = new THREE.Group(); pivot.userData.dynamic = true; pivot.position.set(0, h/2, 0.012); g.add(pivot);
       const door = new THREE.Mesh(RBox(w*0.985, h*0.985, 0.022, 0.008), doorMat); door.position.y = -h/2; door.castShadow = true; pivot.add(door);
       const lab = new THREE.Mesh(new THREE.PlaneGeometry(w*0.94, h*0.94), new THREE.MeshBasicMaterial({map:codeTex, transparent:true, toneMapped:false})); lab.position.z = 0.0115; door.add(lab); lab.position.z = 0.015;
@@ -969,7 +981,8 @@ function createEngine(opts){
       mainDoor = mkLeaf(lw, -1, -w/2, true); mkLeaf(lw, 1, w/2, false);    } else {
       const hr = opt.hingeRight; mainDoor = mkLeaf(w*0.985, hr ? -1 : 1, hr ? w/2 : -w/2, true);
     }
-    E.objs[c.id] = {c, g, leaves, door:mainDoor, doorMat, led, innerMat, items, w, h, style, p:0, target:0};
+    E.objs[c.id] = {c, g, leaves, door:mainDoor, doorMat, led, innerMat, items, w, h, style, p:opt.open ? 1 : 0, target:opt.open ? 1 : 0, fixed:!!opt.open};
+    if (opt.open) { const lab = new THREE.Mesh(new THREE.PlaneGeometry(Math.min(0.5, w*0.6), 0.09), new THREE.MeshBasicMaterial({map:tagTex(c.code || '?'), transparent:true, toneMapped:false})); lab.position.set(0, h/2 + 0.06, 0.01); g.add(lab); lab.userData = {type:'door', coffreId:c.id}; E.pickables.push(lab); }
   }
 
 
@@ -1036,6 +1049,61 @@ function createEngine(opts){
       shelf: std('#b9bfc5', 0.35, 0.75), interior: new THREE.MeshStandardMaterial({color:col('#a7aeb5'), roughness:0.85, side:THREE.BackSide})
     };
     const add = (geo, mat, x, y, z, parent = truck, shadow = true) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = shadow; parent.add(m); return m; };
+    // --- vue intérieure de la cellule sanitaire (ambulance, VSAV) : rangements génériques, caméra depuis les portes arrière
+    E.interior = !!b.interior;
+    if (controls) { controls.minAzimuthAngle = -Infinity; controls.maxAzimuthAngle = Infinity; controls.minPolarAngle = 0; controls.maxPolarAngle = Math.PI*0.47; controls.minDistance = 1.5; controls.maxDistance = 26; }
+    camera.fov = E.interior ? 62 : (opts.fov || 36); camera.updateProjectionMatrix();
+    if (E.interior) {
+      const L = 3.6, Wc = 2.0, H = 1.95, x0 = -L/2;
+      const wallM = std('#eef1f3', 0.6, 0.02, {side:THREE.DoubleSide}), floorM = std('#5b6168', 0.85, 0.05), ceilM = std('#f6f7f8', 0.5, 0, {side:THREE.DoubleSide});
+      const blueM = std(b.accent || '#1f4e79', 0.4, 0.1), railM = std('#c4c9ce', 0.3, 0.9), seatM = std('#2b2f34', 0.7, 0.05), ledM = std('#ffffff', 0.2, 0, {emissive:col('#eaf2ff'), emissiveIntensity:1.4});
+      const wall = (w, h, x, y, z, ry, m = wallM) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m); p.position.set(x, y, z); p.rotation.y = ry; p.receiveShadow = true; truck.add(p); return p; };
+      const fl = new THREE.Mesh(new THREE.PlaneGeometry(L, Wc), floorM); fl.rotation.x = -Math.PI/2; fl.position.set(0, 0.002, 0); truck.add(fl);
+      const ce = new THREE.Mesh(new THREE.PlaneGeometry(L, Wc), ceilM); ce.rotation.x = Math.PI/2; ce.position.set(0, H, 0); truck.add(ce);
+      wall(L, H, 0, H/2, Wc/2, Math.PI); wall(L, H, 0, H/2, -Wc/2, 0); wall(Wc, H, L/2, H/2, 0, -Math.PI/2);
+      // cadre des portes arrière, bande bleue, rail central au sol, spots au plafond
+      add(new THREE.BoxGeometry(0.06, H, 0.12), railM, x0, H/2, Wc/2 - 0.06, truck, false); add(new THREE.BoxGeometry(0.06, H, 0.12), railM, x0, H/2, -Wc/2 + 0.06, truck, false);
+      add(new THREE.BoxGeometry(L, 0.06, 0.012), blueM, 0, 1.4, Wc/2 - 0.006, truck, false); add(new THREE.BoxGeometry(L, 0.06, 0.012), blueM, 0, 1.4, -Wc/2 + 0.006, truck, false);
+      add(new THREE.BoxGeometry(L - 0.4, 0.03, 0.22), railM, 0.1, 0.017, 0.15, truck, false);
+      [-1.1, 0, 1.1].forEach(x => [0.45, -0.45].forEach(z => { const s = add(new THREE.CylinderGeometry(0.05, 0.05, 0.012, 16), ledM, x, H - 0.006, z, truck, false); }));
+      const pl1 = new THREE.PointLight(0xffffff, 0.9, 6, 1.6); pl1.position.set(-0.6, H - 0.15, 0); truck.add(pl1);
+      const pl2 = new THREE.PointLight(0xffffff, 0.7, 6, 1.6); pl2.position.set(1.0, H - 0.15, 0); truck.add(pl2);
+      // siège du côté droit (décor)
+      const seat = new THREE.Group(); seat.position.set(0.55, 0, Wc/2 - 0.32); truck.add(seat);
+      [[0.5, 0.1, 0.5, 0, 0.48, 0], [0.5, 0.65, 0.1, 0, 0.85, -0.22], [0.08, 0.45, 0.4, 0.2, 0.24, -0.02], [0.08, 0.45, 0.4, -0.2, 0.24, -0.02]].forEach(([w, h, d, x, y, z]) => { const m = new THREE.Mesh(RBox(w, h, d, 0.03), seatM); m.position.set(x, y, z); seat.add(m); });
+      seat.rotation.y = Math.PI;
+      // zones de rangement : chaque coffre a une zone (G = mur gauche, D = mur droit, A = avant, C = centre / sol)
+      const Z = {
+        'G-haut': {wall:'G', y:[1.47, 1.9], depth:0.34}, 'G-mur': {wall:'G', y:[0.98, 1.38], depth:0.16, open:true}, 'G-bas': {wall:'G', y:[0.1, 0.92], depth:0.45},
+        'D-haut': {wall:'D', y:[1.47, 1.9], depth:0.34}, 'D-mur': {wall:'D', y:[0.98, 1.38], depth:0.16, open:true}, 'D-bas': {wall:'D', y:[0.1, 0.92], depth:0.42},
+        'A-haut': {wall:'A', y:[1.3, 1.9], depth:0.38}, 'A-bas': {wall:'A', y:[0.1, 1.05], depth:0.45}, 'C': {wall:'C', y:[0.02, 0.98], depth:2.1, open:true},
+        'AR-G': {wall:'R', y:[0.02, 1.35], depth:0.3, open:true}
+      };
+      const W2 = {
+        G: {pos:(d) => [0, 0, -Wc/2 + d], rot:0, span:[-L/2 + 0.12, L/2 - 0.12]},
+        D: {pos:(d) => [0, 0, Wc/2 - d], rot:Math.PI, span:[-L/2 + 0.12, L/2 - 0.12]},
+        A: {pos:(d) => [L/2 - d, 0, 0], rot:-Math.PI/2, span:[-Wc/2 + 0.08, Wc/2 - 0.08]},
+        C: {pos:() => [x0 + 0.35, 0, 0.15], rot:-Math.PI/2, span:[-0.33, 0.33]},
+        R: {pos:() => [x0 + 0.55, 0, -Wc/2 + 0.32], rot:0, span:[-0.3, 0.3]}
+      };
+      const zoneOf = c => Z[c.zone] ? c.zone : ({L:'G-haut', R:'D-haut', B:'A-bas'}[c.side] || 'G-haut');
+      Object.keys(Z).forEach(zk => {
+        const z = Z[zk], wdef = W2[z.wall], list = v.coffres.filter(c => zoneOf(c) === zk); if (!list.length) return;
+        const frame = new THREE.Group(); frame.position.set(...wdef.pos(z.depth)); frame.rotation.y = wdef.rot; truck.add(frame);
+        if (zk.endsWith('-mur')) { const len = wdef.span[1] - wdef.span[0], bar = new THREE.Mesh(new THREE.BoxGeometry(len, 0.035, 0.035), railM); bar.position.set((wdef.span[0] + wdef.span[1])/2, z.y[1] - 0.02, -0.03); frame.add(bar); [0.1, 0.5, 0.9].forEach(f => { const k = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.06, 0.06), railM); k.position.set(wdef.span[0] + len*f, z.y[1] - 0.02, -0.06); frame.add(k); }); }
+        const sum = list.reduce((a, c) => a + (+c.weight || 1), 0) || 1, gap = 0.04, avail = (wdef.span[1] - wdef.span[0]) - gap*Math.max(0, list.length - 1);
+        let u = wdef.span[0];
+        list.forEach(c => { const u1 = u + avail*(+c.weight || 1)/sum;
+          buildCoffre(frame, c, u, u1, z.y[0], z.y[1], z.depth, mats, {open: z.open, interiorDoor:true});
+          u = u1 + gap; });
+      });
+      for (const id of wasOpen) if (E.objs[id]) { E.objs[id].target = 1; E.objs[id].p = 1; }
+      mergeStatic();
+      truck.traverse(o => { if (o.isMesh && o.material && (o.material.map || o.material.transparent)) { o.material.polygonOffset = true; o.material.polygonOffsetFactor = -2; o.material.polygonOffsetUnits = -4; } });
+      E.totalL = L; E.centerX = 0; E.markDoors(); key.target.position.set(0, 1, 0);
+      if (controls) { controls.minAzimuthAngle = -Math.PI/2 - 0.75; controls.maxAzimuthAngle = -Math.PI/2 + 0.75; controls.minPolarAngle = Math.PI*0.3; controls.maxPolarAngle = Math.PI*0.62; controls.minDistance = 0.4; controls.maxDistance = 3.4; }
+      return;
+    }
 
     // implantation longitudinale (d = distance depuis l'avant du pare-chocs)
     const dCabRear = S.front + S.Lc, dBF = dCabRear + S.gap, dBR = dBF + BL;
@@ -1255,7 +1323,7 @@ function createEngine(opts){
     key.target.position.set(0, 1, 0);
   };
 
-  E.setOpen = (id, open) => { const o = E.objs[id]; if (o) o.target = open ? 1 : 0; };
+  E.setOpen = (id, open) => { const o = E.objs[id]; if (o && !o.fixed) o.target = open ? 1 : 0; };
   E.closeAll = () => Object.keys(E.objs).forEach(id => E.setOpen(id, false));
   E.openAll = () => Object.keys(E.objs).forEach(id => E.setOpen(id, true));
   E.setLabels = on => { E.labels = on; E.tags.forEach(t => t.visible = on); };
@@ -1265,12 +1333,15 @@ function createEngine(opts){
   E.flash = (mesh, hex) => { if (mesh) flashGroup(mesh, hex, 700); };
   E.flashDoor = (id, hex) => { const o = E.objs[id]; if (!o) return; o.doorMat.emissive = col(hex); o.doorMat.emissiveIntensity = 0.6; setTimeout(E.markDoors, 650); };
   let camGoal = null;
-  E.overviewPose = () => { const L = (E.totalL || 6)*0.92, a = E.aspect || 1.6, k = a < 1 ? 1.45/a*0.75 : 1;
+  E.overviewPose = () => { if (E.interior) { const a = E.aspect || 1.6; return {pos:new THREE.Vector3(-(E.totalL || 3.6)/2 - (a < 1 ? 1.6 : 0.9), 1.55, 0), target:new THREE.Vector3(0.6, 1.05, 0)}; }
+    const L = (E.totalL || 6)*0.92, a = E.aspect || 1.6, k = a < 1 ? 1.45/a*0.75 : 1;
     return {pos:new THREE.Vector3(-L*0.95*k, 3.7*Math.min(k, 1.3), L*1.15*k), target:new THREE.Vector3(0, 1.5, 0)}; };
   E.overview = () => { camGoal = E.overviewPose(); };
   E.coffrePose = (id, distMul = 1) => { const o = E.objs[id]; if (!o) return null;
     const p = new THREE.Vector3(), q = new THREE.Quaternion(); o.g.getWorldPosition(p); o.g.getWorldQuaternion(q);
-    const nrm = new THREE.Vector3(0, 0, 1).applyQuaternion(q), a = E.aspect || 1.6, dist = Math.max(2.3, Math.max(o.w, o.h)*2 + 0.8)*distMul*(a < 1 ? 1.5 : 1);
+    const nrm = new THREE.Vector3(0, 0, 1).applyQuaternion(q), a = E.aspect || 1.6;
+    if (E.interior) { const cam = new THREE.Vector3(-(E.totalL || 3.6)/2 + 0.25, 1.5, 0), tgt = p.clone(); tgt.y = Math.min(Math.max(tgt.y, 0.5), 1.6); const dir = tgt.clone().sub(cam).normalize(); return {target:tgt, pos:cam.clone().add(dir.multiplyScalar(Math.max(0, cam.distanceTo(tgt) - 1.25*distMul)))}; }
+    const dist = Math.max(2.3, Math.max(o.w, o.h)*2 + 0.8)*distMul*(a < 1 ? 1.5 : 1);
     return {target:p.clone(), pos:p.clone().add(nrm.multiplyScalar(dist)).add(new THREE.Vector3(0, 0.5, 0))}; };
   E.focusCoffre = id => { const g = E.coffrePose(id); if (g) camGoal = g; };
   E.project = id => { const o = E.objs[id]; if (!o) return null; const p = new THREE.Vector3(), q = new THREE.Quaternion(); o.g.getWorldPosition(p); o.g.getWorldQuaternion(q);
@@ -1567,8 +1638,87 @@ function parseList(txt){
     return {id:c.id, code:c.code.slice(0, 4), name:c.name, side:c.side, weight:Math.min(2, Math.max(0.8, Math.max(...shelves.map(r => r.length)) / 3 + 0.4)), shelves};
   });
 }
+/* ---------- contrôle (version ambulances) : prise de poste, désinfection, péremptions, registre ---------- */
+const DIS_TYPES = {apres:'Nettoyage après transport', hebdo:'Désinfection complète hebdomadaire', conta:'Désinfection après patient contagieux'};
+const kData = () => { store.checks = store.checks || {}; const d = store.checks[vid()] = store.checks[vid()] || {}; d.log = d.log || []; d.dis = d.dis || []; d.exp = d.exp || {}; return d; };
+const dfmt = iso => { const d = new Date(iso); return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}); };
+const daysTo = ymd => Math.round((new Date(ymd + 'T00:00:00') - new Date(new Date().toDateString())) / 864e5);
+function kAlerts(){
+  const d = kData(), out = [], items = new Set(allItems().map(i => i.name));
+  const lastH = d.dis.filter(x => x.type === 'hebdo').map(x => x.t).sort().pop();
+  if (!lastH) out.push(['bad', 'Aucune désinfection complète enregistrée']);
+  else { const n = Math.floor((Date.now() - new Date(lastH)) / 864e5); if (n >= 7) out.push(['bad', `Désinfection complète en retard : la dernière date de ${n} jours`]); }
+  const lastC = d.log.map(x => x.t).sort().pop();
+  if (!lastC || new Date(lastC).toDateString() !== new Date().toDateString()) out.push(['warn', 'Contrôle de prise de poste pas encore fait aujourd\'hui']);
+  const lastLog = d.log[d.log.length - 1]; if (lastLog && lastLog.missing.length) out.push(['bad', `Dernier contrôle : ${lastLog.missing.length} matériel(s) manquant(s)`]);
+  Object.entries(d.exp).forEach(([n, ymd]) => { if (!ymd || !items.has(n)) return; const k = daysTo(ymd);
+    if (k < 0) out.push(['bad', `${n} : périmé depuis le ${new Date(ymd).toLocaleDateString('fr-FR')}`]); else if (k <= 30) out.push(['warn', `${n} : périme dans ${k} jour${k > 1 ? 's' : ''}`]); });
+  return out;
+}
+function renderCheck(){
+  const d = kData(), tab = state.kTab || 'poste', al = kAlerts();
+  const tabs = [['poste', 'Prise de poste'], ['dis', 'Désinfection'], ['exp', 'Péremptions'], ['reg', 'Registre']];
+  let h = `<div><h3 class="ph">Contrôle · ${esc(vName())}</h3><p class="muted small">Contrôle du matériel, registre de désinfection et péremptions de cette ambulance.</p></div>
+    <div class="kalerts">${al.length ? al.map(([k, t]) => `<p class="kal ${k}">${esc(t)}</p>`).join('') : '<p class="kal ok">Tout est à jour.</p>'}</div>
+    <div class="row ktabs">${tabs.map(([k, t]) => `<button class="btn ${tab === k ? 'primary' : ''}" data-action="k-tab" data-tab="${k}" id="d-k-tab-${k}">${t}</button>`).join('')}</div>`;
+  if (tab === 'poste') {
+    const miss = state.kMiss || {};
+    h += `<div class="field"><label for="d-k-who">Ambulancier</label><input type="text" id="d-k-who" value="${esc(state.kWho || '')}" placeholder="Nom et prénom"></div>
+      <p class="small muted">Coche chaque matériel présent et en état. Clique un coffre pour l'ouvrir dans la vue 3D.</p>
+      ${sortedCoffres().map(c => `<div class="kcof"><div class="row" style="justify-content:space-between"><button class="btn" data-action="focus" data-id="${c.id}" id="d-k-cof-${c.id}">${esc(c.code)} · ${esc(c.name)}</button>
+        <button class="btn" data-action="k-all" data-id="${c.id}" id="d-k-all-${c.id}">Tout est là</button></div>
+        ${c.shelves.flat().map(n => `<label class="check"><input type="checkbox" data-k-item="${esc(n)}" ${miss[n] === false ? 'checked' : ''}> ${esc(n)}</label>`).join('')}</div>`).join('')}
+      <div class="row"><button class="btn primary" data-action="k-save" id="d-k-save">Valider le contrôle</button></div><p class="small" id="d-k-msg" aria-live="polite"></p>`;
+  } else if (tab === 'dis') {
+    h += `<div class="field"><label for="d-k-dtype">Type</label><select id="d-k-dtype">${Object.entries(DIS_TYPES).map(([k, t]) => `<option value="${k}">${t}</option>`).join('')}</select></div>
+      <div class="field"><label for="d-k-dwho">Ambulancier</label><input type="text" id="d-k-dwho" value="${esc(state.kWho || '')}" placeholder="Nom et prénom"></div>
+      <div class="field"><label for="d-k-dprod">Produit utilisé</label><input type="text" id="d-k-dprod" value="${esc(state.kProd || '')}" placeholder="Ex. détergent-désinfectant de surface"></div>
+      <div class="row"><button class="btn primary" data-action="k-dis" id="d-k-dis">Enregistrer</button></div><p class="small" id="d-k-msg" aria-live="polite"></p>
+      <h4>Dernières opérations</h4>${d.dis.slice(-8).reverse().map(x => `<div class="qrrow"><span>${dfmt(x.t)}</span><b>${esc(DIS_TYPES[x.type])} · ${esc(x.who || '?')}</b></div>`).join('') || '<p class="small muted">Aucune pour l\'instant.</p>'}`;
+  } else if (tab === 'exp') {
+    h += `<p class="small muted">Indique la date de péremption des consommables et de l'oxygène. Une alerte s'affiche 30 jours avant.</p>
+      ${allItems().map(i => i.name).filter((n, k, a) => a.indexOf(n) === k).map((n, k) => { const ymd = d.exp[n] || '', dd = ymd ? daysTo(ymd) : null;
+        const st = dd === null ? '' : dd < 0 ? '<span class="pill bad">Périmé</span>' : dd <= 30 ? '<span class="pill warn">Bientôt</span>' : '<span class="pill ok">OK</span>';
+        return `<div class="kexp"><label for="d-k-exp-${k}">${esc(n)}</label><input type="date" id="d-k-exp-${k}" data-k-exp="${esc(n)}" value="${ymd}"> ${st}</div>`; }).join('')}`;
+  } else {
+    const rows = [...d.log.map(x => ({t:x.t, what:'Contrôle de prise de poste', who:x.who, det:x.missing.length ? 'Manquant : ' + x.missing.join(', ') : 'Complet'})),
+      ...d.dis.map(x => ({t:x.t, what:DIS_TYPES[x.type], who:x.who, det:x.prod || ''}))].sort((a, b) => a.t < b.t ? 1 : -1);
+    h += `<p class="small muted">Registre chronologique de cette ambulance, à présenter lors d'un contrôle.</p>
+      <div class="row"><button class="btn primary" data-action="k-print" id="d-k-print">Imprimer ou enregistrer en PDF</button><button class="btn" data-action="k-csv" id="d-k-csv">Exporter pour Excel</button></div>
+      ${rows.slice(0, 30).map(r => `<div class="qrrow"><span>${dfmt(r.t)}</span><b>${esc(r.what)} · ${esc(r.who || '?')}${r.det ? '<br><small>' + esc(r.det) + '</small>' : ''}</b></div>`).join('') || '<p class="small muted">Registre vide.</p>'}
+      <p class="small muted">Démo : les données restent dans ce navigateur. En service réel, elles seraient partagées par toute l'équipe et sauvegardées.</p>`;
+  }
+  return h;
+}
+function kRows(){ const d = kData();
+  return [...d.log.map(x => [x.t, 'Contrôle de prise de poste', x.who, x.missing.length ? 'Manquant : ' + x.missing.join(', ') : 'Complet']),
+    ...d.dis.map(x => [x.t, DIS_TYPES[x.type], x.who, x.prod || ''])].sort((a, b) => a[0] < b[0] ? -1 : 1); }
+function onCheck(act, a){
+  const d = kData(), msg = () => $('#d-k-msg');
+  if (act === 'k-tab') { state.kTab = a.dataset.tab; renderPanel(); return; }
+  if (act === 'k-all') { const c = state.v.coffres.find(x => x.id === a.dataset.id); state.kMiss = state.kMiss || {};
+    c.shelves.flat().forEach(n => { state.kMiss[n] = false; const cb = panel.querySelector(`input[data-k-item="${CSS.escape(n)}"]`); if (cb) cb.checked = true; }); return; }
+  if (act === 'k-save') { const who = ($('#d-k-who').value || '').trim(); if (!who) { msg().textContent = 'Indique le nom de l\'ambulancier.'; return; }
+    const missing = [...panel.querySelectorAll('input[data-k-item]')].filter(x => !x.checked).map(x => x.dataset.kItem);
+    d.log.push({t:new Date().toISOString(), who, missing}); state.kWho = who; state.kMiss = {}; persist(); renderPanel();
+    const m = msg(); if (m) m.textContent = missing.length ? `Contrôle enregistré : ${missing.length} manquant(s) signalé(s).` : 'Contrôle enregistré : tout est complet.'; return; }
+  if (act === 'k-dis') { const who = ($('#d-k-dwho').value || '').trim(); if (!who) { msg().textContent = 'Indique le nom de l\'ambulancier.'; return; }
+    d.dis.push({t:new Date().toISOString(), type:$('#d-k-dtype').value, who, prod:$('#d-k-dprod').value.trim()}); state.kWho = who; state.kProd = $('#d-k-dprod').value.trim(); persist(); renderPanel();
+    const m = msg(); if (m) m.textContent = 'Opération enregistrée.'; return; }
+  if (act === 'k-csv') { const csv = '﻿Date;Opération;Ambulancier;Détail\n' + kRows().map(r => [dfmt(r[0]), r[1], r[2], r[3]].map(x => '"' + String(x || '').replace(/"/g, '""') + '"').join(';')).join('\n');
+    const url = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'})), l = document.createElement('a'); l.href = url; l.download = `registre-${vName().replace(/\W+/g, '-')}.csv`; document.body.appendChild(l); l.click(); l.remove(); return; }
+  if (act === 'k-print') { const w = window.open('', '_blank'); if (!w) return;
+    w.document.write(`<!doctype html><meta charset="utf-8"><title>Registre ${esc(vName())}</title><style>body{font:13px Arial,sans-serif;margin:24px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:5px 7px;text-align:left;vertical-align:top}th{background:#eee}</style>
+      <h2>Registre de contrôle et de désinfection · ${esc(vName())}</h2><p>Édité le ${dfmt(new Date().toISOString())}</p>
+      <table><tr><th>Date</th><th>Opération</th><th>Ambulancier</th><th>Détail</th></tr>${kRows().map(r => `<tr><td>${dfmt(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2] || '')}</td><td>${esc(r[3] || '')}</td></tr>`).join('')}</table>`);
+    w.document.close(); w.focus(); w.print(); return; }
+}
+panel.addEventListener('change', e => { const n = e.target.dataset && e.target.dataset.kExp; if (n !== undefined) { kData().exp[n] = e.target.value; persist(); renderPanel(); }
+  const it = e.target.dataset && e.target.dataset.kItem; if (it !== undefined) { state.kMiss = state.kMiss || {}; state.kMiss[it] = e.target.checked ? false : true; } });
+
 function renderPanel(){
   const v = state.v; paintTop();
+  if (state.mode === 'check') { panel.innerHTML = renderCheck(); return; }
   if (state.mode === 'learn') {
     const m = vehicleMastery(), n = allItems().length, qc = state.qr && v.coffres.find(c => c.code === state.qr);
     const qrCard = qc ? `<div class="qrcard"><span class="lbl">Coffre scanné</span><h3 class="ph">${esc(qc.code)} · ${esc(qc.name)}</h3>
@@ -1655,6 +1805,7 @@ function selectCoffre(id){ state.sel = id; state.confirmDel = false; E.setOpen(i
 const changed = (rb = true) => { if (rb) build(); persist(); };
 panel.addEventListener('click', e => {
   const a = e.target.closest('[data-action]'); if (!a) return; const act = a.dataset.action, v = state.v;
+  if (act.startsWith('k-')) { onCheck(act, a); return; }
   if (act === 'focus') { if (state.mode === 'edit') selectCoffre(a.dataset.id); else { E.setOpen(a.dataset.id, true); E.focusCoffre(a.dataset.id); state.sel = a.dataset.id; renderPanel(); } }
   if (act === 'openall') E.openAll();
   if (act === 'closeall') E.closeAll();
