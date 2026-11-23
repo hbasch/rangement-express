@@ -1601,12 +1601,13 @@ const build = () => { E.build(state.v); applyLabels(); paintCallouts(); paintTop
 $('#d-view').addEventListener('click', () => E.overview());
 /* vues fixes à l'intérieur de la cellule : un clic pour se placer face à un mur */
 const stBox = document.createElement('div'); stBox.className = 'd-stations'; stBox.setAttribute('role', 'group'); stBox.setAttribute('aria-label', 'Se placer');
-stBox.innerHTML = '<span class="st-l">Se placer</span>' + [['arriere', 'Arrière'], ['gauche', 'Mur gauche'], ['droite', 'Mur droit'], ['avant', 'Avant']].map(([k, t]) => `<button data-station="${k}" id="d-st-${k}" aria-pressed="${k === 'arriere'}">${t}</button>`).join('');
+stBox.innerHTML = '<span class="st-l">View</span>' + [['arriere', 'Rear'], ['gauche', 'Left wall'], ['droite', 'Right wall'], ['avant', 'Front']].map(([k, t]) => `<button data-station="${k}" id="d-st-${k}" aria-pressed="${k === 'arriere'}">${t}</button>`).join('');
 const stView = root.querySelector('.d-view'); if (stView) stView.appendChild(stBox);
 const markSt = k => stBox.querySelectorAll('[data-station]').forEach(x => x.setAttribute('aria-pressed', x.dataset.station === k ? 'true' : 'false'));
 { const _ov = E.overview, _fc = E.focusCoffre; E.overview = (...x) => { markSt('arriere'); return _ov(...x); }; E.focusCoffre = (...x) => { markSt(''); return _fc(...x); }; }
 stBox.addEventListener('click', e => { const b = e.target.closest('[data-station]'); if (b) { E.goStation(b.dataset.station); markSt(b.dataset.station); } });
-const paintStations = () => { stBox.hidden = !E.stations; root.classList.toggle('is-interior', !!E.stations); };
+const hintEl = root.querySelector('.d-hint'), hint0 = hintEl ? hintEl.textContent : '';
+const paintStations = () => { stBox.hidden = !E.stations; root.classList.toggle('is-interior', !!E.stations); if (hintEl) hintEl.textContent = E.stations ? '“View”: change viewpoint · click a locker: open' : hint0; };
 $('#d-zin').addEventListener('click', () => E.zoom(0.75));
 $('#d-zout').addEventListener('click', () => E.zoom(1.33));
 $('#d-labels').addEventListener('click', () => { if (state.mode === 'train' && game.status !== 'idle') return; store.labels = !store.labels; persist(); applyLabels(); });

@@ -1534,7 +1534,8 @@ const stView = root.querySelector('.d-view'); if (stView) stView.appendChild(stB
 const markSt = k => stBox.querySelectorAll('[data-station]').forEach(x => x.setAttribute('aria-pressed', x.dataset.station === k ? 'true' : 'false'));
 { const _ov = E.overview, _fc = E.focusCoffre; E.overview = (...x) => { markSt('arriere'); return _ov(...x); }; E.focusCoffre = (...x) => { markSt(''); return _fc(...x); }; }
 stBox.addEventListener('click', e => { const b = e.target.closest('[data-station]'); if (b) { E.goStation(b.dataset.station); markSt(b.dataset.station); } });
-const paintStations = () => { stBox.hidden = !E.stations; root.classList.toggle('is-interior', !!E.stations); };
+const hintEl = root.querySelector('.d-hint'), hint0 = hintEl ? hintEl.textContent : '';
+const paintStations = () => { stBox.hidden = !E.stations; root.classList.toggle('is-interior', !!E.stations); if (hintEl) hintEl.textContent = E.stations ? '« Se placer » : changer de point de vue · clic sur un rangement : ouvrir' : hint0; };
 $('#d-zin').addEventListener('click', () => E.zoom(0.75));
 $('#d-zout').addEventListener('click', () => E.zoom(1.33));
 $('#d-labels').addEventListener('click', () => { if (state.mode === 'train' && game.status !== 'idle') return; store.labels = !store.labels; persist(); applyLabels(); });
