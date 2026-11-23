@@ -665,7 +665,7 @@ const LIB = [
     [0.25, D - 0.25].forEach(z => { [-1, 1].forEach(s => P.cyl(0.016, 0.3, A, s*(W/2 - 0.06), 0.17, -z - 0.02)); P.cyl(0.016, W - 0.1, A, 0, 0.04, -z - 0.02, 'x', 12);
       [-1, 1].forEach(s => P.cyl(0.04, 0.03, P.M('#1c1d20', 0.7), s*(W/2 - 0.06), 0.04, -z - 0.02, 'x', 18)); });
     P.box(W - 0.04, 0.08, D - 0.55, P.M('#1f4e8c', 0.7), 0, 0.41, -0.04 - (D - 0.55)/2, 0.03, true);
-    const back = P.box(W - 0.04, 0.08, 0.62, P.M('#1f4e8c', 0.7), 0, 0.56, -D + 0.3, 0.03); back.rotation.x = 0.55;
+    const back = P.box(W - 0.04, 0.08, 0.62, P.M('#1f4e8c', 0.7), 0, 0.5, -D + 0.3, 0.03); back.rotation.x = 0.32;
     P.box(W - 0.06, 0.012, D - 0.75, P.M('#f3f3ef', 0.85), 0, 0.455, -0.08 - (D - 0.75)/2, 0.004);
     [-1, 1].forEach(s => { P.cyl(0.012, 0.9, A, s*(W/2), 0.55, -0.95, 'z', 12); [0.6, 1.3].forEach(z => P.cyl(0.012, 0.16, A, s*(W/2), 0.47, -z)); });
     [0.75, 1.35].forEach(z => P.box(W + 0.02, 0.012, 0.05, P.M('#1c1d20', 0.6), 0, 0.455, -z, 0.004));
@@ -1032,7 +1032,10 @@ function createEngine(opts){
     const w = u1 - u0, h = yt - yb, style = c.doorStyle || (opt.interiorDoor ? 'rideau' : E.v.body.doorStyle) || 'porte';
     const g = new THREE.Group(); g.position.set((u0 + u1)/2, (yb + yt)/2, 0); frame.add(g);
     const innerMat = mats.interior.clone(); innerMat.emissive = col('#dfe8f2'); innerMat.emissiveIntensity = 0;
-    const inner = new THREE.Mesh(new THREE.BoxGeometry(w, h, depth), innerMat); inner.position.z = -depth/2; g.add(inner);
+    const inner = new THREE.Mesh(new THREE.BoxGeometry(w, h, depth - 0.008), innerMat); inner.position.z = -(depth - 0.008)/2; g.add(inner);
+    if (opt.interiorDoor && !opt.open) { const cm = mats.carcass || (mats.carcass = new THREE.MeshStandardMaterial({color:col('#e9ecef'), roughness:0.55, metalness:0.05})), cd = depth - 0.05, cz = -0.04 - cd/2;
+      [[w + 0.004, 0.018, 0, h/2 + 0.011], [w + 0.004, 0.018, 0, -h/2 - 0.011], [0.018, h + 0.04, -w/2 - 0.011, 0], [0.018, h + 0.04, w/2 + 0.011, 0]].forEach(([a, b, x, y]) => {
+        const p = new THREE.Mesh(new THREE.BoxGeometry(a, b, cd), cm); p.position.set(x, y, cz); g.add(p); }); }
     if (!opt.open) [[w + 0.04, 0.025, 0, h/2 + 0.0125], [w + 0.04, 0.025, 0, -h/2 - 0.0125], [0.025, h, -w/2 - 0.0125, 0], [0.025, h, w/2 + 0.0125, 0]].forEach(([a, b, x, y]) => {
       const s = new THREE.Mesh(new THREE.BoxGeometry(a, b, 0.03), mats.seal); s.position.set(x, y, -0.005); g.add(s); });
     if (c.photo) { const img = new Image(); const ph = new THREE.Mesh(new THREE.PlaneGeometry(w*0.97, h*0.97), new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0.92, toneMapped:false}));
@@ -1172,7 +1175,7 @@ function createEngine(opts){
       add(new THREE.BoxGeometry(2.5, 0.03, 0.12), railM, -0.5, 0.017, -0.3, truck, false); add(new THREE.BoxGeometry(2.4, 0.05, 0.66), std('#c9ced3', 0.5, 0.3), -0.5, 0.03, -0.3, truck, false);
       // sol antidérapant (texture), portes arrière ouvertes, prises d'oxygène murales, main courante au plafond
       { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); x.fillStyle = '#5d636a'; x.fillRect(0, 0, 256, 256);
-        for (let i = 0; i < 2600; i++) { x.fillStyle = Math.random() < 0.5 ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.12)'; x.fillRect(Math.random()*256, Math.random()*256, 2, 2); }
+        for (let i = 0; i < 1400; i++) { x.fillStyle = Math.random() < 0.5 ? 'rgba(255,255,255,0.035)' : 'rgba(0,0,0,0.05)'; x.beginPath(); x.arc(Math.random()*256, Math.random()*256, 1.6, 0, 7); x.fill(); }
         const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(6, 3.5); if (THREE.sRGBEncoding) t.encoding = THREE.sRGBEncoding; floorM.map = t; floorM.color = col('#ffffff'); floorM.needsUpdate = true; }
       add(new THREE.BoxGeometry(0.08, 0.03, Wc - 0.1), std('#d8dde2', 0.4, 0.6), x0 - 0.02, 0.015, 0, truck, false);
       const doorM = std('#f4f5f6', 0.45, 0.05), chevA = std('#c8161d', 0.5, 0), chevB = std('#f2c500', 0.5, 0);
