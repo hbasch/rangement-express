@@ -157,6 +157,14 @@ section.s{padding-block:clamp(72px,9vw,112px) 0}
 .co button small{font:400 11px var(--mono);color:var(--muted)}
 .co button:hover small{color:#c9cdcb}
 .d-tools{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;border:var(--b);background:var(--white)}
+.d-stations{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;align-items:stretch;border:var(--b);background:var(--white);z-index:3;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.d-stations .st-l{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 10px;display:flex;align-items:center;border-right:1px solid var(--rule)}
+.d-stations button{font:600 14px var(--body);padding:10px 14px;border:0;border-right:1px solid var(--rule);background:var(--white);color:var(--ink);cursor:pointer;white-space:nowrap}
+.d-stations button:last-child{border-right:0}.d-stations button:hover{background:var(--paper)}
+.d-stations button[aria-pressed="true"]{background:var(--ink);color:var(--white)}
+.is-interior .d-hint{bottom:12px;max-width:calc(50% - 170px)}
+.is-interior .d-hud{top:64px}
+@media (max-width:760px){.d-stations{top:6px}.d-stations .st-l{display:none}.d-stations button{font-size:12px;padding:8px 8px}}
 .ib{display:grid;place-items:center;min-width:38px;height:36px;border:0;background:var(--white);color:var(--ink);cursor:pointer;font:500 12.5px var(--body);padding:0 10px;border-radius:0}
 .ib + .ib{border-left:1px solid var(--ink)}
 .ib:hover{background:var(--paper)}
@@ -392,7 +400,7 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
 <header class="nav">
   <div class="wrap">
     <a class="logo" href="#top"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Rangement Express</a>
-    <nav aria-label="Sections"><a href="#demo">Démo</a><a href="#modes">Modes</a><a href="#publics">Gratuit</a><a href="#pilote">Pilote</a><a href="#faq">Questions</a><a href="de/" lang="de">DE</a><a href="en/" lang="en">EN</a></nav>
+    <nav aria-label="Sections"><a href="#demo">Démo</a><a href="#modes">Modes</a><a href="#publics">Pour qui</a><a href="#pilote">Pilote</a><a href="#faq">Questions</a><a href="de/" lang="de">DE</a><a href="en/" lang="en">EN</a></nav>
     <a class="btn primary" href="#demo">Essayer<span class="hide-s">la démo</span></a>
   </div>
 </header>
@@ -401,7 +409,7 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
   <div class="wrap">
     <div class="hero-top">
       <div class="copy">
-        <span class="eyebrow">Entraînement au rangement des engins · gratuit pour les secours</span>
+        <span class="eyebrow">Entraînement au rangement des engins de secours</span>
         <h1>Le bon coffre,<br>du premier coup.</h1>
         <p class="lead">Ton engin reproduit en 3D, coffre par coffre. Chacun s'entraîne à retrouver le matériel, chrono en main, sur tablette ou ordinateur, même loin de la caserne.</p>
         <div class="ctas"><a class="btn primary" href="#demo">Lancer la démo</a><a class="btn" href="#pilote">Devenir centre pilote</a></div>
@@ -514,11 +522,11 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
 
 <section class="s" id="publics">
   <div class="wrap">
-    <div class="s-head"><span class="eyebrow">Pour qui</span><h2>Gratuit pour les secours. Pour toujours.</h2><p>Sapeurs-pompiers volontaires et professionnels, formateurs, associations de secourisme : l'outil est gratuit, aujourd'hui comme demain.</p></div>
+    <div class="s-head"><span class="eyebrow">Pour qui</span><h2>Pour toute la garde.</h2><p>Sapeurs-pompiers volontaires et professionnels, formateurs, associations de secourisme : chacun apprend le rangement de son engin, à son rythme.</p></div>
     <div class="aud" style="grid-template-columns:minmax(0,1fr)">
       <div class="acard sec-c">
         <span class="who">POMPIERS · SECOURS · ASSOCIATIONS</span>
-        <div class="price">Tout est inclus.</div>
+        <div class="price">Ce que fait l'outil.</div>
         <ul>
           <li>Engins et objets illimités</li>
           <li>Sans compte, sans installation</li>
@@ -552,7 +560,6 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
   <div class="wrap">
     <div class="s-head"><span class="eyebrow">Questions</span><h2>Les questions qu'on me pose.</h2></div>
     <div class="faq">
-      <details><summary>C'est vraiment gratuit pour les pompiers ?</summary><p>Oui. Les services de secours publics et les associations de secourisme n'ont rien à payer, aujourd'hui comme demain. Le projet est financé par une offre séparée, destinée aux entreprises qui ont des flottes de véhicules d'intervention.</p></details>
       <details><summary>Faut-il créer un compte ?</summary><p>Non. Tout fonctionne dans le navigateur, et ta progression reste sur ton appareil.</p></details>
       <details><summary>Je peux reproduire exactement mon engin ?</summary><p>Oui : nombre de coffres, côté, largeur, étagères, contenu, couleurs, portes battantes ou rideaux. Tu peux même mettre la photo du vrai coffre au fond du coffre 3D.</p></details>
       <details><summary>Peut-on créer nos propres départs types ?</summary><p>Oui. Dans « Éditer », chaque ligne décrit un départ : code, motif et matériel à prendre. Le formateur adapte les départs aux procédures de son centre.</p></details>
@@ -838,7 +845,7 @@ function shadowTexF(){ const [c, x] = cv(256, 128); x.filter = 'blur(14px)'; x.f
 function letterTex(text, light){ const [c, x] = cv(1024, 128); let fs = 96; x.font = `700 ${fs}px ${DF}`;
   while (x.measureText(text.toUpperCase()).width > 960 && fs > 30) { fs -= 4; x.font = `700 ${fs}px ${DF}`; }
   x.fillStyle = light ? 'rgba(20,22,26,0.9)' : 'rgba(255,255,255,0.96)'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(text.toUpperCase(), 512, 66); return tex(c); }
-function doorTex(code, w, h, doorHex, style){
+function doorTex(code, w, h, doorHex, style, mid){
   const cw = 512, ch = Math.round(512*Math.min(2.6, Math.max(0.45, h/w))); const [c, x] = cv(cw, ch);
   const light = lum(doorHex) > 0.45;
   if (style === 'none') { let fs = Math.round(ch*0.62); x.font = `700 ${fs}px ${DF}`;
@@ -847,6 +854,8 @@ function doorTex(code, w, h, doorHex, style){
   if (style === 'rideau') { for (let y = 0; y < ch; y += 14) { x.fillStyle = 'rgba(0,0,0,0.18)'; x.fillRect(0, y, cw, 2); x.fillStyle = 'rgba(255,255,255,0.3)'; x.fillRect(0, y + 2, cw, 1); } }
   const fs = Math.round(Math.min(cw, ch)*0.13);
   x.font = `700 ${fs}px ${DF}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.shadowColor = 'rgba(0,0,0,0.3)'; x.shadowBlur = 3;
+  if (mid) { x.shadowBlur = 0; let f2 = Math.round(Math.min(ch*0.34, cw*0.2)); x.font = `700 ${f2}px ${DF}`; const tw = x.measureText(code).width + f2*0.8, th = f2*1.35;
+    rr(x, cw/2 - tw/2, ch/2 - th/2, tw, th, f2*0.18); x.fillStyle = 'rgba(20,24,30,0.88)'; x.fill(); x.fillStyle = '#ffffff'; x.fillText(code, cw/2, ch/2 + f2*0.04); return tex(c); }
   x.fillStyle = light ? 'rgba(22,24,28,0.9)' : 'rgba(255,255,255,0.95)'; x.fillText(code, cw/2, ch*0.1);
   return tex(c);
 }
@@ -951,7 +960,7 @@ function createEngine(opts){
     });
     const doorMat = mats.door.clone(), leaves = [];
     const chev = opt.chevrons && style !== 'rideau';
-    const codeTex = chev ? chevronDoorTex(c.code || '?', w, h) : doorTex(c.code || '?', w, h, E.v.body.door || E.v.body.color, style);
+    const codeTex = chev ? chevronDoorTex(c.code || '?', w, h) : doorTex(c.code || '?', w, h, E.v.body.door || E.v.body.color, style, !!opt.interiorDoor);
     const chromeM = mats.chrome, recess = mats.seal;
     const mkLeaf = (lw, sign, hingeX, withCode) => {
       const pivot = new THREE.Group(); pivot.userData.dynamic = true; pivot.position.set(hingeX, 0, 0.012); g.add(pivot);
@@ -1051,10 +1060,10 @@ function createEngine(opts){
     const add = (geo, mat, x, y, z, parent = truck, shadow = true) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = shadow; parent.add(m); return m; };
     // --- vue intérieure de la cellule sanitaire (ambulance, VSAV) : rangements génériques, caméra depuis les portes arrière
     E.interior = !!b.interior;
-    if (controls) { controls.minAzimuthAngle = -Infinity; controls.maxAzimuthAngle = Infinity; controls.minPolarAngle = 0; controls.maxPolarAngle = Math.PI*0.47; controls.minDistance = 1.5; controls.maxDistance = 26; }
-    camera.fov = E.interior ? 62 : (opts.fov || 36); camera.updateProjectionMatrix();
+    E.stations = null; if (controls) { controls.enableRotate = true; controls.enablePan = true; controls.minAzimuthAngle = -Infinity; controls.maxAzimuthAngle = Infinity; controls.minPolarAngle = 0; controls.maxPolarAngle = Math.PI*0.47; controls.minDistance = 1.5; controls.maxDistance = 26; }
+    camera.fov = E.interior ? 68 : (opts.fov || 36); camera.updateProjectionMatrix();
     if (E.interior) {
-      const L = 3.6, Wc = 2.0, H = 1.95, x0 = -L/2;
+      const L = 4.4, Wc = 2.6, H = 2.15, x0 = -L/2;
       const wallM = std('#eef1f3', 0.6, 0.02, {side:THREE.DoubleSide}), floorM = std('#5b6168', 0.85, 0.05), ceilM = std('#f6f7f8', 0.5, 0, {side:THREE.DoubleSide});
       const blueM = std(b.accent || '#1f4e79', 0.4, 0.1), railM = std('#c4c9ce', 0.3, 0.9), seatM = std('#2b2f34', 0.7, 0.05), ledM = std('#ffffff', 0.2, 0, {emissive:col('#eaf2ff'), emissiveIntensity:1.4});
       const wall = (w, h, x, y, z, ry, m = wallM) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m); p.position.set(x, y, z); p.rotation.y = ry; p.receiveShadow = true; truck.add(p); return p; };
@@ -1064,32 +1073,34 @@ function createEngine(opts){
       // cadre des portes arrière, bande bleue, rail central au sol, spots au plafond
       add(new THREE.BoxGeometry(0.06, H, 0.12), railM, x0, H/2, Wc/2 - 0.06, truck, false); add(new THREE.BoxGeometry(0.06, H, 0.12), railM, x0, H/2, -Wc/2 + 0.06, truck, false);
       add(new THREE.BoxGeometry(L, 0.06, 0.012), blueM, 0, 1.4, Wc/2 - 0.006, truck, false); add(new THREE.BoxGeometry(L, 0.06, 0.012), blueM, 0, 1.4, -Wc/2 + 0.006, truck, false);
-      add(new THREE.BoxGeometry(L - 0.4, 0.03, 0.22), railM, 0.1, 0.017, 0.15, truck, false);
-      [-1.1, 0, 1.1].forEach(x => [0.45, -0.45].forEach(z => { const s = add(new THREE.CylinderGeometry(0.05, 0.05, 0.012, 16), ledM, x, H - 0.006, z, truck, false); }));
+      add(new THREE.BoxGeometry(L - 0.5, 0.03, 0.22), railM, 0.1, 0.017, -0.3, truck, false); add(new THREE.BoxGeometry(L - 0.6, 0.12, 0.8), std('#dfe3e6', 0.6, 0.05), 0.15, 0.06, -0.3, truck, false);
+      [-1.4, 0, 1.4].forEach(x => [0.55, -0.55].forEach(z => { const s = add(new THREE.CylinderGeometry(0.05, 0.05, 0.012, 16), ledM, x, H - 0.006, z, truck, false); }));
       const pl1 = new THREE.PointLight(0xffffff, 0.9, 6, 1.6); pl1.position.set(-0.6, H - 0.15, 0); truck.add(pl1);
       const pl2 = new THREE.PointLight(0xffffff, 0.7, 6, 1.6); pl2.position.set(1.0, H - 0.15, 0); truck.add(pl2);
       // siège du côté droit (décor)
-      const seat = new THREE.Group(); seat.position.set(0.55, 0, Wc/2 - 0.32); truck.add(seat);
+      const seat = new THREE.Group(); seat.position.set(1.3, 0, Wc/2 - 0.34); truck.add(seat);
       [[0.5, 0.1, 0.5, 0, 0.48, 0], [0.5, 0.65, 0.1, 0, 0.85, -0.22], [0.08, 0.45, 0.4, 0.2, 0.24, -0.02], [0.08, 0.45, 0.4, -0.2, 0.24, -0.02]].forEach(([w, h, d, x, y, z]) => { const m = new THREE.Mesh(RBox(w, h, d, 0.03), seatM); m.position.set(x, y, z); seat.add(m); });
       seat.rotation.y = Math.PI;
       // zones de rangement : chaque coffre a une zone (G = mur gauche, D = mur droit, A = avant, C = centre / sol)
       const Z = {
-        'G-haut': {wall:'G', y:[1.47, 1.9], depth:0.34}, 'G-mur': {wall:'G', y:[0.98, 1.38], depth:0.16, open:true}, 'G-bas': {wall:'G', y:[0.1, 0.92], depth:0.45},
-        'D-haut': {wall:'D', y:[1.47, 1.9], depth:0.34}, 'D-mur': {wall:'D', y:[0.98, 1.38], depth:0.16, open:true}, 'D-bas': {wall:'D', y:[0.1, 0.92], depth:0.42},
-        'A-haut': {wall:'A', y:[1.3, 1.9], depth:0.38}, 'A-bas': {wall:'A', y:[0.1, 1.05], depth:0.45}, 'C': {wall:'C', y:[0.02, 0.98], depth:2.1, open:true},
-        'AR-G': {wall:'R', y:[0.02, 1.35], depth:0.3, open:true}
+        'G-haut': {wall:'G', y:[1.62, 2.08], depth:0.38, span:[-L/2 + 0.12, L/2 - 0.42]}, 'G-mur': {wall:'G', y:[0.98, 1.52], depth:0.14, open:true, span:[x0 + 0.95, L/2 - 0.42]}, 'G-bas': {wall:'G', y:[0.1, 0.9], depth:0.5, span:[x0 + 0.95, L/2 - 0.52]},
+        'D-haut': {wall:'D', y:[1.62, 2.08], depth:0.38, span:[-L/2 + 0.42, L/2 - 0.12]}, 'D-mur': {wall:'D', y:[1.22, 1.56], depth:0.2, open:true, span:[-L/2 + 0.42, -x0 - 1.12]}, 'D-bas': {wall:'D', y:[0.1, 0.9], depth:0.45, span:[-L/2 + 0.52, -x0 - 1.12]},
+        'A-haut': {wall:'A', y:[1.4, 2.08], depth:0.4}, 'A-bas': {wall:'A', y:[0.1, 1.15], depth:0.5}, 'C': {wall:'C', y:[0.02, 0.95], depth:2.2, open:true},
+        'AR-G': {wall:'R', y:[0.02, 1.3], depth:0.32, open:true}, 'AR-D': {wall:'RD', y:[0.02, 1.35], depth:0.45, open:true}
       };
       const W2 = {
         G: {pos:(d) => [0, 0, -Wc/2 + d], rot:0, span:[-L/2 + 0.12, L/2 - 0.12]},
         D: {pos:(d) => [0, 0, Wc/2 - d], rot:Math.PI, span:[-L/2 + 0.12, L/2 - 0.12]},
         A: {pos:(d) => [L/2 - d, 0, 0], rot:-Math.PI/2, span:[-Wc/2 + 0.08, Wc/2 - 0.08]},
-        C: {pos:() => [x0 + 0.35, 0, 0.15], rot:-Math.PI/2, span:[-0.33, 0.33]},
-        R: {pos:() => [x0 + 0.55, 0, -Wc/2 + 0.32], rot:0, span:[-0.3, 0.3]}
+        C: {pos:() => [x0 + 0.55, 0, -0.3], rot:-Math.PI/2, span:[-0.36, 0.36]},
+        R: {pos:() => [x0 + 0.5, 0, -Wc/2 + 0.34], rot:0, span:[-0.32, 0.32]},
+        RD: {pos:() => [x0 + 0.62, 0, Wc/2 - 0.47], rot:Math.PI, span:[-0.42, 0.42]}
       };
       const zoneOf = c => Z[c.zone] ? c.zone : ({L:'G-haut', R:'D-haut', B:'A-bas'}[c.side] || 'G-haut');
       Object.keys(Z).forEach(zk => {
-        const z = Z[zk], wdef = W2[z.wall], list = v.coffres.filter(c => zoneOf(c) === zk); if (!list.length) return;
+        const z = Z[zk], wdef = Object.assign({}, W2[z.wall], z.span ? {span:z.span} : {}), list = v.coffres.filter(c => zoneOf(c) === zk); if (!list.length) return;
         const frame = new THREE.Group(); frame.position.set(...wdef.pos(z.depth)); frame.rotation.y = wdef.rot; truck.add(frame);
+        if (zk === 'G-mur') { const len = wdef.span[1] - wdef.span[0], pan = new THREE.Mesh(new THREE.BoxGeometry(len, z.y[1] - z.y[0] + 0.06, 0.02), std(b.panel || '#e8641e', 0.8, 0)); pan.position.set((wdef.span[0] + wdef.span[1])/2, (z.y[0] + z.y[1])/2, -z.depth + 0.012); frame.add(pan); }
         if (zk.endsWith('-mur')) { const len = wdef.span[1] - wdef.span[0], bar = new THREE.Mesh(new THREE.BoxGeometry(len, 0.035, 0.035), railM); bar.position.set((wdef.span[0] + wdef.span[1])/2, z.y[1] - 0.02, -0.03); frame.add(bar); [0.1, 0.5, 0.9].forEach(f => { const k = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.06, 0.06), railM); k.position.set(wdef.span[0] + len*f, z.y[1] - 0.02, -0.06); frame.add(k); }); }
         const sum = list.reduce((a, c) => a + (+c.weight || 1), 0) || 1, gap = 0.04, avail = (wdef.span[1] - wdef.span[0]) - gap*Math.max(0, list.length - 1);
         let u = wdef.span[0];
@@ -1101,7 +1112,14 @@ function createEngine(opts){
       mergeStatic();
       truck.traverse(o => { if (o.isMesh && o.material && (o.material.map || o.material.transparent)) { o.material.polygonOffset = true; o.material.polygonOffsetFactor = -2; o.material.polygonOffsetUnits = -4; } });
       E.totalL = L; E.centerX = 0; E.markDoors(); key.target.position.set(0, 1, 0);
-      if (controls) { controls.minAzimuthAngle = -Math.PI/2 - 0.75; controls.maxAzimuthAngle = -Math.PI/2 + 0.75; controls.minPolarAngle = Math.PI*0.3; controls.maxPolarAngle = Math.PI*0.62; controls.minDistance = 0.4; controls.maxDistance = 3.4; }
+      E.stations = {
+        arriere: {pos:new THREE.Vector3(x0 - 1.0, 1.65, 0), target:new THREE.Vector3(0.6, 1.15, 0)},
+        gauche: {pos:new THREE.Vector3(-0.15, 1.32, 1.02), target:new THREE.Vector3(-0.15, 1.15, -Wc/2)},
+        droite: {pos:new THREE.Vector3(-0.55, 1.32, -0.7), target:new THREE.Vector3(-0.55, 1.15, Wc/2)},
+        avant: {pos:new THREE.Vector3(-0.9, 1.55, 0), target:new THREE.Vector3(L/2, 1.2, 0)}
+      };
+      E.cell = {L, Wc, H};
+      if (controls) { controls.enableRotate = false; controls.enablePan = false; controls.minDistance = 0.35; controls.maxDistance = 4.2; }
       return;
     }
 
@@ -1333,14 +1351,16 @@ function createEngine(opts){
   E.flash = (mesh, hex) => { if (mesh) flashGroup(mesh, hex, 700); };
   E.flashDoor = (id, hex) => { const o = E.objs[id]; if (!o) return; o.doorMat.emissive = col(hex); o.doorMat.emissiveIntensity = 0.6; setTimeout(E.markDoors, 650); };
   let camGoal = null;
-  E.overviewPose = () => { if (E.interior) { const a = E.aspect || 1.6; return {pos:new THREE.Vector3(-(E.totalL || 3.6)/2 - (a < 1 ? 1.6 : 0.9), 1.55, 0), target:new THREE.Vector3(0.6, 1.05, 0)}; }
+  E.overviewPose = () => { if (E.interior && E.stations) { const a = E.aspect || 1.6, st = E.stations.arriere; return {pos:st.pos.clone().add(new THREE.Vector3(a < 1 ? -0.9 : 0, 0, 0)), target:st.target.clone()}; }
     const L = (E.totalL || 6)*0.92, a = E.aspect || 1.6, k = a < 1 ? 1.45/a*0.75 : 1;
     return {pos:new THREE.Vector3(-L*0.95*k, 3.7*Math.min(k, 1.3), L*1.15*k), target:new THREE.Vector3(0, 1.5, 0)}; };
   E.overview = () => { camGoal = E.overviewPose(); };
+  E.goStation = k => { if (E.stations && E.stations[k]) camGoal = {pos:E.stations[k].pos.clone(), target:E.stations[k].target.clone()}; };
   E.coffrePose = (id, distMul = 1) => { const o = E.objs[id]; if (!o) return null;
     const p = new THREE.Vector3(), q = new THREE.Quaternion(); o.g.getWorldPosition(p); o.g.getWorldQuaternion(q);
     const nrm = new THREE.Vector3(0, 0, 1).applyQuaternion(q), a = E.aspect || 1.6;
-    if (E.interior) { const cam = new THREE.Vector3(-(E.totalL || 3.6)/2 + 0.25, 1.5, 0), tgt = p.clone(); tgt.y = Math.min(Math.max(tgt.y, 0.5), 1.6); const dir = tgt.clone().sub(cam).normalize(); return {target:tgt, pos:cam.clone().add(dir.multiplyScalar(Math.max(0, cam.distanceTo(tgt) - 1.25*distMul)))}; }
+    if (E.interior) { const C = E.cell || {L:4.4, Wc:2.6}, tgt = p.clone(), d = 1.45*distMul, pos = p.clone().add(nrm.clone().setY(0).normalize().multiplyScalar(d));
+      pos.y = Math.max(1.35, Math.min(1.7, tgt.y + 0.35)); pos.z = Math.max(-C.Wc/2 + 0.3, Math.min(C.Wc/2 - 0.3, pos.z)); pos.x = Math.max(-C.L/2 - 1.2, Math.min(C.L/2 - 0.35, pos.x)); return {target:tgt, pos}; }
     const dist = Math.max(2.3, Math.max(o.w, o.h)*2 + 0.8)*distMul*(a < 1 ? 1.5 : 1);
     return {target:p.clone(), pos:p.clone().add(nrm.multiplyScalar(dist)).add(new THREE.Vector3(0, 0.5, 0))}; };
   E.focusCoffre = id => { const g = E.coffrePose(id); if (g) camGoal = g; };
@@ -1402,7 +1422,7 @@ async function packVehicle(v, withScen = true){
   const pk = (v.preset && v.preset !== 'shared') ? v.preset : (v.basePreset || ''), bb = (PRESETS[pk] || {}).body || {}, body = {};
   Object.keys(v.body || {}).forEach(k => { if (v.body[k] !== bb[k]) body[k] = v.body[k]; });
   const o = {n: v.name || '', p: pk, b: body,
-    c: v.coffres.map(c => [c.code, c.name, c.side, +(+c.weight || 1).toFixed(2), c.shelves])};
+    c: v.coffres.map(c => c.zone ? [c.code, c.name, c.side, +(+c.weight || 1).toFixed(2), c.shelves, c.zone] : [c.code, c.name, c.side, +(+c.weight || 1).toFixed(2), c.shelves])};
   if (withScen && v.scenarios) o.s = v.scenarios;
   const raw = new TextEncoder().encode(JSON.stringify(o));
   try { if (window.CompressionStream) return 'z' + b64u(await streamBytes(raw, CompressionStream)); } catch (e) {}
@@ -1412,7 +1432,7 @@ async function unpackVehicle(str){
   let bytes = unb64u(str.slice(1));
   if (str[0] === 'z') bytes = await streamBytes(bytes, DecompressionStream);
   const o = JSON.parse(new TextDecoder().decode(bytes));
-  return {name: o.n || '', basePreset: o.p || '', body: o.b, scenarios: o.s, coffres: o.c.map(([code, name, side, weight, shelves], i) => ({id: 'q' + i + code, code, name, side, weight, shelves}))};
+  return {name: o.n || '', basePreset: o.p || '', body: o.b, scenarios: o.s, coffres: o.c.map(([code, name, side, weight, shelves, zone], i) => Object.assign({id: 'q' + i + code, code, name, side, weight, shelves}, zone ? {zone} : {}))};
 }
 window.RX = {createEngine, PRESETS, uid, loadAssets, packVehicle, unpackVehicle};
 })();
@@ -1434,6 +1454,7 @@ const KEY = SITE.key || 'rangement-express-v3';
 let store = {current:ALLOW[0], vehicles:{}, stats:{}, bestTotal:{}, sound:false, labels:true};
 try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.vehicles) store = Object.assign(store, s);
   else { const o = JSON.parse(localStorage.getItem('rangement-express-v2')); if (o && o.vehicles) Object.assign(store, {vehicles:o.vehicles, stats:o.stats || {}, bestTotal:o.bestTotal || {}}); } } catch(e) {}
+if (window.RX_START_PRESET && PRESETS[window.RX_START_PRESET] && ALLOW.includes(window.RX_START_PRESET)) store.current = window.RX_START_PRESET;
 if (window.RX_SHARED) { const sv = window.RX_SHARED, base = RX.PRESETS[sv.basePreset] || RX.PRESETS[ALLOW[0]];
   PRESETS.shared = {label: sv.name || 'Engin partagé', group: 'Partagé', body: Object.assign({}, base.body, sv.body), coffres: sv.coffres, scenarios: sv.scenarios || (base.scenarios || []).slice()};
   store.current = 'shared'; store.vehicles.shared = JSON.parse(JSON.stringify(Object.assign({}, sv, {scenarios: PRESETS.shared.scenarios}))); }
@@ -1463,6 +1484,14 @@ const objs = () => E.objs;
 const build = () => { E.build(state.v); applyLabels(); paintCallouts(); paintTop(); };
 
 $('#d-view').addEventListener('click', () => E.overview());
+/* vues fixes à l'intérieur de la cellule : un clic pour se placer face à un mur */
+const stBox = document.createElement('div'); stBox.className = 'd-stations'; stBox.setAttribute('role', 'group'); stBox.setAttribute('aria-label', 'Se placer');
+stBox.innerHTML = '<span class="st-l">Se placer</span>' + [['arriere', 'Arrière'], ['gauche', 'Mur gauche'], ['droite', 'Mur droit'], ['avant', 'Avant']].map(([k, t]) => `<button data-station="${k}" id="d-st-${k}" aria-pressed="${k === 'arriere'}">${t}</button>`).join('');
+const stView = root.querySelector('.d-view'); if (stView) stView.appendChild(stBox);
+const markSt = k => stBox.querySelectorAll('[data-station]').forEach(x => x.setAttribute('aria-pressed', x.dataset.station === k ? 'true' : 'false'));
+{ const _ov = E.overview, _fc = E.focusCoffre; E.overview = (...x) => { markSt('arriere'); return _ov(...x); }; E.focusCoffre = (...x) => { markSt(''); return _fc(...x); }; }
+stBox.addEventListener('click', e => { const b = e.target.closest('[data-station]'); if (b) { E.goStation(b.dataset.station); markSt(b.dataset.station); } });
+const paintStations = () => { stBox.hidden = !E.stations; root.classList.toggle('is-interior', !!E.stations); };
 $('#d-zin').addEventListener('click', () => E.zoom(0.75));
 $('#d-zout').addEventListener('click', () => E.zoom(1.33));
 $('#d-labels').addEventListener('click', () => { if (state.mode === 'train' && game.status !== 'idle') return; store.labels = !store.labels; persist(); applyLabels(); });
@@ -1474,7 +1503,7 @@ canvas.addEventListener('pointerup', e => {
   const hit = E.pick(e); if (!hit) return;
   if (state.mode === 'train') { if (game.status === 'running') onGameClick(hit); return; }
   if (state.mode === 'edit') { selectCoffre(hit.coffreId); return; }
-  if (hit.kind === 'door') { const o = objs()[hit.coffreId]; E.setOpen(hit.coffreId, o.target === 0); beep('tick'); }
+  if (hit.kind === 'door') { const o = objs()[hit.coffreId], opening = o.target === 0; E.setOpen(hit.coffreId, opening); if (opening && E.interior) E.focusCoffre(hit.coffreId); beep('tick'); }
 });
 const tip = $('.d-tip'); let hoverEv = null;
 canvas.addEventListener('pointermove', e => hoverEv = e);
@@ -1546,10 +1575,10 @@ function fail(msg){ game.penalty += 2; game.errors++; game.msg = msg + ' (+2 s)'
 function onGameClick(hit){
   const tgt = game.list[game.i];
   if (game.type === 'find') {
-    if (hit.kind === 'door') { E.setOpen(hit.coffreId, objs()[hit.coffreId].target === 0); beep('tick'); return; }
+    if (hit.kind === 'door') { const op = objs()[hit.coffreId].target === 0; E.setOpen(hit.coffreId, op); if (op && E.interior) E.focusCoffre(hit.coffreId); beep('tick'); return; }
     if (hit.name === tgt.name) success(hit.main); else { E.flash(hit.main, BAD); fail(`Non, ça c'est « ${hit.name} »`); }
   } else if (game.type === 'depart') {
-    if (hit.kind === 'door') { E.setOpen(hit.coffreId, objs()[hit.coffreId].target === 0); beep('tick'); return; }
+    if (hit.kind === 'door') { const op = objs()[hit.coffreId].target === 0; E.setOpen(hit.coffreId, op); if (op && E.interior) E.focusCoffre(hit.coffreId); beep('tick'); return; }
     if (game.got.has(hit.name)) return;
     if (tgt.items.some(i => i.name === hit.name)) { game.got.add(hit.name); E.flash(hit.main, OK); beep('tick'); game.hintId = null; E.markDoors();
       if (game.got.size >= tgt.items.length) success(null); else { game.msg = `${hit.name} : pris`; game.msgKind = 'ok'; renderHud(); } }
@@ -1897,7 +1926,7 @@ const thumbOf = k => { const b = (PRESETS[k] && PRESETS[k].body) || {}; return b
 function paintCards(){ const box = root.querySelector('#d-cards'); if (!box) return;
   box.innerHTML = Object.entries(PRESETS).map(([k, p]) => `<button class="vcard" data-preset="${k}" aria-pressed="${k === store.current}" id="d-card-${k}">${thumbOf(k)}<span>${esc(store.vehicles[k] && store.vehicles[k].name || p.label)}<small>${esc(p.group || '')} · ${(store.vehicles[k] || p).coffres.length} coffres</small></span></button>`).join(''); }
 root.querySelector('#d-cards').addEventListener('click', e => { const b = e.target.closest('[data-preset]'); if (b && b.dataset.preset !== store.current) loadPreset(b.dataset.preset); });
-function paintTop(){ const n = root.querySelector('#d-vname'); if (n) n.textContent = vName(); const cn = root.querySelector('#d-card-' + store.current + ' span'); if (cn && cn.firstChild) cn.firstChild.textContent = vName();
+function paintTop(){ paintStations(); const n = root.querySelector('#d-vname'); if (n) n.textContent = vName(); const cn = root.querySelector('#d-card-' + store.current + ' span'); if (cn && cn.firstChild) cn.firstChild.textContent = vName();
   const m = vehicleMastery(), bar = root.querySelector('#d-chip-bar'), val = root.querySelector('#d-chip-v'); if (bar) bar.style.width = m + '%'; if (val) val.textContent = m + ' %'; }
 const coBox = root.querySelector('.d-callouts'); let coEls = {};
 const showCallouts = () => state.mode !== 'train';
@@ -1922,11 +1951,13 @@ function moveCallouts(){ if (!showCallouts()) return; const r = viewport.getBoun
     const dot = el.querySelector('.dot'); dot.style.top = len + 'px'; dot.style.left = dx + 'px';
     const ln = el.querySelector('.ln'); ln.style.top = '0px'; ln.style.height = len + 'px'; ln.style.left = dx + 'px'; } }
 /* ---------- feuille de QR codes imprimable ---------- */
+window.__rxQrSheet = () => openQrSheet();
 async function openQrSheet(){
   if (typeof qrcode !== 'function') { const m = $('#d-share-msg'); if (m) m.textContent = 'Le générateur de QR codes n\'a pas pu se charger.'; return; }
   const payload = await RX.packVehicle(state.v, false), base = pageBase();
   let ov = document.getElementById('qr-sheet'); if (!ov) { ov = document.createElement('div'); ov.id = 'qr-sheet'; ov.className = 'qr-sheet'; document.body.appendChild(ov); }
-  const cards = sortedCoffres().map(c => { const q = qrcode(0, 'L'); q.addData(base + '#q=' + payload + '&c=' + encodeURIComponent(c.code)); q.make();
+  const sig = v => JSON.stringify((v.coffres || []).map(c => [c.code, c.name, c.zone || '', c.shelves])), pre = PRESETS[store.current], short = store.current !== 'shared' && pre && sig(pre) === sig(state.v);
+  const cards = sortedCoffres().map(c => { const q = qrcode(0, short ? 'M' : 'L'); q.addData(short ? base + '#p=' + store.current + '&c=' + encodeURIComponent(c.code) : base + '#q=' + payload + '&c=' + encodeURIComponent(c.code)); q.make();
     const its = [...new Set(c.shelves.flat().filter(Boolean))];
     return `<div class="qr-card"><div class="qr-img">${q.createSvgTag({cellSize: 3, margin: 2, scalable: true})}</div>
       <div class="qr-txt"><span class="qr-code">${esc(c.code)}</span><b>${esc(c.name)}</b><span class="qr-veh">${esc(vName())} · ${SIDE[c.side]}</span>
@@ -1973,7 +2004,7 @@ let script = [];
 const fmt = s => s.toFixed(1).replace('.', ',') + ' s';
 function loadHero(k){
   const v = JSON.parse(JSON.stringify(RX.PRESETS[k])); v.preset = k; H.build(v); H.beaconsOn = !!v.body.beacons;
-  const visible = v.coffres.filter(c => c.side !== 'R');
+  const visible = v.body.interior ? v.coffres.filter(c => c.zone !== 'C') : v.coffres.filter(c => c.side !== 'R');
   script = [];
   visible.forEach((c, i) => script.push({at:1 + i*1.3, open:c.id}));
   const pick = visible.slice(0, 2).map(c => ({cid:c.id, name:c.shelves.flat()[1] || c.shelves.flat()[0]}));
@@ -1991,6 +2022,8 @@ function heroTick(dt){
     if (s.found) { const o = H.objs[s.found.cid]; const d = o && o.items.find(x => x.name === s.found.name); if (d) H.flash(d.main, '#3ecf7f'); hcOk.classList.add('on'); hcT.textContent = fmt(askT); ask = null; } }
   if (ask) { askT += dt; hcT.textContent = fmt(askT); }
   if (cycleT > 13) { si = (si + 1) % seq.length; loadHero(seq[si]); }
+  if (H.interior && H.stations) { const s = H.stations.arriere, w = Math.sin(cycleT/13*Math.PI*2);
+    H.camera.position.set(s.pos.x + 0.5, s.pos.y - 0.05, s.pos.z + w*0.3); H.camera.lookAt(s.target.x, s.target.y, s.target.z - w*0.35); return; }
   const L = H.totalL || 6, a = H.aspect || 1.6, narrow = a < 1.05;
   const phi = phi0 - 0.5*Math.sin(Math.min(1, cycleT/13)*Math.PI*0.9);
   const R = (L*1.25 + 3.2)*(narrow ? 1.55 : 1), y = narrow ? 3.6 : 3.0;
@@ -2016,9 +2049,10 @@ function initDemo(){
   engines.push({E:D, active:() => demoVisible && !document.hidden, tick:dt => demo.frame()});
 }
 let pendingShare = null;
-window.addEventListener('hashchange', () => { if (/(^#|&)(q|v)=/.test(location.hash)) location.reload(); });
+window.addEventListener('hashchange', () => { if (/(^#|&)(q|v|p)=/.test(location.hash)) location.reload(); });
 { const h = location.hash.slice(1), prm = Object.fromEntries(h.split('&').map(kv => kv.split('=')).filter(x => x.length === 2));
   const pl = prm.q || prm.v;
+  if (prm.p && !pl) { window.RX_START_PRESET = prm.p; if (prm.c) window.RX_SHARED_COFFRE = decodeURIComponent(prm.c); setTimeout(() => { initDemo(); droot.scrollIntoView({block: 'start'}); }, 50); }
   if (pl) pendingShare = RX.unpackVehicle(pl).then(sv => { window.RX_SHARED = sv; if (prm.c) window.RX_SHARED_COFFRE = decodeURIComponent(prm.c); })
     .catch(() => {}).then(() => { pendingShare = null; initDemo(); droot.scrollIntoView({block: 'start'}); }); }
 new IntersectionObserver(es => es.forEach(e => { demoVisible = e.isIntersecting; if (demoVisible && !pendingShare) initDemo(); }), {rootMargin:'300px 0px'}).observe(droot);
@@ -2041,5 +2075,4 @@ window.__rx = {H, get D(){ return D; }, heroTick, loadHero};
 })();
 </script>
 
-</body>
-</html>
+</body></html>

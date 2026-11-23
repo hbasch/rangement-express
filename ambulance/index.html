@@ -157,6 +157,14 @@ section.s{padding-block:clamp(72px,9vw,112px) 0}
 .co button small{font:400 11px var(--mono);color:var(--muted)}
 .co button:hover small{color:#c9cdcb}
 .d-tools{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;border:var(--b);background:var(--white)}
+.d-stations{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;align-items:stretch;border:var(--b);background:var(--white);z-index:3;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.d-stations .st-l{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 10px;display:flex;align-items:center;border-right:1px solid var(--rule)}
+.d-stations button{font:600 14px var(--body);padding:10px 14px;border:0;border-right:1px solid var(--rule);background:var(--white);color:var(--ink);cursor:pointer;white-space:nowrap}
+.d-stations button:last-child{border-right:0}.d-stations button:hover{background:var(--paper)}
+.d-stations button[aria-pressed="true"]{background:var(--ink);color:var(--white)}
+.is-interior .d-hint{bottom:12px;max-width:calc(50% - 170px)}
+.is-interior .d-hud{top:64px}
+@media (max-width:760px){.d-stations{top:6px}.d-stations .st-l{display:none}.d-stations button{font-size:12px;padding:8px 8px}}
 .ib{display:grid;place-items:center;min-width:38px;height:36px;border:0;background:var(--white);color:var(--ink);cursor:pointer;font:500 12.5px var(--body);padding:0 10px;border-radius:0}
 .ib + .ib{border-left:1px solid var(--ink)}
 .ib:hover{background:var(--paper)}
@@ -397,8 +405,8 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
 <header class="nav">
   <div class="wrap">
     <a class="logo" href="#top"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Rangement Express<span class="hide-s" style="font:500 12px var(--mono);letter-spacing:.06em;color:var(--muted);margin-left:4px">AMBULANCES</span></a>
-    <nav aria-label="Sections"><a href="#demo">Démo</a><a href="#modes">Fonctionnement</a><a href="#controle">Contrôle</a><a href="#pilote">Pilote</a><a href="#faq">Questions</a></nav>
-    <a class="btn primary" href="#pilote">Pilote<span class="hide-s">gratuit</span></a>
+    <nav aria-label="Sections"><a href="#demo">Démo</a><a href="#modes">Fonctionnement</a><a href="#controle">Contrôle</a><a href="#qr">QR codes</a><a href="#pilote">Pilote</a><a href="#faq">Questions</a></nav>
+    <a class="btn primary" href="#pilote">Pilote</a>
   </div>
 </header>
 
@@ -408,31 +416,31 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
       <div class="copy">
         <span class="eyebrow">Formation au rangement des ambulances · pour les sociétés de transport sanitaire</span>
         <h1>Le bon matériel,<br>du premier coup.</h1>
-        <p class="lead">Vos ambulances reproduites en 3D avec leur vrai rangement, cellule et coffres compris. Vos ambulanciers, nouveaux, intérimaires ou remplaçants, savent où est chaque matériel avant de prendre leur poste, et quoi prendre pour chaque mission.</p>
+        <p class="lead">La cellule de vos ambulances en 3D, avec le matériel obligatoire de l'arrêté du 20 avril 2026 rangé à sa vraie place. Vos ambulanciers, nouveaux, intérimaires ou remplaçants, savent où est chaque matériel avant de prendre leur poste. Un QR code dans chaque ambulance montre le contenu attendu et ouvre le contrôle en un scan.</p>
         <div class="ctas"><a class="btn primary" href="#pilote">Devenir société pilote</a><a class="btn" href="#demo">Voir la démo</a></div>
       </div>
       <div class="cartouche" aria-label="Fiche du projet">
         <div><span>CLIENT</span><b>Votre société d'ambulances</b></div>
-        <div><span>VÉHICULES</span><b>Ambulances · cellule et coffres</b></div>
-        <div><span>PLAN</span><b>Un standard par flotte</b></div>
-        <div><span>MATÉRIEL</span><b>Arrêté du 12 décembre 2017</b></div>
+        <div><span>VÉHICULE</span><b>Ambulance de type A</b></div>
+        <div><span>SUR PLACE</span><b>QR code par ambulance</b></div>
+        <div><span>MATÉRIEL</span><b>Arrêté du 20 avril 2026</b></div>
         <div><span>STATUT</span><b class="st">Programme pilote</b></div>
         <div><span>ACCÈS</span><b>Navigateur, sans installation</b></div>
       </div>
     </div>
     <div class="fig">
-      <canvas id="hero-canvas" aria-label="Ambulance en 3D dont les coffres s'ouvrent un à un"></canvas>
+      <canvas id="hero-canvas" aria-label="Cellule d'ambulance en 3D dont les rangements s'ouvrent un à un"></canvas>
       <div class="hud-card" id="hud-card" aria-hidden="true">
         <div class="top"><span>Trouve</span><span id="hc-n">1/10</span></div>
         <div class="body">
-          <div class="item" id="hc-item">DSA</div>
+          <div class="item" id="hc-item">Défibrillateur (DSA)</div>
           <div class="row"><span class="t" id="hc-t">0,0 s</span><span class="ok" id="hc-ok">Trouvé du premier coup</span></div>
-          <div class="veh" id="hc-veh">Ambulance 1 · exemple</div>
+          <div class="veh" id="hc-veh">Ambulance type A · exemple</div>
         </div>
       </div>
-      <span class="fig-cap" id="fig-cap">Fig. 1 · Ambulance, coffres ouverts un à un</span>
+      <span class="fig-cap" id="fig-cap">Fig. 1 · Cellule d'ambulance de type A</span>
     </div>
-    <div class="proto" id="retours"><span class="proto-tag">PROGRAMME PILOTE</span><p>Outil en construction. Les modèles 3D de la démo sont des exemples génériques : pour vos ambulances, des modèles fidèles de votre vrai matériel se font simplement et à faible coût, à partir de quelques photos. Je cherche trois sociétés d'ambulances pour quelques semaines d'essai gratuit, sans engagement. Contact : <span class="addr">hadrienbasch@gmail.com</span></p></div>
+    <div class="proto" id="retours"><span class="proto-tag">PROGRAMME PILOTE</span><p>Outil en construction. Les modèles 3D de la démo sont des exemples génériques : pour vos ambulances, des modèles fidèles de votre vrai matériel se font simplement et à faible coût, à partir de quelques photos. Je cherche trois sociétés d'ambulances pilotes pour construire l'outil avec elles. Contact : <span class="addr">hadrienbasch@gmail.com</span></p></div>
   </div>
 </section>
 
@@ -453,14 +461,14 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
     <div class="steps">
       <div class="step"><span class="k">ÉTAPE 1</span><h3>Vos ambulances</h3><p>À partir de photos et de votre liste de matériel (un copier-coller depuis Excel suffit), je reproduis chaque véhicule avec son rangement.</p></div>
       <div class="step"><span class="k">ÉTAPE 2</span><h3>Vos équipes s'entraînent</h3><p>Deux minutes sur tablette ou ordinateur, sans compte, par exemple à la prise de poste. Le matériel mal connu revient plus souvent.</p></div>
-      <div class="step"><span class="k">ÉTAPE 3</span><h3>Un QR code par véhicule</h3><p>Collé dans chaque ambulance, il montre en un scan ce qui doit se trouver dans chaque coffre. Pratique aussi pour le contrôle du matériel.</p></div>
+      <div class="step"><span class="k">ÉTAPE 3</span><h3>Un QR code par ambulance</h3><p>Collé dans la cellule et sur chaque rangement, il montre en un scan ce qui doit s'y trouver, et ouvre le contrôle du matériel. <a href="#qr">Voir comment</a>.</p></div>
     </div>
   </div>
 </section>
 
 <section class="s" id="demo">
   <div class="wrap">
-    <div class="s-head"><span class="eyebrow">Démo</span><h2>Essayez sur deux ambulances.</h2><p class="small muted" style="margin:0">Les modèles 3D ci-dessous sont des exemples. Les vôtres peuvent être créés à partir de simples photos de votre matériel.</p><p>C'est la vraie application. Les deux ambulances ont le même matériel, rangé différemment : essayez de passer de l'une à l'autre. Ouvrez les coffres, puis passez en « S'entraîner » et lancez le chrono. C'est un prototype, modèles 3D compris : <a href="#retours">dites-moi ce qui manque</a>.</p></div>
+    <div class="s-head"><span class="eyebrow">Démo</span><h2>Entrez dans la cellule.</h2><p class="small muted" style="margin:0">Les modèles 3D ci-dessous sont des exemples. Les vôtres peuvent être créés à partir de simples photos de votre matériel.</p><p>C'est la vraie application, sur une ambulance de type A équipée du matériel obligatoire de l'arrêté du 20 avril 2026. Les boutons « Se placer » (Arrière, Mur gauche, Mur droit, Avant) changent de point de vue d'un clic. Cliquez un rangement pour l'ouvrir, puis passez en « S'entraîner » et lancez le chrono. C'est un prototype : <a href="#retours">dites-moi ce qui manque</a>.</p></div>
     <div class="demo-frame">
       <div class="demo" id="demo-root">
         <div class="d-top">
@@ -479,7 +487,7 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
           <canvas id="demo-canvas" aria-label="Vue 3D interactive de l'ambulance"></canvas>
           <div class="d-callouts" aria-hidden="false"></div>
           <div class="d-hud" hidden></div>
-          <div class="d-hint">Glisser : tourner · molette : zoomer · clic sur un coffre : ouvrir</div>
+          <div class="d-hint">« Se placer » : changer de point de vue · clic sur un rangement : ouvrir</div>
           <div class="d-tools" role="toolbar" aria-label="Vue">
             <button class="ib" id="d-view" title="Vue d'ensemble" aria-label="Vue d'ensemble"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg></button>
             <button class="ib" id="d-zout" title="Dézoomer" aria-label="Dézoomer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
@@ -504,8 +512,8 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
           <p>Une mission tombe. L'ambulancier rassemble tout le matériel nécessaire, coffre par coffre, avant la fin du chrono. Il apprend quoi prendre, et où, pour chaque type de mission.</p></div>
         <div class="ticket" aria-label="Exemple de mission">
           <span class="dim">MISSION</span>
-          <span><span class="tag">GARDE</span>Malaise cardiaque à domicile</span>
-          <span class="list">☐ DSA<br>☐ Sac de premiers secours<br>☐ Bouteille d'oxygène 5 L<br>☐ Insufflateur manuel adulte</span>
+          <span><span class="tag">URGENCE</span>Malaise en attendant le SMUR</span>
+          <span class="list">☐ Défibrillateur (DSA)<br>☐ Insufflateur manuel adulte<br>☐ Masques haute concentration<br>☐ Aspirateur de mucosités</span>
           <span class="dim">Types de mission écrits par votre société</span>
         </div>
       </div>
@@ -520,7 +528,7 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
 
 <section class="s" id="controle">
   <div class="wrap">
-    <div class="s-head"><span class="eyebrow">Contrôle et traçabilité</span><h2>Le matériel obligatoire et la désinfection, tracés sans papier.</h2><p>Dans l'onglet « Contrôle » de la démo, chaque ambulance a son carnet. Ce qui se fait aujourd'hui sur feuille ou dans un classeur se fait en quelques clics, et tout est prêt le jour d'un contrôle de l'ARS.</p></div>
+    <div class="s-head"><span class="eyebrow">Contrôle et traçabilité</span><h2>Le matériel obligatoire et la désinfection, tracés sans papier.</h2><p>Dans l'onglet « Contrôle » de la démo, chaque ambulance a son carnet, construit sur la liste officielle du matériel. Ce qui se fait aujourd'hui sur feuille ou dans un classeur se fait en quelques clics, et tout est prêt le jour d'un contrôle de l'ARS.</p></div>
     <div class="cols3">
       <div><h3>Prise de poste</h3><p>L'ambulancier coche le matériel coffre par coffre. Ce qui manque est signalé et daté, avec son nom.</p></div>
       <div><h3>Registre de désinfection</h3><p>Nettoyage après transport, désinfection complète hebdomadaire, désinfection après un patient contagieux : chaque opération est enregistrée, et un retard est signalé.</p></div>
@@ -529,15 +537,46 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
   </div>
 </section>
 
+<section class="s" id="qr">
+  <div class="wrap">
+    <div class="s-head"><span class="eyebrow">QR codes</span><h2>Un scan dans l'ambulance, la bonne liste à l'écran.</h2><p>L'outil imprime une étiquette QR code par rangement. Collée sur l'armoire ou le coffre, elle se lit avec l'appareil photo de n'importe quel téléphone, sans application.</p></div>
+    <div class="qrhl">
+      <div class="qrtag" aria-label="Exemple d'étiquette QR code">
+        <div class="qrimg"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 132"  preserveAspectRatio="xMinYMin meet"><rect width="100%" height="100%" fill="white" cx="0" cy="0"/><path d="M0,0l4,0 0,4 -4,0 0,-4z M4,0l4,0 0,4 -4,0 0,-4z M8,0l4,0 0,4 -4,0 0,-4z M12,0l4,0 0,4 -4,0 0,-4z M16,0l4,0 0,4 -4,0 0,-4z M20,0l4,0 0,4 -4,0 0,-4z M24,0l4,0 0,4 -4,0 0,-4z M32,0l4,0 0,4 -4,0 0,-4z M40,0l4,0 0,4 -4,0 0,-4z M44,0l4,0 0,4 -4,0 0,-4z M52,0l4,0 0,4 -4,0 0,-4z M64,0l4,0 0,4 -4,0 0,-4z M68,0l4,0 0,4 -4,0 0,-4z M72,0l4,0 0,4 -4,0 0,-4z M76,0l4,0 0,4 -4,0 0,-4z M92,0l4,0 0,4 -4,0 0,-4z M104,0l4,0 0,4 -4,0 0,-4z M108,0l4,0 0,4 -4,0 0,-4z M112,0l4,0 0,4 -4,0 0,-4z M116,0l4,0 0,4 -4,0 0,-4z M120,0l4,0 0,4 -4,0 0,-4z M124,0l4,0 0,4 -4,0 0,-4z M128,0l4,0 0,4 -4,0 0,-4z M0,4l4,0 0,4 -4,0 0,-4z M24,4l4,0 0,4 -4,0 0,-4z M32,4l4,0 0,4 -4,0 0,-4z M36,4l4,0 0,4 -4,0 0,-4z M40,4l4,0 0,4 -4,0 0,-4z M44,4l4,0 0,4 -4,0 0,-4z M52,4l4,0 0,4 -4,0 0,-4z M64,4l4,0 0,4 -4,0 0,-4z M72,4l4,0 0,4 -4,0 0,-4z M80,4l4,0 0,4 -4,0 0,-4z M88,4l4,0 0,4 -4,0 0,-4z M92,4l4,0 0,4 -4,0 0,-4z M96,4l4,0 0,4 -4,0 0,-4z M104,4l4,0 0,4 -4,0 0,-4z M128,4l4,0 0,4 -4,0 0,-4z M0,8l4,0 0,4 -4,0 0,-4z M8,8l4,0 0,4 -4,0 0,-4z M12,8l4,0 0,4 -4,0 0,-4z M16,8l4,0 0,4 -4,0 0,-4z M24,8l4,0 0,4 -4,0 0,-4z M36,8l4,0 0,4 -4,0 0,-4z M40,8l4,0 0,4 -4,0 0,-4z M60,8l4,0 0,4 -4,0 0,-4z M72,8l4,0 0,4 -4,0 0,-4z M92,8l4,0 0,4 -4,0 0,-4z M104,8l4,0 0,4 -4,0 0,-4z M112,8l4,0 0,4 -4,0 0,-4z M116,8l4,0 0,4 -4,0 0,-4z M120,8l4,0 0,4 -4,0 0,-4z M128,8l4,0 0,4 -4,0 0,-4z M0,12l4,0 0,4 -4,0 0,-4z M8,12l4,0 0,4 -4,0 0,-4z M12,12l4,0 0,4 -4,0 0,-4z M16,12l4,0 0,4 -4,0 0,-4z M24,12l4,0 0,4 -4,0 0,-4z M32,12l4,0 0,4 -4,0 0,-4z M36,12l4,0 0,4 -4,0 0,-4z M40,12l4,0 0,4 -4,0 0,-4z M44,12l4,0 0,4 -4,0 0,-4z M48,12l4,0 0,4 -4,0 0,-4z M56,12l4,0 0,4 -4,0 0,-4z M60,12l4,0 0,4 -4,0 0,-4z M64,12l4,0 0,4 -4,0 0,-4z M68,12l4,0 0,4 -4,0 0,-4z M72,12l4,0 0,4 -4,0 0,-4z M88,12l4,0 0,4 -4,0 0,-4z M96,12l4,0 0,4 -4,0 0,-4z M104,12l4,0 0,4 -4,0 0,-4z M112,12l4,0 0,4 -4,0 0,-4z M116,12l4,0 0,4 -4,0 0,-4z M120,12l4,0 0,4 -4,0 0,-4z M128,12l4,0 0,4 -4,0 0,-4z M0,16l4,0 0,4 -4,0 0,-4z M8,16l4,0 0,4 -4,0 0,-4z M12,16l4,0 0,4 -4,0 0,-4z M16,16l4,0 0,4 -4,0 0,-4z M24,16l4,0 0,4 -4,0 0,-4z M36,16l4,0 0,4 -4,0 0,-4z M48,16l4,0 0,4 -4,0 0,-4z M56,16l4,0 0,4 -4,0 0,-4z M76,16l4,0 0,4 -4,0 0,-4z M80,16l4,0 0,4 -4,0 0,-4z M84,16l4,0 0,4 -4,0 0,-4z M96,16l4,0 0,4 -4,0 0,-4z M104,16l4,0 0,4 -4,0 0,-4z M112,16l4,0 0,4 -4,0 0,-4z M116,16l4,0 0,4 -4,0 0,-4z M120,16l4,0 0,4 -4,0 0,-4z M128,16l4,0 0,4 -4,0 0,-4z M0,20l4,0 0,4 -4,0 0,-4z M24,20l4,0 0,4 -4,0 0,-4z M40,20l4,0 0,4 -4,0 0,-4z M52,20l4,0 0,4 -4,0 0,-4z M56,20l4,0 0,4 -4,0 0,-4z M68,20l4,0 0,4 -4,0 0,-4z M72,20l4,0 0,4 -4,0 0,-4z M76,20l4,0 0,4 -4,0 0,-4z M80,20l4,0 0,4 -4,0 0,-4z M88,20l4,0 0,4 -4,0 0,-4z M96,20l4,0 0,4 -4,0 0,-4z M104,20l4,0 0,4 -4,0 0,-4z M128,20l4,0 0,4 -4,0 0,-4z M0,24l4,0 0,4 -4,0 0,-4z M4,24l4,0 0,4 -4,0 0,-4z M8,24l4,0 0,4 -4,0 0,-4z M12,24l4,0 0,4 -4,0 0,-4z M16,24l4,0 0,4 -4,0 0,-4z M20,24l4,0 0,4 -4,0 0,-4z M24,24l4,0 0,4 -4,0 0,-4z M32,24l4,0 0,4 -4,0 0,-4z M40,24l4,0 0,4 -4,0 0,-4z M48,24l4,0 0,4 -4,0 0,-4z M56,24l4,0 0,4 -4,0 0,-4z M64,24l4,0 0,4 -4,0 0,-4z M72,24l4,0 0,4 -4,0 0,-4z M80,24l4,0 0,4 -4,0 0,-4z M88,24l4,0 0,4 -4,0 0,-4z M96,24l4,0 0,4 -4,0 0,-4z M104,24l4,0 0,4 -4,0 0,-4z M108,24l4,0 0,4 -4,0 0,-4z M112,24l4,0 0,4 -4,0 0,-4z M116,24l4,0 0,4 -4,0 0,-4z M120,24l4,0 0,4 -4,0 0,-4z M124,24l4,0 0,4 -4,0 0,-4z M128,24l4,0 0,4 -4,0 0,-4z M32,28l4,0 0,4 -4,0 0,-4z M40,28l4,0 0,4 -4,0 0,-4z M44,28l4,0 0,4 -4,0 0,-4z M68,28l4,0 0,4 -4,0 0,-4z M92,28l4,0 0,4 -4,0 0,-4z M0,32l4,0 0,4 -4,0 0,-4z M8,32l4,0 0,4 -4,0 0,-4z M12,32l4,0 0,4 -4,0 0,-4z M20,32l4,0 0,4 -4,0 0,-4z M24,32l4,0 0,4 -4,0 0,-4z M28,32l4,0 0,4 -4,0 0,-4z M44,32l4,0 0,4 -4,0 0,-4z M48,32l4,0 0,4 -4,0 0,-4z M56,32l4,0 0,4 -4,0 0,-4z M64,32l4,0 0,4 -4,0 0,-4z M68,32l4,0 0,4 -4,0 0,-4z M72,32l4,0 0,4 -4,0 0,-4z M76,32l4,0 0,4 -4,0 0,-4z M84,32l4,0 0,4 -4,0 0,-4z M88,32l4,0 0,4 -4,0 0,-4z M104,32l4,0 0,4 -4,0 0,-4z M116,32l4,0 0,4 -4,0 0,-4z M124,32l4,0 0,4 -4,0 0,-4z M128,32l4,0 0,4 -4,0 0,-4z M0,36l4,0 0,4 -4,0 0,-4z M4,36l4,0 0,4 -4,0 0,-4z M8,36l4,0 0,4 -4,0 0,-4z M12,36l4,0 0,4 -4,0 0,-4z M32,36l4,0 0,4 -4,0 0,-4z M36,36l4,0 0,4 -4,0 0,-4z M44,36l4,0 0,4 -4,0 0,-4z M48,36l4,0 0,4 -4,0 0,-4z M64,36l4,0 0,4 -4,0 0,-4z M72,36l4,0 0,4 -4,0 0,-4z M76,36l4,0 0,4 -4,0 0,-4z M80,36l4,0 0,4 -4,0 0,-4z M84,36l4,0 0,4 -4,0 0,-4z M92,36l4,0 0,4 -4,0 0,-4z M104,36l4,0 0,4 -4,0 0,-4z M108,36l4,0 0,4 -4,0 0,-4z M116,36l4,0 0,4 -4,0 0,-4z M120,36l4,0 0,4 -4,0 0,-4z M124,36l4,0 0,4 -4,0 0,-4z M128,36l4,0 0,4 -4,0 0,-4z M16,40l4,0 0,4 -4,0 0,-4z M20,40l4,0 0,4 -4,0 0,-4z M24,40l4,0 0,4 -4,0 0,-4z M28,40l4,0 0,4 -4,0 0,-4z M40,40l4,0 0,4 -4,0 0,-4z M44,40l4,0 0,4 -4,0 0,-4z M56,40l4,0 0,4 -4,0 0,-4z M84,40l4,0 0,4 -4,0 0,-4z M92,40l4,0 0,4 -4,0 0,-4z M96,40l4,0 0,4 -4,0 0,-4z M104,40l4,0 0,4 -4,0 0,-4z M108,40l4,0 0,4 -4,0 0,-4z M112,40l4,0 0,4 -4,0 0,-4z M116,40l4,0 0,4 -4,0 0,-4z M124,40l4,0 0,4 -4,0 0,-4z M128,40l4,0 0,4 -4,0 0,-4z M0,44l4,0 0,4 -4,0 0,-4z M4,44l4,0 0,4 -4,0 0,-4z M8,44l4,0 0,4 -4,0 0,-4z M16,44l4,0 0,4 -4,0 0,-4z M32,44l4,0 0,4 -4,0 0,-4z M36,44l4,0 0,4 -4,0 0,-4z M44,44l4,0 0,4 -4,0 0,-4z M52,44l4,0 0,4 -4,0 0,-4z M56,44l4,0 0,4 -4,0 0,-4z M60,44l4,0 0,4 -4,0 0,-4z M72,44l4,0 0,4 -4,0 0,-4z M76,44l4,0 0,4 -4,0 0,-4z M80,44l4,0 0,4 -4,0 0,-4z M88,44l4,0 0,4 -4,0 0,-4z M92,44l4,0 0,4 -4,0 0,-4z M100,44l4,0 0,4 -4,0 0,-4z M104,44l4,0 0,4 -4,0 0,-4z M108,44l4,0 0,4 -4,0 0,-4z M116,44l4,0 0,4 -4,0 0,-4z M124,44l4,0 0,4 -4,0 0,-4z M128,44l4,0 0,4 -4,0 0,-4z M0,48l4,0 0,4 -4,0 0,-4z M4,48l4,0 0,4 -4,0 0,-4z M8,48l4,0 0,4 -4,0 0,-4z M12,48l4,0 0,4 -4,0 0,-4z M24,48l4,0 0,4 -4,0 0,-4z M48,48l4,0 0,4 -4,0 0,-4z M68,48l4,0 0,4 -4,0 0,-4z M88,48l4,0 0,4 -4,0 0,-4z M96,48l4,0 0,4 -4,0 0,-4z M100,48l4,0 0,4 -4,0 0,-4z M112,48l4,0 0,4 -4,0 0,-4z M116,48l4,0 0,4 -4,0 0,-4z M124,48l4,0 0,4 -4,0 0,-4z M128,48l4,0 0,4 -4,0 0,-4z M0,52l4,0 0,4 -4,0 0,-4z M4,52l4,0 0,4 -4,0 0,-4z M12,52l4,0 0,4 -4,0 0,-4z M16,52l4,0 0,4 -4,0 0,-4z M20,52l4,0 0,4 -4,0 0,-4z M36,52l4,0 0,4 -4,0 0,-4z M48,52l4,0 0,4 -4,0 0,-4z M64,52l4,0 0,4 -4,0 0,-4z M76,52l4,0 0,4 -4,0 0,-4z M84,52l4,0 0,4 -4,0 0,-4z M88,52l4,0 0,4 -4,0 0,-4z M96,52l4,0 0,4 -4,0 0,-4z M108,52l4,0 0,4 -4,0 0,-4z M124,52l4,0 0,4 -4,0 0,-4z M12,56l4,0 0,4 -4,0 0,-4z M20,56l4,0 0,4 -4,0 0,-4z M24,56l4,0 0,4 -4,0 0,-4z M28,56l4,0 0,4 -4,0 0,-4z M32,56l4,0 0,4 -4,0 0,-4z M40,56l4,0 0,4 -4,0 0,-4z M44,56l4,0 0,4 -4,0 0,-4z M48,56l4,0 0,4 -4,0 0,-4z M52,56l4,0 0,4 -4,0 0,-4z M60,56l4,0 0,4 -4,0 0,-4z M64,56l4,0 0,4 -4,0 0,-4z M76,56l4,0 0,4 -4,0 0,-4z M80,56l4,0 0,4 -4,0 0,-4z M84,56l4,0 0,4 -4,0 0,-4z M96,56l4,0 0,4 -4,0 0,-4z M104,56l4,0 0,4 -4,0 0,-4z M112,56l4,0 0,4 -4,0 0,-4z M0,60l4,0 0,4 -4,0 0,-4z M4,60l4,0 0,4 -4,0 0,-4z M12,60l4,0 0,4 -4,0 0,-4z M20,60l4,0 0,4 -4,0 0,-4z M36,60l4,0 0,4 -4,0 0,-4z M48,60l4,0 0,4 -4,0 0,-4z M64,60l4,0 0,4 -4,0 0,-4z M76,60l4,0 0,4 -4,0 0,-4z M84,60l4,0 0,4 -4,0 0,-4z M92,60l4,0 0,4 -4,0 0,-4z M100,60l4,0 0,4 -4,0 0,-4z M104,60l4,0 0,4 -4,0 0,-4z M108,60l4,0 0,4 -4,0 0,-4z M120,60l4,0 0,4 -4,0 0,-4z M0,64l4,0 0,4 -4,0 0,-4z M24,64l4,0 0,4 -4,0 0,-4z M36,64l4,0 0,4 -4,0 0,-4z M40,64l4,0 0,4 -4,0 0,-4z M44,64l4,0 0,4 -4,0 0,-4z M48,64l4,0 0,4 -4,0 0,-4z M52,64l4,0 0,4 -4,0 0,-4z M60,64l4,0 0,4 -4,0 0,-4z M72,64l4,0 0,4 -4,0 0,-4z M84,64l4,0 0,4 -4,0 0,-4z M88,64l4,0 0,4 -4,0 0,-4z M96,64l4,0 0,4 -4,0 0,-4z M100,64l4,0 0,4 -4,0 0,-4z M104,64l4,0 0,4 -4,0 0,-4z M112,64l4,0 0,4 -4,0 0,-4z M116,64l4,0 0,4 -4,0 0,-4z M120,64l4,0 0,4 -4,0 0,-4z M0,68l4,0 0,4 -4,0 0,-4z M12,68l4,0 0,4 -4,0 0,-4z M16,68l4,0 0,4 -4,0 0,-4z M20,68l4,0 0,4 -4,0 0,-4z M28,68l4,0 0,4 -4,0 0,-4z M40,68l4,0 0,4 -4,0 0,-4z M44,68l4,0 0,4 -4,0 0,-4z M48,68l4,0 0,4 -4,0 0,-4z M52,68l4,0 0,4 -4,0 0,-4z M56,68l4,0 0,4 -4,0 0,-4z M60,68l4,0 0,4 -4,0 0,-4z M80,68l4,0 0,4 -4,0 0,-4z M88,68l4,0 0,4 -4,0 0,-4z M92,68l4,0 0,4 -4,0 0,-4z M96,68l4,0 0,4 -4,0 0,-4z M100,68l4,0 0,4 -4,0 0,-4z M104,68l4,0 0,4 -4,0 0,-4z M112,68l4,0 0,4 -4,0 0,-4z M116,68l4,0 0,4 -4,0 0,-4z M124,68l4,0 0,4 -4,0 0,-4z M128,68l4,0 0,4 -4,0 0,-4z M8,72l4,0 0,4 -4,0 0,-4z M12,72l4,0 0,4 -4,0 0,-4z M16,72l4,0 0,4 -4,0 0,-4z M20,72l4,0 0,4 -4,0 0,-4z M24,72l4,0 0,4 -4,0 0,-4z M28,72l4,0 0,4 -4,0 0,-4z M36,72l4,0 0,4 -4,0 0,-4z M40,72l4,0 0,4 -4,0 0,-4z M52,72l4,0 0,4 -4,0 0,-4z M56,72l4,0 0,4 -4,0 0,-4z M60,72l4,0 0,4 -4,0 0,-4z M64,72l4,0 0,4 -4,0 0,-4z M84,72l4,0 0,4 -4,0 0,-4z M88,72l4,0 0,4 -4,0 0,-4z M100,72l4,0 0,4 -4,0 0,-4z M108,72l4,0 0,4 -4,0 0,-4z M112,72l4,0 0,4 -4,0 0,-4z M120,72l4,0 0,4 -4,0 0,-4z M124,72l4,0 0,4 -4,0 0,-4z M0,76l4,0 0,4 -4,0 0,-4z M4,76l4,0 0,4 -4,0 0,-4z M8,76l4,0 0,4 -4,0 0,-4z M12,76l4,0 0,4 -4,0 0,-4z M20,76l4,0 0,4 -4,0 0,-4z M36,76l4,0 0,4 -4,0 0,-4z M48,76l4,0 0,4 -4,0 0,-4z M56,76l4,0 0,4 -4,0 0,-4z M68,76l4,0 0,4 -4,0 0,-4z M80,76l4,0 0,4 -4,0 0,-4z M88,76l4,0 0,4 -4,0 0,-4z M92,76l4,0 0,4 -4,0 0,-4z M100,76l4,0 0,4 -4,0 0,-4z M104,76l4,0 0,4 -4,0 0,-4z M112,76l4,0 0,4 -4,0 0,-4z M124,76l4,0 0,4 -4,0 0,-4z M128,76l4,0 0,4 -4,0 0,-4z M8,80l4,0 0,4 -4,0 0,-4z M12,80l4,0 0,4 -4,0 0,-4z M16,80l4,0 0,4 -4,0 0,-4z M24,80l4,0 0,4 -4,0 0,-4z M28,80l4,0 0,4 -4,0 0,-4z M44,80l4,0 0,4 -4,0 0,-4z M64,80l4,0 0,4 -4,0 0,-4z M68,80l4,0 0,4 -4,0 0,-4z M72,80l4,0 0,4 -4,0 0,-4z M84,80l4,0 0,4 -4,0 0,-4z M108,80l4,0 0,4 -4,0 0,-4z M116,80l4,0 0,4 -4,0 0,-4z M120,80l4,0 0,4 -4,0 0,-4z M0,84l4,0 0,4 -4,0 0,-4z M20,84l4,0 0,4 -4,0 0,-4z M28,84l4,0 0,4 -4,0 0,-4z M36,84l4,0 0,4 -4,0 0,-4z M44,84l4,0 0,4 -4,0 0,-4z M52,84l4,0 0,4 -4,0 0,-4z M60,84l4,0 0,4 -4,0 0,-4z M68,84l4,0 0,4 -4,0 0,-4z M72,84l4,0 0,4 -4,0 0,-4z M76,84l4,0 0,4 -4,0 0,-4z M80,84l4,0 0,4 -4,0 0,-4z M84,84l4,0 0,4 -4,0 0,-4z M92,84l4,0 0,4 -4,0 0,-4z M96,84l4,0 0,4 -4,0 0,-4z M100,84l4,0 0,4 -4,0 0,-4z M104,84l4,0 0,4 -4,0 0,-4z M116,84l4,0 0,4 -4,0 0,-4z M128,84l4,0 0,4 -4,0 0,-4z M8,88l4,0 0,4 -4,0 0,-4z M12,88l4,0 0,4 -4,0 0,-4z M20,88l4,0 0,4 -4,0 0,-4z M24,88l4,0 0,4 -4,0 0,-4z M36,88l4,0 0,4 -4,0 0,-4z M40,88l4,0 0,4 -4,0 0,-4z M44,88l4,0 0,4 -4,0 0,-4z M48,88l4,0 0,4 -4,0 0,-4z M64,88l4,0 0,4 -4,0 0,-4z M72,88l4,0 0,4 -4,0 0,-4z M80,88l4,0 0,4 -4,0 0,-4z M84,88l4,0 0,4 -4,0 0,-4z M88,88l4,0 0,4 -4,0 0,-4z M92,88l4,0 0,4 -4,0 0,-4z M96,88l4,0 0,4 -4,0 0,-4z M124,88l4,0 0,4 -4,0 0,-4z M128,88l4,0 0,4 -4,0 0,-4z M4,92l4,0 0,4 -4,0 0,-4z M8,92l4,0 0,4 -4,0 0,-4z M12,92l4,0 0,4 -4,0 0,-4z M28,92l4,0 0,4 -4,0 0,-4z M36,92l4,0 0,4 -4,0 0,-4z M44,92l4,0 0,4 -4,0 0,-4z M48,92l4,0 0,4 -4,0 0,-4z M60,92l4,0 0,4 -4,0 0,-4z M72,92l4,0 0,4 -4,0 0,-4z M80,92l4,0 0,4 -4,0 0,-4z M92,92l4,0 0,4 -4,0 0,-4z M100,92l4,0 0,4 -4,0 0,-4z M116,92l4,0 0,4 -4,0 0,-4z M124,92l4,0 0,4 -4,0 0,-4z M128,92l4,0 0,4 -4,0 0,-4z M0,96l4,0 0,4 -4,0 0,-4z M16,96l4,0 0,4 -4,0 0,-4z M20,96l4,0 0,4 -4,0 0,-4z M24,96l4,0 0,4 -4,0 0,-4z M28,96l4,0 0,4 -4,0 0,-4z M32,96l4,0 0,4 -4,0 0,-4z M36,96l4,0 0,4 -4,0 0,-4z M40,96l4,0 0,4 -4,0 0,-4z M44,96l4,0 0,4 -4,0 0,-4z M52,96l4,0 0,4 -4,0 0,-4z M56,96l4,0 0,4 -4,0 0,-4z M68,96l4,0 0,4 -4,0 0,-4z M72,96l4,0 0,4 -4,0 0,-4z M76,96l4,0 0,4 -4,0 0,-4z M88,96l4,0 0,4 -4,0 0,-4z M96,96l4,0 0,4 -4,0 0,-4z M100,96l4,0 0,4 -4,0 0,-4z M104,96l4,0 0,4 -4,0 0,-4z M108,96l4,0 0,4 -4,0 0,-4z M112,96l4,0 0,4 -4,0 0,-4z M128,96l4,0 0,4 -4,0 0,-4z M32,100l4,0 0,4 -4,0 0,-4z M40,100l4,0 0,4 -4,0 0,-4z M44,100l4,0 0,4 -4,0 0,-4z M48,100l4,0 0,4 -4,0 0,-4z M52,100l4,0 0,4 -4,0 0,-4z M56,100l4,0 0,4 -4,0 0,-4z M60,100l4,0 0,4 -4,0 0,-4z M64,100l4,0 0,4 -4,0 0,-4z M68,100l4,0 0,4 -4,0 0,-4z M76,100l4,0 0,4 -4,0 0,-4z M84,100l4,0 0,4 -4,0 0,-4z M92,100l4,0 0,4 -4,0 0,-4z M96,100l4,0 0,4 -4,0 0,-4z M112,100l4,0 0,4 -4,0 0,-4z M116,100l4,0 0,4 -4,0 0,-4z M0,104l4,0 0,4 -4,0 0,-4z M4,104l4,0 0,4 -4,0 0,-4z M8,104l4,0 0,4 -4,0 0,-4z M12,104l4,0 0,4 -4,0 0,-4z M16,104l4,0 0,4 -4,0 0,-4z M20,104l4,0 0,4 -4,0 0,-4z M24,104l4,0 0,4 -4,0 0,-4z M32,104l4,0 0,4 -4,0 0,-4z M36,104l4,0 0,4 -4,0 0,-4z M40,104l4,0 0,4 -4,0 0,-4z M64,104l4,0 0,4 -4,0 0,-4z M72,104l4,0 0,4 -4,0 0,-4z M76,104l4,0 0,4 -4,0 0,-4z M92,104l4,0 0,4 -4,0 0,-4z M96,104l4,0 0,4 -4,0 0,-4z M104,104l4,0 0,4 -4,0 0,-4z M112,104l4,0 0,4 -4,0 0,-4z M0,108l4,0 0,4 -4,0 0,-4z M24,108l4,0 0,4 -4,0 0,-4z M32,108l4,0 0,4 -4,0 0,-4z M36,108l4,0 0,4 -4,0 0,-4z M40,108l4,0 0,4 -4,0 0,-4z M48,108l4,0 0,4 -4,0 0,-4z M52,108l4,0 0,4 -4,0 0,-4z M80,108l4,0 0,4 -4,0 0,-4z M84,108l4,0 0,4 -4,0 0,-4z M92,108l4,0 0,4 -4,0 0,-4z M96,108l4,0 0,4 -4,0 0,-4z M112,108l4,0 0,4 -4,0 0,-4z M116,108l4,0 0,4 -4,0 0,-4z M120,108l4,0 0,4 -4,0 0,-4z M124,108l4,0 0,4 -4,0 0,-4z M0,112l4,0 0,4 -4,0 0,-4z M8,112l4,0 0,4 -4,0 0,-4z M12,112l4,0 0,4 -4,0 0,-4z M16,112l4,0 0,4 -4,0 0,-4z M24,112l4,0 0,4 -4,0 0,-4z M40,112l4,0 0,4 -4,0 0,-4z M44,112l4,0 0,4 -4,0 0,-4z M72,112l4,0 0,4 -4,0 0,-4z M80,112l4,0 0,4 -4,0 0,-4z M84,112l4,0 0,4 -4,0 0,-4z M88,112l4,0 0,4 -4,0 0,-4z M92,112l4,0 0,4 -4,0 0,-4z M96,112l4,0 0,4 -4,0 0,-4z M100,112l4,0 0,4 -4,0 0,-4z M104,112l4,0 0,4 -4,0 0,-4z M108,112l4,0 0,4 -4,0 0,-4z M112,112l4,0 0,4 -4,0 0,-4z M120,112l4,0 0,4 -4,0 0,-4z M124,112l4,0 0,4 -4,0 0,-4z M0,116l4,0 0,4 -4,0 0,-4z M8,116l4,0 0,4 -4,0 0,-4z M12,116l4,0 0,4 -4,0 0,-4z M16,116l4,0 0,4 -4,0 0,-4z M24,116l4,0 0,4 -4,0 0,-4z M32,116l4,0 0,4 -4,0 0,-4z M36,116l4,0 0,4 -4,0 0,-4z M40,116l4,0 0,4 -4,0 0,-4z M48,116l4,0 0,4 -4,0 0,-4z M60,116l4,0 0,4 -4,0 0,-4z M68,116l4,0 0,4 -4,0 0,-4z M80,116l4,0 0,4 -4,0 0,-4z M84,116l4,0 0,4 -4,0 0,-4z M88,116l4,0 0,4 -4,0 0,-4z M96,116l4,0 0,4 -4,0 0,-4z M108,116l4,0 0,4 -4,0 0,-4z M116,116l4,0 0,4 -4,0 0,-4z M128,116l4,0 0,4 -4,0 0,-4z M0,120l4,0 0,4 -4,0 0,-4z M8,120l4,0 0,4 -4,0 0,-4z M12,120l4,0 0,4 -4,0 0,-4z M16,120l4,0 0,4 -4,0 0,-4z M24,120l4,0 0,4 -4,0 0,-4z M32,120l4,0 0,4 -4,0 0,-4z M36,120l4,0 0,4 -4,0 0,-4z M44,120l4,0 0,4 -4,0 0,-4z M48,120l4,0 0,4 -4,0 0,-4z M52,120l4,0 0,4 -4,0 0,-4z M56,120l4,0 0,4 -4,0 0,-4z M60,120l4,0 0,4 -4,0 0,-4z M64,120l4,0 0,4 -4,0 0,-4z M68,120l4,0 0,4 -4,0 0,-4z M80,120l4,0 0,4 -4,0 0,-4z M84,120l4,0 0,4 -4,0 0,-4z M96,120l4,0 0,4 -4,0 0,-4z M104,120l4,0 0,4 -4,0 0,-4z M108,120l4,0 0,4 -4,0 0,-4z M116,120l4,0 0,4 -4,0 0,-4z M120,120l4,0 0,4 -4,0 0,-4z M0,124l4,0 0,4 -4,0 0,-4z M24,124l4,0 0,4 -4,0 0,-4z M40,124l4,0 0,4 -4,0 0,-4z M44,124l4,0 0,4 -4,0 0,-4z M48,124l4,0 0,4 -4,0 0,-4z M52,124l4,0 0,4 -4,0 0,-4z M56,124l4,0 0,4 -4,0 0,-4z M64,124l4,0 0,4 -4,0 0,-4z M68,124l4,0 0,4 -4,0 0,-4z M72,124l4,0 0,4 -4,0 0,-4z M80,124l4,0 0,4 -4,0 0,-4z M88,124l4,0 0,4 -4,0 0,-4z M96,124l4,0 0,4 -4,0 0,-4z M104,124l4,0 0,4 -4,0 0,-4z M108,124l4,0 0,4 -4,0 0,-4z M112,124l4,0 0,4 -4,0 0,-4z M128,124l4,0 0,4 -4,0 0,-4z M0,128l4,0 0,4 -4,0 0,-4z M4,128l4,0 0,4 -4,0 0,-4z M8,128l4,0 0,4 -4,0 0,-4z M12,128l4,0 0,4 -4,0 0,-4z M16,128l4,0 0,4 -4,0 0,-4z M20,128l4,0 0,4 -4,0 0,-4z M24,128l4,0 0,4 -4,0 0,-4z M32,128l4,0 0,4 -4,0 0,-4z M36,128l4,0 0,4 -4,0 0,-4z M52,128l4,0 0,4 -4,0 0,-4z M60,128l4,0 0,4 -4,0 0,-4z M68,128l4,0 0,4 -4,0 0,-4z M72,128l4,0 0,4 -4,0 0,-4z M76,128l4,0 0,4 -4,0 0,-4z M80,128l4,0 0,4 -4,0 0,-4z M84,128l4,0 0,4 -4,0 0,-4z M92,128l4,0 0,4 -4,0 0,-4z M104,128l4,0 0,4 -4,0 0,-4z M112,128l4,0 0,4 -4,0 0,-4z M116,128l4,0 0,4 -4,0 0,-4z M120,128l4,0 0,4 -4,0 0,-4z " stroke="transparent" fill="black"/></svg></div>
+        <div class="qrtxt"><span class="qcode">H2</span><b>Armoire haute 2 · diagnostic</b><span class="qveh">Ambulance type A · mur gauche</span>
+          <ul><li>Tensiomètre automatique</li><li>Oxymètre de pouls</li><li>Thermomètre</li><li>Stéthoscope</li><li>Lecteur de glycémie</li></ul>
+          <span class="qhint">Scannez pour voir le contenu attendu</span></div>
+      </div>
+      <div class="qrcols">
+        <div><h3>Sur chaque rangement</h3><p>Le scan montre ce qui doit s'y trouver, étagère par étagère. Un remplaçant retrouve sa place à chaque matériel sans demander.</p></div>
+        <div><h3>À la prise de poste</h3><p>Le même scan ouvre le contrôle : l'ambulancier coche ce qui est là, signale ce qui manque, et le contrôle est daté avec son nom.</p></div>
+        <div><h3>Pour toute la flotte</h3><p>Une feuille d'étiquettes par ambulance, imprimée en une fois. Si le rangement change, on réimprime : le contenu suit.</p></div>
+        <div class="qrcta"><button class="btn primary" type="button" id="qr-demo-sheet">Voir la feuille d'étiquettes de la démo</button><span class="small muted">Scannez l'exemple ci-contre avec votre téléphone : il ouvre la démo.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+.qrhl{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:32px;align-items:start}
+.qrtag{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;border:2px dashed var(--ink);padding:14px;background:#fff;color:#111}
+.qrimg svg{width:132px;height:132px;display:block}.qrtxt{display:flex;flex-direction:column;gap:3px;font-size:13px}
+.qcode{font:700 22px var(--mono);color:var(--red)}.qveh{font:500 11px var(--mono);color:#555;letter-spacing:.04em}
+.qrtxt ul{margin:4px 0;padding-left:16px}.qhint{font:500 11px var(--mono);color:#555}
+.qrcols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.qrcols h3{margin:0 0 6px}
+.qrcta{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+@media (max-width:860px){.qrhl{grid-template-columns:minmax(0,1fr)}.qrcols{grid-template-columns:minmax(0,1fr)}.qrtag{grid-template-columns:110px minmax(0,1fr)}.qrimg svg{width:110px;height:110px}}
+</style>
+<script>document.addEventListener('click',e=>{if(e.target&&e.target.id==='qr-demo-sheet'&&window.__rxQrSheet)window.__rxQrSheet();});</script>
+
 <section class="s" id="pilote">
   <div class="wrap pilot">
     <div style="display:flex;flex-direction:column;gap:18px">
       <div class="s-head" style="margin:0"><span class="eyebrow">Programme pilote</span><h2>Trois sociétés pilotes, accompagnées de près.</h2>
-        <p>Je reproduis vos ambulances gratuitement, vos équipes testent quelques semaines, et vos retours décident de la suite. Basé dans la Drôme, je peux passer vous voir.</p></div>
+        <p>Je reproduis vos ambulances, vos équipes l'utilisent à la prise de poste, et vos retours décident des prochaines fonctions. Basé dans la Drôme, je peux passer vous voir.</p></div>
       <div class="contact" id="contact"></div>
     </div>
     <div class="plist">
-      <div><b>01 · SEMAINE 1</b><p><strong>Vos ambulances reproduites, offert</strong>Un appel, votre liste de matériel et quelques photos des coffres.</p></div>
+      <div><b>01 · SEMAINE 1</b><p><strong>Vos ambulances reproduites</strong>Un appel, votre liste de matériel et quelques photos des coffres.</p></div>
       <div><b>02 · QUELQUES SEMAINES</b><p><strong>Essai avec vos équipes</strong>À la prise de poste, sans engagement. Vos retours orientent les fonctions.</p></div>
       <div><b>03 · ENSUITE</b><p><strong>Tarif fondateur si vous continuez</strong>Avec, si vous le souhaitez, des modèles 3D de votre propre matériel faits à partir de photos.</p></div>
     </div>
@@ -549,17 +588,19 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
     <div class="s-head"><span class="eyebrow">Questions</span><h2>Les questions qu'on me pose.</h2></div>
     <div class="faq">
       <details><summary>Faut-il installer quelque chose ?</summary><p>Non. L'outil fonctionne dans le navigateur, sur tablette ou ordinateur, sans compte.</p></details>
-      <details><summary>Combien ça coûte ?</summary><p>L'essai pilote est gratuit. Le prix sera fixé avec les entreprises pilotes, qui garderont un tarif fondateur.</p></details>
+      <details><summary>Combien ça coûte ?</summary><p>Un abonnement par ambulance. Le tarif est fixé avec les sociétés pilotes, qui gardent un tarif fondateur.</p></details>
       <details><summary>Où vont nos données ?</summary><p>Nulle part. Il n'y a ni compte, ni serveur, ni base de données : tout reste dans le navigateur de chaque appareil. Aucune donnée sur vos salariés n'est collectée.</p></details>
       <details><summary>Peut-on reproduire exactement nos ambulances ?</summary><p>Oui : nombre de coffres et d'étagères, contenu, et même la photo du vrai coffre au fond de l'emplacement 3D. Chaque ambulance peut avoir son propre rangement.</p></details>
       <details><summary>Les modèles 3D ressemblent-ils à notre matériel ?</summary><p>Ceux de la démo sont des exemples génériques. Pour votre société, je peux créer des modèles fidèles de votre vrai matériel (sacs, DSA, bouteilles, brancard) à partir de simples photos. C'est rapide et peu coûteux.</p></details>
+      <details><summary>D'où vient la liste du matériel ?</summary><p>De l'arrêté du 12 décembre 2017 fixant les caractéristiques et les installations matérielles des véhicules de transports sanitaires, modifié par l'arrêté du 20 avril 2026 (JO du 25 avril 2026). La démo montre une ambulance de type A. Vous pouvez ajouter votre propre matériel et votre propre rangement.</p></details>
+      <details><summary>Les QR codes fonctionnent avec n'importe quel téléphone ?</summary><p>Oui. L'appareil photo du téléphone suffit, sans application à installer. Le QR code ouvre la page de l'ambulance dans le navigateur.</p></details>
       <details><summary>Y a-t-il des données patients ?</summary><p>Non, aucune. L'outil ne connaît que des noms de matériel et d'emplacements.</p></details>
     </div>
   </div>
 </section>
 
 <footer><div class="wrap"><a class="logo" href="#top"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Rangement Express</a><span>Projet indépendant, Drôme · hadrienbasch@gmail.com</span></div></footer>
-<script>window.RX_SITE={presets:["ambui1","ambui2","ambu1"],hero:["ambu1","ambui1"],key:"rangement-express-ambu-v1",base:"https://hbasch.github.io/rangement-express/ambulance/",cap:"coffres ouverts un à un",modes:{depart:{t:"Départ en mission",d:"Une mission tombe. Rassemble tout le matériel nécessaire, au chrono."},find:{t:"Trouve le matériel"},which:{t:"Quel coffre ?"}}}</script>
+<script>window.RX_SITE={presets:["ambu"],hero:["ambu"],key:"rangement-express-ambu-v2",base:"https://hbasch.github.io/rangement-express/ambulance/",cap:"rangements ouverts un à un",modes:{depart:{t:"Départ en mission",d:"Une mission tombe. Rassemble tout le matériel nécessaire, au chrono."},find:{t:"Trouve le matériel"},which:{t:"Quel coffre ?"}}}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
@@ -783,31 +824,31 @@ window.RX_PLATE = {c:'F', t:'AB-123-CD'};
       {code:'AR',name:'Cellule arrière',side:'B',weight:1,shelves:[['Brancard principal'],['Pied à perfusion','Chaise portoir'],['Désinfectant de surface','Gants à usage unique','Sacs DASRI']]}
     ], scenarios:sc}
   };
-  const bodyIn = Object.assign({}, body, {interior:true, accent:'#1f4e79'});
-  Object.assign(window.RX_EXTRA_PRESETS, {
-    ambui1: {label:'Ambulance 1 · cellule', group:'Ambulances', body:Object.assign({}, bodyIn), coffres:[
-      {code:'H1',name:'Armoire haute gauche 1',zone:'G-haut',side:'L',weight:1,shelves:[['Insufflateur manuel adulte','Insufflateur manuel enfant']]},
-      {code:'H2',name:'Armoire haute gauche 2',zone:'G-haut',side:'L',weight:1,shelves:[['Tensiomètre','Oxymètre de pouls']]},
-      {code:'H3',name:'Armoire haute gauche 3',zone:'G-haut',side:'L',weight:1,shelves:[['Kit accouchement','Kit nouveau-né']]},
-      {code:'R1',name:'Rail mural gauche',zone:'G-mur',side:'L',weight:1.4,shelves:[['Sac de premiers secours','DSA','Aspirateur de mucosités']]},
-      {code:'M1',name:'Meuble bas gauche',zone:'G-bas',side:'L',weight:1,shelves:[['Couvertures de survie','Draps à usage unique'],['Sondes d\'aspiration','Gants à usage unique']]},
-      {code:'H4',name:'Armoire haute droite',zone:'D-haut',side:'R',weight:1,shelves:[['Attelles à dépression','Colliers cervicaux']]},
-      {code:'T1',name:'Tiroirs avant',zone:'A-bas',side:'B',weight:1,shelves:[['Désinfectant de surface','Sacs DASRI'],['Extincteur','Lampe torche']]},
-      {code:'O2',name:'Bouteilles d\'oxygène',zone:'AR-G',side:'L',weight:1,shelves:[['Bouteille d\'oxygène 5 L','Manodétendeur']]},
-      {code:'BR',name:'Brancard',zone:'C',side:'B',weight:1,shelves:[['Brancard principal']]}
-    ], scenarios:sc},
-    ambui2: {label:'Ambulance 2 · cellule (autre rangement)', group:'Ambulances', body:Object.assign({}, bodyIn, {cabText:'AMBULANCE 2'}), coffres:[
-      {code:'H1',name:'Armoire haute droite 1',zone:'D-haut',side:'R',weight:1,shelves:[['Kit accouchement','Kit nouveau-né']]},
-      {code:'H2',name:'Armoire haute droite 2',zone:'D-haut',side:'R',weight:1,shelves:[['Insufflateur manuel adulte','Insufflateur manuel enfant']]},
-      {code:'H3',name:'Armoire haute gauche',zone:'G-haut',side:'L',weight:1,shelves:[['Tensiomètre','Oxymètre de pouls']]},
-      {code:'R1',name:'Rail mural gauche',zone:'G-mur',side:'L',weight:1,shelves:[['DSA','Sac de premiers secours']]},
-      {code:'M1',name:'Meuble bas gauche',zone:'G-bas',side:'L',weight:1,shelves:[['Attelles à dépression','Colliers cervicaux'],['Aspirateur de mucosités','Sondes d\'aspiration']]},
-      {code:'A1',name:'Armoire haute avant',zone:'A-haut',side:'B',weight:1,shelves:[['Couvertures de survie','Draps à usage unique']]},
-      {code:'T1',name:'Tiroirs avant',zone:'A-bas',side:'B',weight:1,shelves:[['Gants à usage unique','Désinfectant de surface'],['Sacs DASRI','Lampe torche','Extincteur']]},
-      {code:'O2',name:'Bouteilles d\'oxygène',zone:'AR-G',side:'L',weight:1,shelves:[['Bouteille d\'oxygène 5 L','Manodétendeur']]},
-      {code:'BR',name:'Brancard',zone:'C',side:'B',weight:1,shelves:[['Brancard principal']]}
-    ], scenarios:sc}
-  });
+  const bodyIn = Object.assign({}, body, {interior:true, accent:'#1f4e79', panel:'#e8641e'});
+  /* Ambulance de type A (catégorie C, transport sanitaire) : matériel de l'arrêté du 12 décembre 2017 modifié par l'arrêté du 20 avril 2026 */
+  window.RX_EXTRA_PRESETS.ambu = {label:'Ambulance type A', group:'Ambulances', body:bodyIn, coffres:[
+    {code:'H1',name:'Armoire haute 1 · ventilation',zone:'G-haut',side:'L',weight:1,shelves:[['Insufflateur manuel adulte','Insufflateur manuel pédiatrique'],['Masques haute concentration','Lunettes à oxygène']]},
+    {code:'H2',name:'Armoire haute 2 · diagnostic',zone:'G-haut',side:'L',weight:1,shelves:[['Tensiomètre automatique','Oxymètre de pouls','Thermomètre'],['Stéthoscope','Lecteur de glycémie']]},
+    {code:'H3',name:'Armoire haute 3 · kits',zone:'G-haut',side:'L',weight:1,shelves:[['Kit accouchement d\'urgence','Kit traitement des plaies'],['Kit AEV','Couverture bactériostatique']]},
+    {code:'P1',name:'Panneau de pochettes',zone:'G-mur',side:'L',weight:1,shelves:[['Compresses stériles','Pansements américains','Gants stériles','Sacs vomitoires','Haricots']]},
+    {code:'M1',name:'Meuble bas gauche',zone:'G-bas',side:'L',weight:1,shelves:[['Coussin de tête','Draps à usage unique','Matelas de transfert'],['Bassin','Urinal']]},
+    {code:'H4',name:'Armoire haute droite · protection',zone:'D-haut',side:'R',weight:1,shelves:[['Masques FFP2','Tenues de protection'],['Gilets rétroréfléchissants']]},
+    {code:'F1',name:'Mur droit · appareils fixés',zone:'D-mur',side:'R',weight:1,shelves:[['Tensiomètre manuel','Défibrillateur (DSA)','Aspirateur de mucosités']]},
+    {code:'A1',name:'Armoire avant · hygiène',zone:'A-haut',side:'B',weight:1,shelves:[['Gants non stériles','Kit nettoyage et désinfection'],['Sacs DASRI','Sacs DAOM']]},
+    {code:'A2',name:'Rangement avant bas · sécurité',zone:'A-bas',side:'B',weight:1,shelves:[['Extincteur à poudre','Triangle de présignalisation'],['Coupe-ceinture','Support soluté']]},
+    {code:'O2',name:'Oxygène portable',zone:'AR-G',side:'L',weight:1,shelves:[['Bouteille d\'oxygène 400 L','Détendeur débitlitre']]},
+    {code:'R1',name:'Rangement arrière droit · immobilisation',zone:'AR-D',side:'R',weight:1,shelves:[['Chaise portoir','Matelas immobilisateur à dépression'],['Attelles à dépression','Collier cervical adulte','Collier cervical pédiatrique']]},
+    {code:'BR',name:'Brancard principal',zone:'C',side:'B',weight:1,shelves:[['Brancard principal']]}
+  ], scenarios:[
+    'Transport | Patient sous oxygène vers l\'hôpital | Bouteille d\'oxygène 400 L, Détendeur débitlitre, Lunettes à oxygène, Oxymètre de pouls',
+    'Transport | Sortie d\'hôpital, 3e étage sans ascenseur | Chaise portoir, Couverture bactériostatique',
+    'Urgence | Malaise en attendant le SMUR | Défibrillateur (DSA), Insufflateur manuel adulte, Masques haute concentration, Aspirateur de mucosités',
+    'Urgence | Chute d\'une personne âgée, suspicion de fracture | Matelas immobilisateur à dépression, Attelles à dépression, Collier cervical adulte',
+    'Urgence | Accouchement imminent pendant le transport | Kit accouchement d\'urgence, Draps à usage unique, Couverture bactériostatique',
+    'Prise en charge | Contrôle des constantes au départ | Tensiomètre automatique, Oxymètre de pouls, Thermomètre, Lecteur de glycémie',
+    'Fin de transport | Désinfection après un patient contagieux | Kit nettoyage et désinfection, Gants non stériles, Sacs DASRI, Masques FFP2'
+  ]};
+  window.RX_ALIAS = Object.assign(window.RX_ALIAS || {}, {"bouteille d'oxygène 400 l":'Bouteilles ARI de réserve', 'détendeur débitlitre':'Raccords', 'tensiomètre manuel':'Tensiomètre', 'support soluté':'Pied à perfusion'});
 })();
 
 ;
@@ -888,7 +929,7 @@ function shadowTexF(){ const [c, x] = cv(256, 128); x.filter = 'blur(14px)'; x.f
 function letterTex(text, light){ const [c, x] = cv(1024, 128); let fs = 96; x.font = `700 ${fs}px ${DF}`;
   while (x.measureText(text.toUpperCase()).width > 960 && fs > 30) { fs -= 4; x.font = `700 ${fs}px ${DF}`; }
   x.fillStyle = light ? 'rgba(20,22,26,0.9)' : 'rgba(255,255,255,0.96)'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(text.toUpperCase(), 512, 66); return tex(c); }
-function doorTex(code, w, h, doorHex, style){
+function doorTex(code, w, h, doorHex, style, mid){
   const cw = 512, ch = Math.round(512*Math.min(2.6, Math.max(0.45, h/w))); const [c, x] = cv(cw, ch);
   const light = lum(doorHex) > 0.45;
   if (style === 'none') { let fs = Math.round(ch*0.62); x.font = `700 ${fs}px ${DF}`;
@@ -897,6 +938,8 @@ function doorTex(code, w, h, doorHex, style){
   if (style === 'rideau') { for (let y = 0; y < ch; y += 14) { x.fillStyle = 'rgba(0,0,0,0.18)'; x.fillRect(0, y, cw, 2); x.fillStyle = 'rgba(255,255,255,0.3)'; x.fillRect(0, y + 2, cw, 1); } }
   const fs = Math.round(Math.min(cw, ch)*0.13);
   x.font = `700 ${fs}px ${DF}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.shadowColor = 'rgba(0,0,0,0.3)'; x.shadowBlur = 3;
+  if (mid) { x.shadowBlur = 0; let f2 = Math.round(Math.min(ch*0.34, cw*0.2)); x.font = `700 ${f2}px ${DF}`; const tw = x.measureText(code).width + f2*0.8, th = f2*1.35;
+    rr(x, cw/2 - tw/2, ch/2 - th/2, tw, th, f2*0.18); x.fillStyle = 'rgba(20,24,30,0.88)'; x.fill(); x.fillStyle = '#ffffff'; x.fillText(code, cw/2, ch/2 + f2*0.04); return tex(c); }
   x.fillStyle = light ? 'rgba(22,24,28,0.9)' : 'rgba(255,255,255,0.95)'; x.fillText(code, cw/2, ch*0.1);
   return tex(c);
 }
@@ -1001,7 +1044,7 @@ function createEngine(opts){
     });
     const doorMat = mats.door.clone(), leaves = [];
     const chev = opt.chevrons && style !== 'rideau';
-    const codeTex = chev ? chevronDoorTex(c.code || '?', w, h) : doorTex(c.code || '?', w, h, E.v.body.door || E.v.body.color, style);
+    const codeTex = chev ? chevronDoorTex(c.code || '?', w, h) : doorTex(c.code || '?', w, h, E.v.body.door || E.v.body.color, style, !!opt.interiorDoor);
     const chromeM = mats.chrome, recess = mats.seal;
     const mkLeaf = (lw, sign, hingeX, withCode) => {
       const pivot = new THREE.Group(); pivot.userData.dynamic = true; pivot.position.set(hingeX, 0, 0.012); g.add(pivot);
@@ -1101,10 +1144,10 @@ function createEngine(opts){
     const add = (geo, mat, x, y, z, parent = truck, shadow = true) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = shadow; parent.add(m); return m; };
     // --- vue intérieure de la cellule sanitaire (ambulance, VSAV) : rangements génériques, caméra depuis les portes arrière
     E.interior = !!b.interior;
-    if (controls) { controls.minAzimuthAngle = -Infinity; controls.maxAzimuthAngle = Infinity; controls.minPolarAngle = 0; controls.maxPolarAngle = Math.PI*0.47; controls.minDistance = 1.5; controls.maxDistance = 26; }
-    camera.fov = E.interior ? 62 : (opts.fov || 36); camera.updateProjectionMatrix();
+    E.stations = null; if (controls) { controls.enableRotate = true; controls.enablePan = true; controls.minAzimuthAngle = -Infinity; controls.maxAzimuthAngle = Infinity; controls.minPolarAngle = 0; controls.maxPolarAngle = Math.PI*0.47; controls.minDistance = 1.5; controls.maxDistance = 26; }
+    camera.fov = E.interior ? 68 : (opts.fov || 36); camera.updateProjectionMatrix();
     if (E.interior) {
-      const L = 3.6, Wc = 2.0, H = 1.95, x0 = -L/2;
+      const L = 4.4, Wc = 2.6, H = 2.15, x0 = -L/2;
       const wallM = std('#eef1f3', 0.6, 0.02, {side:THREE.DoubleSide}), floorM = std('#5b6168', 0.85, 0.05), ceilM = std('#f6f7f8', 0.5, 0, {side:THREE.DoubleSide});
       const blueM = std(b.accent || '#1f4e79', 0.4, 0.1), railM = std('#c4c9ce', 0.3, 0.9), seatM = std('#2b2f34', 0.7, 0.05), ledM = std('#ffffff', 0.2, 0, {emissive:col('#eaf2ff'), emissiveIntensity:1.4});
       const wall = (w, h, x, y, z, ry, m = wallM) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m); p.position.set(x, y, z); p.rotation.y = ry; p.receiveShadow = true; truck.add(p); return p; };
@@ -1114,32 +1157,34 @@ function createEngine(opts){
       // cadre des portes arrière, bande bleue, rail central au sol, spots au plafond
       add(new THREE.BoxGeometry(0.06, H, 0.12), railM, x0, H/2, Wc/2 - 0.06, truck, false); add(new THREE.BoxGeometry(0.06, H, 0.12), railM, x0, H/2, -Wc/2 + 0.06, truck, false);
       add(new THREE.BoxGeometry(L, 0.06, 0.012), blueM, 0, 1.4, Wc/2 - 0.006, truck, false); add(new THREE.BoxGeometry(L, 0.06, 0.012), blueM, 0, 1.4, -Wc/2 + 0.006, truck, false);
-      add(new THREE.BoxGeometry(L - 0.4, 0.03, 0.22), railM, 0.1, 0.017, 0.15, truck, false);
-      [-1.1, 0, 1.1].forEach(x => [0.45, -0.45].forEach(z => { const s = add(new THREE.CylinderGeometry(0.05, 0.05, 0.012, 16), ledM, x, H - 0.006, z, truck, false); }));
+      add(new THREE.BoxGeometry(L - 0.5, 0.03, 0.22), railM, 0.1, 0.017, -0.3, truck, false); add(new THREE.BoxGeometry(L - 0.6, 0.12, 0.8), std('#dfe3e6', 0.6, 0.05), 0.15, 0.06, -0.3, truck, false);
+      [-1.4, 0, 1.4].forEach(x => [0.55, -0.55].forEach(z => { const s = add(new THREE.CylinderGeometry(0.05, 0.05, 0.012, 16), ledM, x, H - 0.006, z, truck, false); }));
       const pl1 = new THREE.PointLight(0xffffff, 0.9, 6, 1.6); pl1.position.set(-0.6, H - 0.15, 0); truck.add(pl1);
       const pl2 = new THREE.PointLight(0xffffff, 0.7, 6, 1.6); pl2.position.set(1.0, H - 0.15, 0); truck.add(pl2);
       // siège du côté droit (décor)
-      const seat = new THREE.Group(); seat.position.set(0.55, 0, Wc/2 - 0.32); truck.add(seat);
+      const seat = new THREE.Group(); seat.position.set(1.3, 0, Wc/2 - 0.34); truck.add(seat);
       [[0.5, 0.1, 0.5, 0, 0.48, 0], [0.5, 0.65, 0.1, 0, 0.85, -0.22], [0.08, 0.45, 0.4, 0.2, 0.24, -0.02], [0.08, 0.45, 0.4, -0.2, 0.24, -0.02]].forEach(([w, h, d, x, y, z]) => { const m = new THREE.Mesh(RBox(w, h, d, 0.03), seatM); m.position.set(x, y, z); seat.add(m); });
       seat.rotation.y = Math.PI;
       // zones de rangement : chaque coffre a une zone (G = mur gauche, D = mur droit, A = avant, C = centre / sol)
       const Z = {
-        'G-haut': {wall:'G', y:[1.47, 1.9], depth:0.34}, 'G-mur': {wall:'G', y:[0.98, 1.38], depth:0.16, open:true}, 'G-bas': {wall:'G', y:[0.1, 0.92], depth:0.45},
-        'D-haut': {wall:'D', y:[1.47, 1.9], depth:0.34}, 'D-mur': {wall:'D', y:[0.98, 1.38], depth:0.16, open:true}, 'D-bas': {wall:'D', y:[0.1, 0.92], depth:0.42},
-        'A-haut': {wall:'A', y:[1.3, 1.9], depth:0.38}, 'A-bas': {wall:'A', y:[0.1, 1.05], depth:0.45}, 'C': {wall:'C', y:[0.02, 0.98], depth:2.1, open:true},
-        'AR-G': {wall:'R', y:[0.02, 1.35], depth:0.3, open:true}
+        'G-haut': {wall:'G', y:[1.62, 2.08], depth:0.38, span:[-L/2 + 0.12, L/2 - 0.42]}, 'G-mur': {wall:'G', y:[0.98, 1.52], depth:0.14, open:true, span:[x0 + 0.95, L/2 - 0.42]}, 'G-bas': {wall:'G', y:[0.1, 0.9], depth:0.5, span:[x0 + 0.95, L/2 - 0.52]},
+        'D-haut': {wall:'D', y:[1.62, 2.08], depth:0.38, span:[-L/2 + 0.42, L/2 - 0.12]}, 'D-mur': {wall:'D', y:[1.22, 1.56], depth:0.2, open:true, span:[-L/2 + 0.42, -x0 - 1.12]}, 'D-bas': {wall:'D', y:[0.1, 0.9], depth:0.45, span:[-L/2 + 0.52, -x0 - 1.12]},
+        'A-haut': {wall:'A', y:[1.4, 2.08], depth:0.4}, 'A-bas': {wall:'A', y:[0.1, 1.15], depth:0.5}, 'C': {wall:'C', y:[0.02, 0.95], depth:2.2, open:true},
+        'AR-G': {wall:'R', y:[0.02, 1.3], depth:0.32, open:true}, 'AR-D': {wall:'RD', y:[0.02, 1.35], depth:0.45, open:true}
       };
       const W2 = {
         G: {pos:(d) => [0, 0, -Wc/2 + d], rot:0, span:[-L/2 + 0.12, L/2 - 0.12]},
         D: {pos:(d) => [0, 0, Wc/2 - d], rot:Math.PI, span:[-L/2 + 0.12, L/2 - 0.12]},
         A: {pos:(d) => [L/2 - d, 0, 0], rot:-Math.PI/2, span:[-Wc/2 + 0.08, Wc/2 - 0.08]},
-        C: {pos:() => [x0 + 0.35, 0, 0.15], rot:-Math.PI/2, span:[-0.33, 0.33]},
-        R: {pos:() => [x0 + 0.55, 0, -Wc/2 + 0.32], rot:0, span:[-0.3, 0.3]}
+        C: {pos:() => [x0 + 0.55, 0, -0.3], rot:-Math.PI/2, span:[-0.36, 0.36]},
+        R: {pos:() => [x0 + 0.5, 0, -Wc/2 + 0.34], rot:0, span:[-0.32, 0.32]},
+        RD: {pos:() => [x0 + 0.62, 0, Wc/2 - 0.47], rot:Math.PI, span:[-0.42, 0.42]}
       };
       const zoneOf = c => Z[c.zone] ? c.zone : ({L:'G-haut', R:'D-haut', B:'A-bas'}[c.side] || 'G-haut');
       Object.keys(Z).forEach(zk => {
-        const z = Z[zk], wdef = W2[z.wall], list = v.coffres.filter(c => zoneOf(c) === zk); if (!list.length) return;
+        const z = Z[zk], wdef = Object.assign({}, W2[z.wall], z.span ? {span:z.span} : {}), list = v.coffres.filter(c => zoneOf(c) === zk); if (!list.length) return;
         const frame = new THREE.Group(); frame.position.set(...wdef.pos(z.depth)); frame.rotation.y = wdef.rot; truck.add(frame);
+        if (zk === 'G-mur') { const len = wdef.span[1] - wdef.span[0], pan = new THREE.Mesh(new THREE.BoxGeometry(len, z.y[1] - z.y[0] + 0.06, 0.02), std(b.panel || '#e8641e', 0.8, 0)); pan.position.set((wdef.span[0] + wdef.span[1])/2, (z.y[0] + z.y[1])/2, -z.depth + 0.012); frame.add(pan); }
         if (zk.endsWith('-mur')) { const len = wdef.span[1] - wdef.span[0], bar = new THREE.Mesh(new THREE.BoxGeometry(len, 0.035, 0.035), railM); bar.position.set((wdef.span[0] + wdef.span[1])/2, z.y[1] - 0.02, -0.03); frame.add(bar); [0.1, 0.5, 0.9].forEach(f => { const k = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.06, 0.06), railM); k.position.set(wdef.span[0] + len*f, z.y[1] - 0.02, -0.06); frame.add(k); }); }
         const sum = list.reduce((a, c) => a + (+c.weight || 1), 0) || 1, gap = 0.04, avail = (wdef.span[1] - wdef.span[0]) - gap*Math.max(0, list.length - 1);
         let u = wdef.span[0];
@@ -1151,7 +1196,14 @@ function createEngine(opts){
       mergeStatic();
       truck.traverse(o => { if (o.isMesh && o.material && (o.material.map || o.material.transparent)) { o.material.polygonOffset = true; o.material.polygonOffsetFactor = -2; o.material.polygonOffsetUnits = -4; } });
       E.totalL = L; E.centerX = 0; E.markDoors(); key.target.position.set(0, 1, 0);
-      if (controls) { controls.minAzimuthAngle = -Math.PI/2 - 0.75; controls.maxAzimuthAngle = -Math.PI/2 + 0.75; controls.minPolarAngle = Math.PI*0.3; controls.maxPolarAngle = Math.PI*0.62; controls.minDistance = 0.4; controls.maxDistance = 3.4; }
+      E.stations = {
+        arriere: {pos:new THREE.Vector3(x0 - 1.0, 1.65, 0), target:new THREE.Vector3(0.6, 1.15, 0)},
+        gauche: {pos:new THREE.Vector3(-0.15, 1.32, 1.02), target:new THREE.Vector3(-0.15, 1.15, -Wc/2)},
+        droite: {pos:new THREE.Vector3(-0.55, 1.32, -0.7), target:new THREE.Vector3(-0.55, 1.15, Wc/2)},
+        avant: {pos:new THREE.Vector3(-0.9, 1.55, 0), target:new THREE.Vector3(L/2, 1.2, 0)}
+      };
+      E.cell = {L, Wc, H};
+      if (controls) { controls.enableRotate = false; controls.enablePan = false; controls.minDistance = 0.35; controls.maxDistance = 4.2; }
       return;
     }
 
@@ -1383,14 +1435,16 @@ function createEngine(opts){
   E.flash = (mesh, hex) => { if (mesh) flashGroup(mesh, hex, 700); };
   E.flashDoor = (id, hex) => { const o = E.objs[id]; if (!o) return; o.doorMat.emissive = col(hex); o.doorMat.emissiveIntensity = 0.6; setTimeout(E.markDoors, 650); };
   let camGoal = null;
-  E.overviewPose = () => { if (E.interior) { const a = E.aspect || 1.6; return {pos:new THREE.Vector3(-(E.totalL || 3.6)/2 - (a < 1 ? 1.6 : 0.9), 1.55, 0), target:new THREE.Vector3(0.6, 1.05, 0)}; }
+  E.overviewPose = () => { if (E.interior && E.stations) { const a = E.aspect || 1.6, st = E.stations.arriere; return {pos:st.pos.clone().add(new THREE.Vector3(a < 1 ? -0.9 : 0, 0, 0)), target:st.target.clone()}; }
     const L = (E.totalL || 6)*0.92, a = E.aspect || 1.6, k = a < 1 ? 1.45/a*0.75 : 1;
     return {pos:new THREE.Vector3(-L*0.95*k, 3.7*Math.min(k, 1.3), L*1.15*k), target:new THREE.Vector3(0, 1.5, 0)}; };
   E.overview = () => { camGoal = E.overviewPose(); };
+  E.goStation = k => { if (E.stations && E.stations[k]) camGoal = {pos:E.stations[k].pos.clone(), target:E.stations[k].target.clone()}; };
   E.coffrePose = (id, distMul = 1) => { const o = E.objs[id]; if (!o) return null;
     const p = new THREE.Vector3(), q = new THREE.Quaternion(); o.g.getWorldPosition(p); o.g.getWorldQuaternion(q);
     const nrm = new THREE.Vector3(0, 0, 1).applyQuaternion(q), a = E.aspect || 1.6;
-    if (E.interior) { const cam = new THREE.Vector3(-(E.totalL || 3.6)/2 + 0.25, 1.5, 0), tgt = p.clone(); tgt.y = Math.min(Math.max(tgt.y, 0.5), 1.6); const dir = tgt.clone().sub(cam).normalize(); return {target:tgt, pos:cam.clone().add(dir.multiplyScalar(Math.max(0, cam.distanceTo(tgt) - 1.25*distMul)))}; }
+    if (E.interior) { const C = E.cell || {L:4.4, Wc:2.6}, tgt = p.clone(), d = 1.45*distMul, pos = p.clone().add(nrm.clone().setY(0).normalize().multiplyScalar(d));
+      pos.y = Math.max(1.35, Math.min(1.7, tgt.y + 0.35)); pos.z = Math.max(-C.Wc/2 + 0.3, Math.min(C.Wc/2 - 0.3, pos.z)); pos.x = Math.max(-C.L/2 - 1.2, Math.min(C.L/2 - 0.35, pos.x)); return {target:tgt, pos}; }
     const dist = Math.max(2.3, Math.max(o.w, o.h)*2 + 0.8)*distMul*(a < 1 ? 1.5 : 1);
     return {target:p.clone(), pos:p.clone().add(nrm.multiplyScalar(dist)).add(new THREE.Vector3(0, 0.5, 0))}; };
   E.focusCoffre = id => { const g = E.coffrePose(id); if (g) camGoal = g; };
@@ -1452,7 +1506,7 @@ async function packVehicle(v, withScen = true){
   const pk = (v.preset && v.preset !== 'shared') ? v.preset : (v.basePreset || ''), bb = (PRESETS[pk] || {}).body || {}, body = {};
   Object.keys(v.body || {}).forEach(k => { if (v.body[k] !== bb[k]) body[k] = v.body[k]; });
   const o = {n: v.name || '', p: pk, b: body,
-    c: v.coffres.map(c => [c.code, c.name, c.side, +(+c.weight || 1).toFixed(2), c.shelves])};
+    c: v.coffres.map(c => c.zone ? [c.code, c.name, c.side, +(+c.weight || 1).toFixed(2), c.shelves, c.zone] : [c.code, c.name, c.side, +(+c.weight || 1).toFixed(2), c.shelves])};
   if (withScen && v.scenarios) o.s = v.scenarios;
   const raw = new TextEncoder().encode(JSON.stringify(o));
   try { if (window.CompressionStream) return 'z' + b64u(await streamBytes(raw, CompressionStream)); } catch (e) {}
@@ -1462,7 +1516,7 @@ async function unpackVehicle(str){
   let bytes = unb64u(str.slice(1));
   if (str[0] === 'z') bytes = await streamBytes(bytes, DecompressionStream);
   const o = JSON.parse(new TextDecoder().decode(bytes));
-  return {name: o.n || '', basePreset: o.p || '', body: o.b, scenarios: o.s, coffres: o.c.map(([code, name, side, weight, shelves], i) => ({id: 'q' + i + code, code, name, side, weight, shelves}))};
+  return {name: o.n || '', basePreset: o.p || '', body: o.b, scenarios: o.s, coffres: o.c.map(([code, name, side, weight, shelves, zone], i) => Object.assign({id: 'q' + i + code, code, name, side, weight, shelves}, zone ? {zone} : {}))};
 }
 window.RX = {createEngine, PRESETS, uid, loadAssets, packVehicle, unpackVehicle};
 })();
@@ -1484,6 +1538,7 @@ const KEY = SITE.key || 'rangement-express-v3';
 let store = {current:ALLOW[0], vehicles:{}, stats:{}, bestTotal:{}, sound:false, labels:true};
 try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.vehicles) store = Object.assign(store, s);
   else { const o = JSON.parse(localStorage.getItem('rangement-express-v2')); if (o && o.vehicles) Object.assign(store, {vehicles:o.vehicles, stats:o.stats || {}, bestTotal:o.bestTotal || {}}); } } catch(e) {}
+if (window.RX_START_PRESET && PRESETS[window.RX_START_PRESET] && ALLOW.includes(window.RX_START_PRESET)) store.current = window.RX_START_PRESET;
 if (window.RX_SHARED) { const sv = window.RX_SHARED, base = RX.PRESETS[sv.basePreset] || RX.PRESETS[ALLOW[0]];
   PRESETS.shared = {label: sv.name || 'Engin partagé', group: 'Partagé', body: Object.assign({}, base.body, sv.body), coffres: sv.coffres, scenarios: sv.scenarios || (base.scenarios || []).slice()};
   store.current = 'shared'; store.vehicles.shared = JSON.parse(JSON.stringify(Object.assign({}, sv, {scenarios: PRESETS.shared.scenarios}))); }
@@ -1513,6 +1568,14 @@ const objs = () => E.objs;
 const build = () => { E.build(state.v); applyLabels(); paintCallouts(); paintTop(); };
 
 $('#d-view').addEventListener('click', () => E.overview());
+/* vues fixes à l'intérieur de la cellule : un clic pour se placer face à un mur */
+const stBox = document.createElement('div'); stBox.className = 'd-stations'; stBox.setAttribute('role', 'group'); stBox.setAttribute('aria-label', 'Se placer');
+stBox.innerHTML = '<span class="st-l">Se placer</span>' + [['arriere', 'Arrière'], ['gauche', 'Mur gauche'], ['droite', 'Mur droit'], ['avant', 'Avant']].map(([k, t]) => `<button data-station="${k}" id="d-st-${k}" aria-pressed="${k === 'arriere'}">${t}</button>`).join('');
+const stView = root.querySelector('.d-view'); if (stView) stView.appendChild(stBox);
+const markSt = k => stBox.querySelectorAll('[data-station]').forEach(x => x.setAttribute('aria-pressed', x.dataset.station === k ? 'true' : 'false'));
+{ const _ov = E.overview, _fc = E.focusCoffre; E.overview = (...x) => { markSt('arriere'); return _ov(...x); }; E.focusCoffre = (...x) => { markSt(''); return _fc(...x); }; }
+stBox.addEventListener('click', e => { const b = e.target.closest('[data-station]'); if (b) { E.goStation(b.dataset.station); markSt(b.dataset.station); } });
+const paintStations = () => { stBox.hidden = !E.stations; root.classList.toggle('is-interior', !!E.stations); };
 $('#d-zin').addEventListener('click', () => E.zoom(0.75));
 $('#d-zout').addEventListener('click', () => E.zoom(1.33));
 $('#d-labels').addEventListener('click', () => { if (state.mode === 'train' && game.status !== 'idle') return; store.labels = !store.labels; persist(); applyLabels(); });
@@ -1524,7 +1587,7 @@ canvas.addEventListener('pointerup', e => {
   const hit = E.pick(e); if (!hit) return;
   if (state.mode === 'train') { if (game.status === 'running') onGameClick(hit); return; }
   if (state.mode === 'edit') { selectCoffre(hit.coffreId); return; }
-  if (hit.kind === 'door') { const o = objs()[hit.coffreId]; E.setOpen(hit.coffreId, o.target === 0); beep('tick'); }
+  if (hit.kind === 'door') { const o = objs()[hit.coffreId], opening = o.target === 0; E.setOpen(hit.coffreId, opening); if (opening && E.interior) E.focusCoffre(hit.coffreId); beep('tick'); }
 });
 const tip = $('.d-tip'); let hoverEv = null;
 canvas.addEventListener('pointermove', e => hoverEv = e);
@@ -1596,10 +1659,10 @@ function fail(msg){ game.penalty += 2; game.errors++; game.msg = msg + ' (+2 s)'
 function onGameClick(hit){
   const tgt = game.list[game.i];
   if (game.type === 'find') {
-    if (hit.kind === 'door') { E.setOpen(hit.coffreId, objs()[hit.coffreId].target === 0); beep('tick'); return; }
+    if (hit.kind === 'door') { const op = objs()[hit.coffreId].target === 0; E.setOpen(hit.coffreId, op); if (op && E.interior) E.focusCoffre(hit.coffreId); beep('tick'); return; }
     if (hit.name === tgt.name) success(hit.main); else { E.flash(hit.main, BAD); fail(`Non, ça c'est « ${hit.name} »`); }
   } else if (game.type === 'depart') {
-    if (hit.kind === 'door') { E.setOpen(hit.coffreId, objs()[hit.coffreId].target === 0); beep('tick'); return; }
+    if (hit.kind === 'door') { const op = objs()[hit.coffreId].target === 0; E.setOpen(hit.coffreId, op); if (op && E.interior) E.focusCoffre(hit.coffreId); beep('tick'); return; }
     if (game.got.has(hit.name)) return;
     if (tgt.items.some(i => i.name === hit.name)) { game.got.add(hit.name); E.flash(hit.main, OK); beep('tick'); game.hintId = null; E.markDoors();
       if (game.got.size >= tgt.items.length) success(null); else { game.msg = `${hit.name} : pris`; game.msgKind = 'ok'; renderHud(); } }
@@ -1774,7 +1837,7 @@ function renderPanel(){
     const qrCard = qc ? `<div class="qrcard"><span class="lbl">Coffre scanné</span><h3 class="ph">${esc(qc.code)} · ${esc(qc.name)}</h3>
       ${qc.shelves.map((r, i) => `<div class="qrrow"><span>Étagère ${i + 1}</span><b>${r.map(esc).join(' · ') || 'vide'}</b></div>`).join('')}
       <button class="btn" data-action="qrclose" id="d-qrclose">Voir toute l'ambulance</button></div>` : '';
-    panel.innerHTML = qrCard + `<div><h3 class="ph">${esc(vName())}</h3><p class="muted small">Ouvre les coffres, survole les objets, mémorise. Clique un coffre de la liste pour t'en approcher.</p></div>
+    panel.innerHTML = qrCard + `<div><h3 class="ph">${esc(vName())}</h3><p class="muted small">Ouvre les rangements, survole le matériel, mémorise. Clique un rangement de la liste pour t'en approcher.</p></div>
       <div class="mastery"><div class="ring" style="--v:${m}"><span>${m}%</span></div><div><b>Maîtrise du véhicule</b><p class="small muted">${n} objets · justesse au premier essai et vitesse.</p></div></div>
       <div class="row"><button class="btn" data-action="openall" id="d-openall">Tout ouvrir</button><button class="btn" data-action="closeall" id="d-closeall">Tout fermer</button><button class="btn primary" data-action="go-train" id="d-go-train">S'entraîner</button></div>
       <div><h4>Inventaire</h4>${sortedCoffres().map(c => coffreRow(c, true)).join('')}
@@ -1947,7 +2010,7 @@ const thumbOf = k => { const b = (PRESETS[k] && PRESETS[k].body) || {}; return b
 function paintCards(){ const box = root.querySelector('#d-cards'); if (!box) return;
   box.innerHTML = Object.entries(PRESETS).map(([k, p]) => `<button class="vcard" data-preset="${k}" aria-pressed="${k === store.current}" id="d-card-${k}">${thumbOf(k)}<span>${esc(store.vehicles[k] && store.vehicles[k].name || p.label)}<small>${esc(p.group || '')} · ${(store.vehicles[k] || p).coffres.length} coffres</small></span></button>`).join(''); }
 root.querySelector('#d-cards').addEventListener('click', e => { const b = e.target.closest('[data-preset]'); if (b && b.dataset.preset !== store.current) loadPreset(b.dataset.preset); });
-function paintTop(){ const n = root.querySelector('#d-vname'); if (n) n.textContent = vName(); const cn = root.querySelector('#d-card-' + store.current + ' span'); if (cn && cn.firstChild) cn.firstChild.textContent = vName();
+function paintTop(){ paintStations(); const n = root.querySelector('#d-vname'); if (n) n.textContent = vName(); const cn = root.querySelector('#d-card-' + store.current + ' span'); if (cn && cn.firstChild) cn.firstChild.textContent = vName();
   const m = vehicleMastery(), bar = root.querySelector('#d-chip-bar'), val = root.querySelector('#d-chip-v'); if (bar) bar.style.width = m + '%'; if (val) val.textContent = m + ' %'; }
 const coBox = root.querySelector('.d-callouts'); let coEls = {};
 const showCallouts = () => state.mode !== 'train';
@@ -1972,11 +2035,13 @@ function moveCallouts(){ if (!showCallouts()) return; const r = viewport.getBoun
     const dot = el.querySelector('.dot'); dot.style.top = len + 'px'; dot.style.left = dx + 'px';
     const ln = el.querySelector('.ln'); ln.style.top = '0px'; ln.style.height = len + 'px'; ln.style.left = dx + 'px'; } }
 /* ---------- feuille de QR codes imprimable ---------- */
+window.__rxQrSheet = () => openQrSheet();
 async function openQrSheet(){
   if (typeof qrcode !== 'function') { const m = $('#d-share-msg'); if (m) m.textContent = 'Le générateur de QR codes n\'a pas pu se charger.'; return; }
   const payload = await RX.packVehicle(state.v, false), base = pageBase();
   let ov = document.getElementById('qr-sheet'); if (!ov) { ov = document.createElement('div'); ov.id = 'qr-sheet'; ov.className = 'qr-sheet'; document.body.appendChild(ov); }
-  const cards = sortedCoffres().map(c => { const q = qrcode(0, 'L'); q.addData(base + '#q=' + payload + '&c=' + encodeURIComponent(c.code)); q.make();
+  const sig = v => JSON.stringify((v.coffres || []).map(c => [c.code, c.name, c.zone || '', c.shelves])), pre = PRESETS[store.current], short = store.current !== 'shared' && pre && sig(pre) === sig(state.v);
+  const cards = sortedCoffres().map(c => { const q = qrcode(0, short ? 'M' : 'L'); q.addData(short ? base + '#p=' + store.current + '&c=' + encodeURIComponent(c.code) : base + '#q=' + payload + '&c=' + encodeURIComponent(c.code)); q.make();
     const its = [...new Set(c.shelves.flat().filter(Boolean))];
     return `<div class="qr-card"><div class="qr-img">${q.createSvgTag({cellSize: 3, margin: 2, scalable: true})}</div>
       <div class="qr-txt"><span class="qr-code">${esc(c.code)}</span><b>${esc(c.name)}</b><span class="qr-veh">${esc(vName())} · ${SIDE[c.side]}</span>
@@ -2023,7 +2088,7 @@ let script = [];
 const fmt = s => s.toFixed(1).replace('.', ',') + ' s';
 function loadHero(k){
   const v = JSON.parse(JSON.stringify(RX.PRESETS[k])); v.preset = k; H.build(v); H.beaconsOn = !!v.body.beacons;
-  const visible = v.coffres.filter(c => c.side !== 'R');
+  const visible = v.body.interior ? v.coffres.filter(c => c.zone !== 'C') : v.coffres.filter(c => c.side !== 'R');
   script = [];
   visible.forEach((c, i) => script.push({at:1 + i*1.3, open:c.id}));
   const pick = visible.slice(0, 2).map(c => ({cid:c.id, name:c.shelves.flat()[1] || c.shelves.flat()[0]}));
@@ -2041,6 +2106,8 @@ function heroTick(dt){
     if (s.found) { const o = H.objs[s.found.cid]; const d = o && o.items.find(x => x.name === s.found.name); if (d) H.flash(d.main, '#3ecf7f'); hcOk.classList.add('on'); hcT.textContent = fmt(askT); ask = null; } }
   if (ask) { askT += dt; hcT.textContent = fmt(askT); }
   if (cycleT > 13) { si = (si + 1) % seq.length; loadHero(seq[si]); }
+  if (H.interior && H.stations) { const s = H.stations.arriere, w = Math.sin(cycleT/13*Math.PI*2);
+    H.camera.position.set(s.pos.x + 0.5, s.pos.y - 0.05, s.pos.z + w*0.3); H.camera.lookAt(s.target.x, s.target.y, s.target.z - w*0.35); return; }
   const L = H.totalL || 6, a = H.aspect || 1.6, narrow = a < 1.05;
   const phi = phi0 - 0.5*Math.sin(Math.min(1, cycleT/13)*Math.PI*0.9);
   const R = (L*1.25 + 3.2)*(narrow ? 1.55 : 1), y = narrow ? 3.6 : 3.0;
@@ -2066,9 +2133,10 @@ function initDemo(){
   engines.push({E:D, active:() => demoVisible && !document.hidden, tick:dt => demo.frame()});
 }
 let pendingShare = null;
-window.addEventListener('hashchange', () => { if (/(^#|&)(q|v)=/.test(location.hash)) location.reload(); });
+window.addEventListener('hashchange', () => { if (/(^#|&)(q|v|p)=/.test(location.hash)) location.reload(); });
 { const h = location.hash.slice(1), prm = Object.fromEntries(h.split('&').map(kv => kv.split('=')).filter(x => x.length === 2));
   const pl = prm.q || prm.v;
+  if (prm.p && !pl) { window.RX_START_PRESET = prm.p; if (prm.c) window.RX_SHARED_COFFRE = decodeURIComponent(prm.c); setTimeout(() => { initDemo(); droot.scrollIntoView({block: 'start'}); }, 50); }
   if (pl) pendingShare = RX.unpackVehicle(pl).then(sv => { window.RX_SHARED = sv; if (prm.c) window.RX_SHARED_COFFRE = decodeURIComponent(prm.c); })
     .catch(() => {}).then(() => { pendingShare = null; initDemo(); droot.scrollIntoView({block: 'start'}); }); }
 new IntersectionObserver(es => es.forEach(e => { demoVisible = e.isIntersecting; if (demoVisible && !pendingShare) initDemo(); }), {rootMargin:'300px 0px'}).observe(droot);
@@ -2091,5 +2159,4 @@ window.__rx = {H, get D(){ return D; }, heroTick, loadHero};
 })();
 </script>
 
-</body>
-</html>
+</body></html>

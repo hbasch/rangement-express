@@ -157,6 +157,14 @@ section.s{padding-block:clamp(72px,9vw,112px) 0}
 .co button small{font:400 11px var(--mono);color:var(--muted)}
 .co button:hover small{color:#c9cdcb}
 .d-tools{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;border:var(--b);background:var(--white)}
+.d-stations{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;align-items:stretch;border:var(--b);background:var(--white);z-index:3;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.d-stations .st-l{font:500 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 10px;display:flex;align-items:center;border-right:1px solid var(--rule)}
+.d-stations button{font:600 14px var(--body);padding:10px 14px;border:0;border-right:1px solid var(--rule);background:var(--white);color:var(--ink);cursor:pointer;white-space:nowrap}
+.d-stations button:last-child{border-right:0}.d-stations button:hover{background:var(--paper)}
+.d-stations button[aria-pressed="true"]{background:var(--ink);color:var(--white)}
+.is-interior .d-hint{bottom:12px;max-width:calc(50% - 170px)}
+.is-interior .d-hud{top:64px}
+@media (max-width:760px){.d-stations{top:6px}.d-stations .st-l{display:none}.d-stations button{font-size:12px;padding:8px 8px}}
 .ib{display:grid;place-items:center;min-width:38px;height:36px;border:0;background:var(--white);color:var(--ink);cursor:pointer;font:500 12.5px var(--body);padding:0 10px;border-radius:0}
 .ib + .ib{border-left:1px solid var(--ink)}
 .ib:hover{background:var(--paper)}
@@ -392,7 +400,7 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
 <header class="nav">
   <div class="wrap">
     <a class="logo" href="#top"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Rangement Express</a>
-    <nav aria-label="Sections"><a href="#demo">Demo</a><a href="#modes">Modes</a><a href="#publics">Free</a><a href="#pilote">Pilot</a><a href="#faq">FAQ</a><a href="../" lang="fr">FR</a><a href="../de/" lang="de">DE</a></nav>
+    <nav aria-label="Sections"><a href="#demo">Demo</a><a href="#modes">Modes</a><a href="#publics">Who it is for</a><a href="#pilote">Pilot</a><a href="#faq">FAQ</a><a href="../" lang="fr">FR</a><a href="../de/" lang="de">DE</a></nav>
     <a class="btn primary" href="#demo">Try<span class="hide-s"> the demo</span></a>
   </div>
 </header>
@@ -401,7 +409,7 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
   <div class="wrap">
     <div class="hero-top">
       <div class="copy">
-        <span class="eyebrow">Stowage training · free for fire and ambulance services</span>
+        <span class="eyebrow">Stowage training for fire and ambulance services</span>
         <h1>The right locker,<br>first time.</h1>
         <p class="lead">Your appliance in 3D, locker by locker. Every crew member practises finding the kit, against the clock, on a tablet or a computer, even away from the station.</p>
         <div class="ctas"><a class="btn primary" href="#demo">Start the demo</a><a class="btn" href="#pilote">Become a pilot station</a></div>
@@ -514,11 +522,11 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
 
 <section class="s" id="publics">
   <div class="wrap">
-    <div class="s-head"><span class="eyebrow">Who it is for</span><h2>Free for fire and ambulance services. For good.</h2><p>Wholetime and on-call firefighters, volunteers, instructors, ambulance crews, voluntary aid societies: the tool is free, today and tomorrow.</p></div>
+    <div class="s-head"><span class="eyebrow">Who it is for</span><h2>For the whole watch.</h2><p>Wholetime and on-call firefighters, volunteers, instructors, ambulance crews, voluntary aid societies: everyone learns their own appliance, at their own pace.</p></div>
     <div class="aud" style="grid-template-columns:minmax(0,1fr)">
       <div class="acard sec-c">
         <span class="who">FIRE &amp; RESCUE · AMBULANCE · VOLUNTARY AID</span>
-        <div class="price">Everything included.</div>
+        <div class="price">What it does.</div>
         <ul>
           <li>Unlimited appliances and kit</li>
           <li>No account, no installation</li>
@@ -552,7 +560,6 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
   <div class="wrap">
     <div class="s-head"><span class="eyebrow">FAQ</span><h2>Common questions.</h2></div>
     <div class="faq">
-      <details><summary>Is it really free for fire services?</summary><p>Yes. Fire and rescue services, ambulance services and voluntary aid societies pay nothing, today and tomorrow. The project is funded by a separate offer for companies that run van fleets.</p></details>
       <details><summary>Do I need an account?</summary><p>No. Everything runs in the browser, and your progress stays on your device.</p></details>
       <details><summary>Can I rebuild my appliance exactly?</summary><p>Yes: number of lockers, side, width, shelves, contents, colours, hinged doors or roller shutters. You can even put a photo of the real locker at the back of the 3D locker.</p></details>
       <details><summary>Can we add our own incident types?</summary><p>Yes. In “Edit”, each line describes an incident: code, description and the kit it needs. Instructors adapt them to their own station.</p></details>
@@ -821,6 +828,16 @@ const PRESETS = {
     {code:'D2',name:'Coffre extérieur arrière droit',side:'R',weight:1.2,shelves:[['Matelas immobilisateur'],['Plan dur','Chaise portoir']]},
     {code:'AR',name:'Cellule arrière',side:'B',weight:1,shelves:[['Brancard principal'],['Sacs DASRI','Désinfectant','Gants']]}
   ]},
+  vsavi: {label:'VSAV · cellule', group:'Secours', body:{length:3.9,width:2.2,height:2.45,color:'#b3121b',door:'#b3121b',doorStyle:'porte',stripe:true,beacons:true,cab:'van',casquette:true,rearWindows:true,rearChevrons:true,frontYellow:true,beltLine:true,lettering:'Sapeurs-pompiers',cabText:'VSAV',interior:true,accent:'#c8102e'}, coffres:[
+    {code:'H1',name:'Armoire haute gauche 1',zone:'G-haut',side:'L',weight:1,shelves:[['Kit accouchement','Kit brûlés']]},
+    {code:'H2',name:'Armoire haute gauche 2',zone:'G-haut',side:'L',weight:1,shelves:[['Colliers cervicaux','Kit membre']]},
+    {code:'R1',name:'Rail mural gauche',zone:'G-mur',side:'L',weight:1.4,shelves:[['Sac PS','DSA','Aspirateur de mucosités']]},
+    {code:'M1',name:'Meuble bas gauche',zone:'G-bas',side:'L',weight:1,shelves:[['Couvertures','Draps'],['Gants','Désinfectant']]},
+    {code:'H3',name:'Armoire haute droite',zone:'D-haut',side:'R',weight:1,shelves:[['Attelles à dépression','Attelles modulables']]},
+    {code:'A1',name:'Armoire avant',zone:'A-haut',side:'B',weight:1,shelves:[['Sac oxygénothérapie','Sacs DASRI']]},
+    {code:'T1',name:'Rangement bas avant',zone:'A-bas',side:'B',weight:1,shelves:[['Matelas immobilisateur'],['Plan dur','Chaise portoir']]},
+    {code:'BR',name:'Brancard',zone:'C',side:'B',weight:1,shelves:[['Brancard principal']]}
+  ]},
   fpt: {label:'FPT', group:'Secours', body:{length:4.3,width:2.5,height:2.5,color:'#b3121b',door:'#e8ebee',hoseReels:true,frontChevrons:true,beltLine:true,doorStyle:'rideau',stripe:true,beacons:true,cab:'truck',ladder:true,lettering:'Sapeurs-pompiers',cabText:'FPT'}, coffres:[
     {code:'G1',name:'Coffre ARI',side:'L',weight:1,shelves:[['ARI 1','ARI 2','ARI 3'],['Bouteilles ARI de réserve','Masques ARI de rechange'],['Lot de sauvetage','Caméra thermique']]},
     {code:'G2',name:'Coffre établissements',side:'L',weight:1.25,shelves:[['Tuyaux 45 mm','Lances 500 L/min'],['Division','Clé tricoise','Coudes d\'alimentation']]},
@@ -846,6 +863,7 @@ if (window.RX_EXTRA_PRESETS) Object.assign(PRESETS, window.RX_EXTRA_PRESETS);
 Object.values(PRESETS).forEach(p => p.coffres.forEach((c, i) => c.id = c.id || ('p' + i + c.code)));
 const SCEN = {"vsav": ["SAP | Arrêt cardio-respiratoire, homme 60 ans, à domicile | DSA, Sac oxygénothérapie, Aspirateur de mucosités, Sac PS", "SAP | Chute d'échelle, suspicion de trauma du rachis | Colliers cervicaux, Matelas immobilisateur, Plan dur, Sac PS", "SAP | Accouchement inopiné à domicile | Kit accouchement, Couvertures, Sac PS", "SAP | Brûlure étendue, accident domestique | Kit brûlés, Draps, Sac oxygénothérapie", "SAP | Fracture de jambe sur la voie publique | Attelles à dépression, Cônes de balisage, Gilets haute visibilité, Sac PS", "SAP | Malaise dans un 4e étage sans ascenseur | Chaise portoir, Sac PS, Sac oxygénothérapie"], "fpt": ["INC | Feu d'appartement au 3e étage, fumées | ARI 1, ARI 2, Tuyaux 45 mm, Lances 500 L/min, Caméra thermique", "INC | Feu de véhicule sur un parking | Lance à mousse, Émulseur (bidons), Tuyaux 45 mm, ARI 1", "DIV | Odeur de gaz dans un immeuble | Détecteur multigaz, Lot gaz, Ventilateur", "INC | Alimentation sur poteau incendie | Clé de poteau, Tuyaux 70 mm, Clé tricoise", "DIV | Personne bloquée derrière une porte | Pied de biche, Hache, Lot de sauvetage", "INC | Feu de cave, fumée épaisse | ARI 1, ARI 2, Ventilateur, Projecteurs, Caméra thermique"], "plombier": ["DEP | Fuite sous évier, cuisine inondée | Siphons, Joints, Clé à molette, Aspirateur eau", "DEP | Canalisation bouchée | Furet déboucheur, Bâche de protection", "POSE | Remplacement de chauffe-eau | Raccords laiton, Chalumeau, Pompe d'épreuve, Coupe-tube"], "fibre": ["RAC | Raccordement d'un abonné | Soudeuse fibre, Cliveuse, Boîtiers PTO, Kit nettoyage fibre", "SAV | Panne réseau, mesure de ligne | Réflectomètre, Photomètre, Jarretières", "RES | Intervention en chambre sur trottoir | Cônes de chantier, Panneau travaux, Casque, Tire-câble"]};
 Object.entries(SCEN).forEach(([k, l]) => { if (PRESETS[k]) PRESETS[k].scenarios = l; });
+if (PRESETS.vsav && PRESETS.vsavi) PRESETS.vsavi.scenarios = PRESETS.vsav.scenarios;
 
 const col = h => new THREE.Color(h).convertSRGBToLinear();
 const lum = hex => { const c = new THREE.Color(hex); return 0.2126*c.r + 0.7152*c.g + 0.0722*c.b; };
@@ -875,7 +893,7 @@ function shadowTexF(){ const [c, x] = cv(256, 128); x.filter = 'blur(14px)'; x.f
 function letterTex(text, light){ const [c, x] = cv(1024, 128); let fs = 96; x.font = `700 ${fs}px ${DF}`;
   while (x.measureText(text.toUpperCase()).width > 960 && fs > 30) { fs -= 4; x.font = `700 ${fs}px ${DF}`; }
   x.fillStyle = light ? 'rgba(20,22,26,0.9)' : 'rgba(255,255,255,0.96)'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(text.toUpperCase(), 512, 66); return tex(c); }
-function doorTex(code, w, h, doorHex, style){
+function doorTex(code, w, h, doorHex, style, mid){
   const cw = 512, ch = Math.round(512*Math.min(2.6, Math.max(0.45, h/w))); const [c, x] = cv(cw, ch);
   const light = lum(doorHex) > 0.45;
   if (style === 'none') { let fs = Math.round(ch*0.62); x.font = `700 ${fs}px ${DF}`;
@@ -884,6 +902,8 @@ function doorTex(code, w, h, doorHex, style){
   if (style === 'rideau') { for (let y = 0; y < ch; y += 14) { x.fillStyle = 'rgba(0,0,0,0.18)'; x.fillRect(0, y, cw, 2); x.fillStyle = 'rgba(255,255,255,0.3)'; x.fillRect(0, y + 2, cw, 1); } }
   const fs = Math.round(Math.min(cw, ch)*0.13);
   x.font = `700 ${fs}px ${DF}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.shadowColor = 'rgba(0,0,0,0.3)'; x.shadowBlur = 3;
+  if (mid) { x.shadowBlur = 0; let f2 = Math.round(Math.min(ch*0.34, cw*0.2)); x.font = `700 ${f2}px ${DF}`; const tw = x.measureText(code).width + f2*0.8, th = f2*1.35;
+    rr(x, cw/2 - tw/2, ch/2 - th/2, tw, th, f2*0.18); x.fillStyle = 'rgba(20,24,30,0.88)'; x.fill(); x.fillStyle = '#ffffff'; x.fillText(code, cw/2, ch/2 + f2*0.04); return tex(c); }
   x.fillStyle = light ? 'rgba(22,24,28,0.9)' : 'rgba(255,255,255,0.95)'; x.fillText(code, cw/2, ch*0.1);
   return tex(c);
 }
@@ -961,11 +981,11 @@ function createEngine(opts){
 
   /* ---------- coffre ---------- */
   function buildCoffre(frame, c, u0, u1, yb, yt, depth, mats, opt){
-    const w = u1 - u0, h = yt - yb, style = E.v.body.doorStyle || 'porte';
+    const w = u1 - u0, h = yt - yb, style = c.doorStyle || (opt.interiorDoor ? 'rideau' : E.v.body.doorStyle) || 'porte';
     const g = new THREE.Group(); g.position.set((u0 + u1)/2, (yb + yt)/2, 0); frame.add(g);
     const innerMat = mats.interior.clone(); innerMat.emissive = col('#dfe8f2'); innerMat.emissiveIntensity = 0;
     const inner = new THREE.Mesh(new THREE.BoxGeometry(w, h, depth), innerMat); inner.position.z = -depth/2; g.add(inner);
-    [[w + 0.04, 0.025, 0, h/2 + 0.0125], [w + 0.04, 0.025, 0, -h/2 - 0.0125], [0.025, h, -w/2 - 0.0125, 0], [0.025, h, w/2 + 0.0125, 0]].forEach(([a, b, x, y]) => {
+    if (!opt.open) [[w + 0.04, 0.025, 0, h/2 + 0.0125], [w + 0.04, 0.025, 0, -h/2 - 0.0125], [0.025, h, -w/2 - 0.0125, 0], [0.025, h, w/2 + 0.0125, 0]].forEach(([a, b, x, y]) => {
       const s = new THREE.Mesh(new THREE.BoxGeometry(a, b, 0.03), mats.seal); s.position.set(x, y, -0.005); g.add(s); });
     if (c.photo) { const img = new Image(); const ph = new THREE.Mesh(new THREE.PlaneGeometry(w*0.97, h*0.97), new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0.92, toneMapped:false}));
       ph.position.z = -depth + 0.006; g.add(ph); img.onload = () => { const t = new THREE.Texture(img); t.encoding = THREE.sRGBEncoding; t.needsUpdate = true; ph.material.map = t; ph.material.needsUpdate = true; }; img.src = c.photo; }
@@ -988,7 +1008,7 @@ function createEngine(opts){
     });
     const doorMat = mats.door.clone(), leaves = [];
     const chev = opt.chevrons && style !== 'rideau';
-    const codeTex = chev ? chevronDoorTex(c.code || '?', w, h) : doorTex(c.code || '?', w, h, E.v.body.door || E.v.body.color, style);
+    const codeTex = chev ? chevronDoorTex(c.code || '?', w, h) : doorTex(c.code || '?', w, h, E.v.body.door || E.v.body.color, style, !!opt.interiorDoor);
     const chromeM = mats.chrome, recess = mats.seal;
     const mkLeaf = (lw, sign, hingeX, withCode) => {
       const pivot = new THREE.Group(); pivot.userData.dynamic = true; pivot.position.set(hingeX, 0, 0.012); g.add(pivot);
@@ -1004,7 +1024,8 @@ function createEngine(opts){
       return door;
     };
     let mainDoor;
-    if (style === 'rideau') {
+    if (opt.open) { inner.visible = false; }
+    else if (style === 'rideau') {
       const pivot = new THREE.Group(); pivot.userData.dynamic = true; pivot.position.set(0, h/2, 0.012); g.add(pivot);
       const door = new THREE.Mesh(RBox(w*0.985, h*0.985, 0.022, 0.008), doorMat); door.position.y = -h/2; door.castShadow = true; pivot.add(door);
       const lab = new THREE.Mesh(new THREE.PlaneGeometry(w*0.94, h*0.94), new THREE.MeshBasicMaterial({map:codeTex, transparent:true, toneMapped:false})); lab.position.z = 0.0115; door.add(lab); lab.position.z = 0.015;
@@ -1017,7 +1038,8 @@ function createEngine(opts){
       mainDoor = mkLeaf(lw, -1, -w/2, true); mkLeaf(lw, 1, w/2, false);    } else {
       const hr = opt.hingeRight; mainDoor = mkLeaf(w*0.985, hr ? -1 : 1, hr ? w/2 : -w/2, true);
     }
-    E.objs[c.id] = {c, g, leaves, door:mainDoor, doorMat, led, innerMat, items, w, h, style, p:0, target:0};
+    E.objs[c.id] = {c, g, leaves, door:mainDoor, doorMat, led, innerMat, items, w, h, style, p:opt.open ? 1 : 0, target:opt.open ? 1 : 0, fixed:!!opt.open};
+    if (opt.open) { const lab = new THREE.Mesh(new THREE.PlaneGeometry(Math.min(0.5, w*0.6), 0.09), new THREE.MeshBasicMaterial({map:tagTex(c.code || '?'), transparent:true, toneMapped:false})); lab.position.set(0, h/2 + 0.06, 0.01); g.add(lab); lab.userData = {type:'door', coffreId:c.id}; E.pickables.push(lab); }
   }
 
 
@@ -1084,6 +1106,70 @@ function createEngine(opts){
       shelf: std('#b9bfc5', 0.35, 0.75), interior: new THREE.MeshStandardMaterial({color:col('#a7aeb5'), roughness:0.85, side:THREE.BackSide})
     };
     const add = (geo, mat, x, y, z, parent = truck, shadow = true) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = shadow; parent.add(m); return m; };
+    // --- vue intérieure de la cellule sanitaire (ambulance, VSAV) : rangements génériques, caméra depuis les portes arrière
+    E.interior = !!b.interior;
+    E.stations = null; if (controls) { controls.enableRotate = true; controls.enablePan = true; controls.minAzimuthAngle = -Infinity; controls.maxAzimuthAngle = Infinity; controls.minPolarAngle = 0; controls.maxPolarAngle = Math.PI*0.47; controls.minDistance = 1.5; controls.maxDistance = 26; }
+    camera.fov = E.interior ? 68 : (opts.fov || 36); camera.updateProjectionMatrix();
+    if (E.interior) {
+      const L = 4.4, Wc = 2.6, H = 2.15, x0 = -L/2;
+      const wallM = std('#eef1f3', 0.6, 0.02, {side:THREE.DoubleSide}), floorM = std('#5b6168', 0.85, 0.05), ceilM = std('#f6f7f8', 0.5, 0, {side:THREE.DoubleSide});
+      const blueM = std(b.accent || '#1f4e79', 0.4, 0.1), railM = std('#c4c9ce', 0.3, 0.9), seatM = std('#2b2f34', 0.7, 0.05), ledM = std('#ffffff', 0.2, 0, {emissive:col('#eaf2ff'), emissiveIntensity:1.4});
+      const wall = (w, h, x, y, z, ry, m = wallM) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m); p.position.set(x, y, z); p.rotation.y = ry; p.receiveShadow = true; truck.add(p); return p; };
+      const fl = new THREE.Mesh(new THREE.PlaneGeometry(L, Wc), floorM); fl.rotation.x = -Math.PI/2; fl.position.set(0, 0.002, 0); truck.add(fl);
+      const ce = new THREE.Mesh(new THREE.PlaneGeometry(L, Wc), ceilM); ce.rotation.x = Math.PI/2; ce.position.set(0, H, 0); truck.add(ce);
+      wall(L, H, 0, H/2, Wc/2, Math.PI); wall(L, H, 0, H/2, -Wc/2, 0); wall(Wc, H, L/2, H/2, 0, -Math.PI/2);
+      // cadre des portes arrière, bande bleue, rail central au sol, spots au plafond
+      add(new THREE.BoxGeometry(0.06, H, 0.12), railM, x0, H/2, Wc/2 - 0.06, truck, false); add(new THREE.BoxGeometry(0.06, H, 0.12), railM, x0, H/2, -Wc/2 + 0.06, truck, false);
+      add(new THREE.BoxGeometry(L, 0.06, 0.012), blueM, 0, 1.4, Wc/2 - 0.006, truck, false); add(new THREE.BoxGeometry(L, 0.06, 0.012), blueM, 0, 1.4, -Wc/2 + 0.006, truck, false);
+      add(new THREE.BoxGeometry(L - 0.5, 0.03, 0.22), railM, 0.1, 0.017, -0.3, truck, false); add(new THREE.BoxGeometry(L - 0.6, 0.12, 0.8), std('#dfe3e6', 0.6, 0.05), 0.15, 0.06, -0.3, truck, false);
+      [-1.4, 0, 1.4].forEach(x => [0.55, -0.55].forEach(z => { const s = add(new THREE.CylinderGeometry(0.05, 0.05, 0.012, 16), ledM, x, H - 0.006, z, truck, false); }));
+      const pl1 = new THREE.PointLight(0xffffff, 0.9, 6, 1.6); pl1.position.set(-0.6, H - 0.15, 0); truck.add(pl1);
+      const pl2 = new THREE.PointLight(0xffffff, 0.7, 6, 1.6); pl2.position.set(1.0, H - 0.15, 0); truck.add(pl2);
+      // siège du côté droit (décor)
+      const seat = new THREE.Group(); seat.position.set(1.3, 0, Wc/2 - 0.34); truck.add(seat);
+      [[0.5, 0.1, 0.5, 0, 0.48, 0], [0.5, 0.65, 0.1, 0, 0.85, -0.22], [0.08, 0.45, 0.4, 0.2, 0.24, -0.02], [0.08, 0.45, 0.4, -0.2, 0.24, -0.02]].forEach(([w, h, d, x, y, z]) => { const m = new THREE.Mesh(RBox(w, h, d, 0.03), seatM); m.position.set(x, y, z); seat.add(m); });
+      seat.rotation.y = Math.PI;
+      // zones de rangement : chaque coffre a une zone (G = mur gauche, D = mur droit, A = avant, C = centre / sol)
+      const Z = {
+        'G-haut': {wall:'G', y:[1.62, 2.08], depth:0.38, span:[-L/2 + 0.12, L/2 - 0.42]}, 'G-mur': {wall:'G', y:[0.98, 1.52], depth:0.14, open:true, span:[x0 + 0.95, L/2 - 0.42]}, 'G-bas': {wall:'G', y:[0.1, 0.9], depth:0.5, span:[x0 + 0.95, L/2 - 0.52]},
+        'D-haut': {wall:'D', y:[1.62, 2.08], depth:0.38, span:[-L/2 + 0.42, L/2 - 0.12]}, 'D-mur': {wall:'D', y:[1.22, 1.56], depth:0.2, open:true, span:[-L/2 + 0.42, -x0 - 1.12]}, 'D-bas': {wall:'D', y:[0.1, 0.9], depth:0.45, span:[-L/2 + 0.52, -x0 - 1.12]},
+        'A-haut': {wall:'A', y:[1.4, 2.08], depth:0.4}, 'A-bas': {wall:'A', y:[0.1, 1.15], depth:0.5}, 'C': {wall:'C', y:[0.02, 0.95], depth:2.2, open:true},
+        'AR-G': {wall:'R', y:[0.02, 1.3], depth:0.32, open:true}, 'AR-D': {wall:'RD', y:[0.02, 1.35], depth:0.45, open:true}
+      };
+      const W2 = {
+        G: {pos:(d) => [0, 0, -Wc/2 + d], rot:0, span:[-L/2 + 0.12, L/2 - 0.12]},
+        D: {pos:(d) => [0, 0, Wc/2 - d], rot:Math.PI, span:[-L/2 + 0.12, L/2 - 0.12]},
+        A: {pos:(d) => [L/2 - d, 0, 0], rot:-Math.PI/2, span:[-Wc/2 + 0.08, Wc/2 - 0.08]},
+        C: {pos:() => [x0 + 0.55, 0, -0.3], rot:-Math.PI/2, span:[-0.36, 0.36]},
+        R: {pos:() => [x0 + 0.5, 0, -Wc/2 + 0.34], rot:0, span:[-0.32, 0.32]},
+        RD: {pos:() => [x0 + 0.62, 0, Wc/2 - 0.47], rot:Math.PI, span:[-0.42, 0.42]}
+      };
+      const zoneOf = c => Z[c.zone] ? c.zone : ({L:'G-haut', R:'D-haut', B:'A-bas'}[c.side] || 'G-haut');
+      Object.keys(Z).forEach(zk => {
+        const z = Z[zk], wdef = Object.assign({}, W2[z.wall], z.span ? {span:z.span} : {}), list = v.coffres.filter(c => zoneOf(c) === zk); if (!list.length) return;
+        const frame = new THREE.Group(); frame.position.set(...wdef.pos(z.depth)); frame.rotation.y = wdef.rot; truck.add(frame);
+        if (zk === 'G-mur') { const len = wdef.span[1] - wdef.span[0], pan = new THREE.Mesh(new THREE.BoxGeometry(len, z.y[1] - z.y[0] + 0.06, 0.02), std(b.panel || '#e8641e', 0.8, 0)); pan.position.set((wdef.span[0] + wdef.span[1])/2, (z.y[0] + z.y[1])/2, -z.depth + 0.012); frame.add(pan); }
+        if (zk.endsWith('-mur')) { const len = wdef.span[1] - wdef.span[0], bar = new THREE.Mesh(new THREE.BoxGeometry(len, 0.035, 0.035), railM); bar.position.set((wdef.span[0] + wdef.span[1])/2, z.y[1] - 0.02, -0.03); frame.add(bar); [0.1, 0.5, 0.9].forEach(f => { const k = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.06, 0.06), railM); k.position.set(wdef.span[0] + len*f, z.y[1] - 0.02, -0.06); frame.add(k); }); }
+        const sum = list.reduce((a, c) => a + (+c.weight || 1), 0) || 1, gap = 0.04, avail = (wdef.span[1] - wdef.span[0]) - gap*Math.max(0, list.length - 1);
+        let u = wdef.span[0];
+        list.forEach(c => { const u1 = u + avail*(+c.weight || 1)/sum;
+          buildCoffre(frame, c, u, u1, z.y[0], z.y[1], z.depth, mats, {open: z.open, interiorDoor:true});
+          u = u1 + gap; });
+      });
+      for (const id of wasOpen) if (E.objs[id]) { E.objs[id].target = 1; E.objs[id].p = 1; }
+      mergeStatic();
+      truck.traverse(o => { if (o.isMesh && o.material && (o.material.map || o.material.transparent)) { o.material.polygonOffset = true; o.material.polygonOffsetFactor = -2; o.material.polygonOffsetUnits = -4; } });
+      E.totalL = L; E.centerX = 0; E.markDoors(); key.target.position.set(0, 1, 0);
+      E.stations = {
+        arriere: {pos:new THREE.Vector3(x0 - 1.0, 1.65, 0), target:new THREE.Vector3(0.6, 1.15, 0)},
+        gauche: {pos:new THREE.Vector3(-0.15, 1.32, 1.02), target:new THREE.Vector3(-0.15, 1.15, -Wc/2)},
+        droite: {pos:new THREE.Vector3(-0.55, 1.32, -0.7), target:new THREE.Vector3(-0.55, 1.15, Wc/2)},
+        avant: {pos:new THREE.Vector3(-0.9, 1.55, 0), target:new THREE.Vector3(L/2, 1.2, 0)}
+      };
+      E.cell = {L, Wc, H};
+      if (controls) { controls.enableRotate = false; controls.enablePan = false; controls.minDistance = 0.35; controls.maxDistance = 4.2; }
+      return;
+    }
 
     // implantation longitudinale (d = distance depuis l'avant du pare-chocs)
     const dCabRear = S.front + S.Lc, dBF = dCabRear + S.gap, dBR = dBF + BL;
@@ -1303,7 +1389,7 @@ function createEngine(opts){
     key.target.position.set(0, 1, 0);
   };
 
-  E.setOpen = (id, open) => { const o = E.objs[id]; if (o) o.target = open ? 1 : 0; };
+  E.setOpen = (id, open) => { const o = E.objs[id]; if (o && !o.fixed) o.target = open ? 1 : 0; };
   E.closeAll = () => Object.keys(E.objs).forEach(id => E.setOpen(id, false));
   E.openAll = () => Object.keys(E.objs).forEach(id => E.setOpen(id, true));
   E.setLabels = on => { E.labels = on; E.tags.forEach(t => t.visible = on); };
@@ -1313,12 +1399,17 @@ function createEngine(opts){
   E.flash = (mesh, hex) => { if (mesh) flashGroup(mesh, hex, 700); };
   E.flashDoor = (id, hex) => { const o = E.objs[id]; if (!o) return; o.doorMat.emissive = col(hex); o.doorMat.emissiveIntensity = 0.6; setTimeout(E.markDoors, 650); };
   let camGoal = null;
-  E.overviewPose = () => { const L = (E.totalL || 6)*0.92, a = E.aspect || 1.6, k = a < 1 ? 1.45/a*0.75 : 1;
+  E.overviewPose = () => { if (E.interior && E.stations) { const a = E.aspect || 1.6, st = E.stations.arriere; return {pos:st.pos.clone().add(new THREE.Vector3(a < 1 ? -0.9 : 0, 0, 0)), target:st.target.clone()}; }
+    const L = (E.totalL || 6)*0.92, a = E.aspect || 1.6, k = a < 1 ? 1.45/a*0.75 : 1;
     return {pos:new THREE.Vector3(-L*0.95*k, 3.7*Math.min(k, 1.3), L*1.15*k), target:new THREE.Vector3(0, 1.5, 0)}; };
   E.overview = () => { camGoal = E.overviewPose(); };
+  E.goStation = k => { if (E.stations && E.stations[k]) camGoal = {pos:E.stations[k].pos.clone(), target:E.stations[k].target.clone()}; };
   E.coffrePose = (id, distMul = 1) => { const o = E.objs[id]; if (!o) return null;
     const p = new THREE.Vector3(), q = new THREE.Quaternion(); o.g.getWorldPosition(p); o.g.getWorldQuaternion(q);
-    const nrm = new THREE.Vector3(0, 0, 1).applyQuaternion(q), a = E.aspect || 1.6, dist = Math.max(2.3, Math.max(o.w, o.h)*2 + 0.8)*distMul*(a < 1 ? 1.5 : 1);
+    const nrm = new THREE.Vector3(0, 0, 1).applyQuaternion(q), a = E.aspect || 1.6;
+    if (E.interior) { const C = E.cell || {L:4.4, Wc:2.6}, tgt = p.clone(), d = 1.45*distMul, pos = p.clone().add(nrm.clone().setY(0).normalize().multiplyScalar(d));
+      pos.y = Math.max(1.35, Math.min(1.7, tgt.y + 0.35)); pos.z = Math.max(-C.Wc/2 + 0.3, Math.min(C.Wc/2 - 0.3, pos.z)); pos.x = Math.max(-C.L/2 - 1.2, Math.min(C.L/2 - 0.35, pos.x)); return {target:tgt, pos}; }
+    const dist = Math.max(2.3, Math.max(o.w, o.h)*2 + 0.8)*distMul*(a < 1 ? 1.5 : 1);
     return {target:p.clone(), pos:p.clone().add(nrm.multiplyScalar(dist)).add(new THREE.Vector3(0, 0.5, 0))}; };
   E.focusCoffre = id => { const g = E.coffrePose(id); if (g) camGoal = g; };
   E.project = id => { const o = E.objs[id]; if (!o) return null; const p = new THREE.Vector3(), q = new THREE.Quaternion(); o.g.getWorldPosition(p); o.g.getWorldQuaternion(q);
@@ -1379,7 +1470,7 @@ async function packVehicle(v, withScen = true){
   const pk = (v.preset && v.preset !== 'shared') ? v.preset : (v.basePreset || ''), bb = (PRESETS[pk] || {}).body || {}, body = {};
   Object.keys(v.body || {}).forEach(k => { if (v.body[k] !== bb[k]) body[k] = v.body[k]; });
   const o = {n: v.name || '', p: pk, b: body,
-    c: v.coffres.map(c => [c.code, c.name, c.side, +(+c.weight || 1).toFixed(2), c.shelves])};
+    c: v.coffres.map(c => c.zone ? [c.code, c.name, c.side, +(+c.weight || 1).toFixed(2), c.shelves, c.zone] : [c.code, c.name, c.side, +(+c.weight || 1).toFixed(2), c.shelves])};
   if (withScen && v.scenarios) o.s = v.scenarios;
   const raw = new TextEncoder().encode(JSON.stringify(o));
   try { if (window.CompressionStream) return 'z' + b64u(await streamBytes(raw, CompressionStream)); } catch (e) {}
@@ -1389,7 +1480,7 @@ async function unpackVehicle(str){
   let bytes = unb64u(str.slice(1));
   if (str[0] === 'z') bytes = await streamBytes(bytes, DecompressionStream);
   const o = JSON.parse(new TextDecoder().decode(bytes));
-  return {name: o.n || '', basePreset: o.p || '', body: o.b, scenarios: o.s, coffres: o.c.map(([code, name, side, weight, shelves], i) => ({id: 'q' + i + code, code, name, side, weight, shelves}))};
+  return {name: o.n || '', basePreset: o.p || '', body: o.b, scenarios: o.s, coffres: o.c.map(([code, name, side, weight, shelves, zone], i) => Object.assign({id: 'q' + i + code, code, name, side, weight, shelves}, zone ? {zone} : {}))};
 }
 window.RX = {createEngine, PRESETS, uid, loadAssets, packVehicle, unpackVehicle};
 })();
@@ -1411,6 +1502,7 @@ const KEY = SITE.key || 'rangement-express-v3';
 let store = {current:ALLOW[0], vehicles:{}, stats:{}, bestTotal:{}, sound:false, labels:true};
 try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.vehicles) store = Object.assign(store, s);
   else { const o = JSON.parse(localStorage.getItem('rangement-express-v2')); if (o && o.vehicles) Object.assign(store, {vehicles:o.vehicles, stats:o.stats || {}, bestTotal:o.bestTotal || {}}); } } catch(e) {}
+if (window.RX_START_PRESET && PRESETS[window.RX_START_PRESET] && ALLOW.includes(window.RX_START_PRESET)) store.current = window.RX_START_PRESET;
 if (window.RX_SHARED) { const sv = window.RX_SHARED, base = RX.PRESETS[sv.basePreset] || RX.PRESETS[ALLOW[0]];
   PRESETS.shared = {label: sv.name || 'Shared appliance', group: 'Shared', body: Object.assign({}, base.body, sv.body), coffres: sv.coffres, scenarios: sv.scenarios || (base.scenarios || []).slice()};
   store.current = 'shared'; store.vehicles.shared = JSON.parse(JSON.stringify(Object.assign({}, sv, {scenarios: PRESETS.shared.scenarios}))); }
@@ -1440,6 +1532,14 @@ const objs = () => E.objs;
 const build = () => { E.build(state.v); applyLabels(); paintCallouts(); paintTop(); };
 
 $('#d-view').addEventListener('click', () => E.overview());
+/* vues fixes à l'intérieur de la cellule : un clic pour se placer face à un mur */
+const stBox = document.createElement('div'); stBox.className = 'd-stations'; stBox.setAttribute('role', 'group'); stBox.setAttribute('aria-label', 'Se placer');
+stBox.innerHTML = '<span class="st-l">Se placer</span>' + [['arriere', 'Arrière'], ['gauche', 'Mur gauche'], ['droite', 'Mur droit'], ['avant', 'Avant']].map(([k, t]) => `<button data-station="${k}" id="d-st-${k}" aria-pressed="${k === 'arriere'}">${t}</button>`).join('');
+const stView = root.querySelector('.d-view'); if (stView) stView.appendChild(stBox);
+const markSt = k => stBox.querySelectorAll('[data-station]').forEach(x => x.setAttribute('aria-pressed', x.dataset.station === k ? 'true' : 'false'));
+{ const _ov = E.overview, _fc = E.focusCoffre; E.overview = (...x) => { markSt('arriere'); return _ov(...x); }; E.focusCoffre = (...x) => { markSt(''); return _fc(...x); }; }
+stBox.addEventListener('click', e => { const b = e.target.closest('[data-station]'); if (b) { E.goStation(b.dataset.station); markSt(b.dataset.station); } });
+const paintStations = () => { stBox.hidden = !E.stations; root.classList.toggle('is-interior', !!E.stations); };
 $('#d-zin').addEventListener('click', () => E.zoom(0.75));
 $('#d-zout').addEventListener('click', () => E.zoom(1.33));
 $('#d-labels').addEventListener('click', () => { if (state.mode === 'train' && game.status !== 'idle') return; store.labels = !store.labels; persist(); applyLabels(); });
@@ -1451,7 +1551,7 @@ canvas.addEventListener('pointerup', e => {
   const hit = E.pick(e); if (!hit) return;
   if (state.mode === 'train') { if (game.status === 'running') onGameClick(hit); return; }
   if (state.mode === 'edit') { selectCoffre(hit.coffreId); return; }
-  if (hit.kind === 'door') { const o = objs()[hit.coffreId]; E.setOpen(hit.coffreId, o.target === 0); beep('tick'); }
+  if (hit.kind === 'door') { const o = objs()[hit.coffreId], opening = o.target === 0; E.setOpen(hit.coffreId, opening); if (opening && E.interior) E.focusCoffre(hit.coffreId); beep('tick'); }
 });
 const tip = $('.d-tip'); let hoverEv = null;
 canvas.addEventListener('pointermove', e => hoverEv = e);
@@ -1523,10 +1623,10 @@ function fail(msg){ game.penalty += 2; game.errors++; game.msg = msg + ' (+2 s)'
 function onGameClick(hit){
   const tgt = game.list[game.i];
   if (game.type === 'find') {
-    if (hit.kind === 'door') { E.setOpen(hit.coffreId, objs()[hit.coffreId].target === 0); beep('tick'); return; }
+    if (hit.kind === 'door') { const op = objs()[hit.coffreId].target === 0; E.setOpen(hit.coffreId, op); if (op && E.interior) E.focusCoffre(hit.coffreId); beep('tick'); return; }
     if (hit.name === tgt.name) success(hit.main); else { E.flash(hit.main, BAD); fail(`No, that's “${hit.name}”`); }
   } else if (game.type === 'depart') {
-    if (hit.kind === 'door') { E.setOpen(hit.coffreId, objs()[hit.coffreId].target === 0); beep('tick'); return; }
+    if (hit.kind === 'door') { const op = objs()[hit.coffreId].target === 0; E.setOpen(hit.coffreId, op); if (op && E.interior) E.focusCoffre(hit.coffreId); beep('tick'); return; }
     if (game.got.has(hit.name)) return;
     if (tgt.items.some(i => i.name === hit.name)) { game.got.add(hit.name); E.flash(hit.main, OK); beep('tick'); game.hintId = null; E.markDoors();
       if (game.got.size >= tgt.items.length) success(null); else { game.msg = `${hit.name}: taken`; game.msgKind = 'ok'; renderHud(); } }
@@ -1615,8 +1715,87 @@ function parseList(txt){
     return {id:c.id, code:c.code.slice(0, 4), name:c.name, side:c.side, weight:Math.min(2, Math.max(0.8, Math.max(...shelves.map(r => r.length)) / 3 + 0.4)), shelves};
   });
 }
+/* ---------- contrôle (version ambulances) : prise de poste, désinfection, péremptions, registre ---------- */
+const DIS_TYPES = {apres:'Nettoyage après transport', hebdo:'Désinfection complète hebdomadaire', conta:'Désinfection après patient contagieux'};
+const kData = () => { store.checks = store.checks || {}; const d = store.checks[vid()] = store.checks[vid()] || {}; d.log = d.log || []; d.dis = d.dis || []; d.exp = d.exp || {}; return d; };
+const dfmt = iso => { const d = new Date(iso); return d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}); };
+const daysTo = ymd => Math.round((new Date(ymd + 'T00:00:00') - new Date(new Date().toDateString())) / 864e5);
+function kAlerts(){
+  const d = kData(), out = [], items = new Set(allItems().map(i => i.name));
+  const lastH = d.dis.filter(x => x.type === 'hebdo').map(x => x.t).sort().pop();
+  if (!lastH) out.push(['bad', 'Aucune désinfection complète enregistrée']);
+  else { const n = Math.floor((Date.now() - new Date(lastH)) / 864e5); if (n >= 7) out.push(['bad', `Désinfection complète en retard : la dernière date de ${n} jours`]); }
+  const lastC = d.log.map(x => x.t).sort().pop();
+  if (!lastC || new Date(lastC).toDateString() !== new Date().toDateString()) out.push(['warn', 'Contrôle de prise de poste pas encore fait aujourd\'hui']);
+  const lastLog = d.log[d.log.length - 1]; if (lastLog && lastLog.missing.length) out.push(['bad', `Dernier contrôle : ${lastLog.missing.length} matériel(s) manquant(s)`]);
+  Object.entries(d.exp).forEach(([n, ymd]) => { if (!ymd || !items.has(n)) return; const k = daysTo(ymd);
+    if (k < 0) out.push(['bad', `${n} : périmé depuis le ${new Date(ymd).toLocaleDateString('fr-FR')}`]); else if (k <= 30) out.push(['warn', `${n} : périme dans ${k} jour${k > 1 ? 's' : ''}`]); });
+  return out;
+}
+function renderCheck(){
+  const d = kData(), tab = state.kTab || 'poste', al = kAlerts();
+  const tabs = [['poste', 'Prise de poste'], ['dis', 'Désinfection'], ['exp', 'Péremptions'], ['reg', 'Registre']];
+  let h = `<div><h3 class="ph">Contrôle · ${esc(vName())}</h3><p class="muted small">Contrôle du matériel, registre de désinfection et péremptions de cette ambulance.</p></div>
+    <div class="kalerts">${al.length ? al.map(([k, t]) => `<p class="kal ${k}">${esc(t)}</p>`).join('') : '<p class="kal ok">Tout est à jour.</p>'}</div>
+    <div class="row ktabs">${tabs.map(([k, t]) => `<button class="btn ${tab === k ? 'primary' : ''}" data-action="k-tab" data-tab="${k}" id="d-k-tab-${k}">${t}</button>`).join('')}</div>`;
+  if (tab === 'poste') {
+    const miss = state.kMiss || {};
+    h += `<div class="field"><label for="d-k-who">Ambulancier</label><input type="text" id="d-k-who" value="${esc(state.kWho || '')}" placeholder="Nom et prénom"></div>
+      <p class="small muted">Coche chaque matériel présent et en état. Clique un coffre pour l'ouvrir dans la vue 3D.</p>
+      ${sortedCoffres().map(c => `<div class="kcof"><div class="row" style="justify-content:space-between"><button class="btn" data-action="focus" data-id="${c.id}" id="d-k-cof-${c.id}">${esc(c.code)} · ${esc(c.name)}</button>
+        <button class="btn" data-action="k-all" data-id="${c.id}" id="d-k-all-${c.id}">Tout est là</button></div>
+        ${c.shelves.flat().map(n => `<label class="check"><input type="checkbox" data-k-item="${esc(n)}" ${miss[n] === false ? 'checked' : ''}> ${esc(n)}</label>`).join('')}</div>`).join('')}
+      <div class="row"><button class="btn primary" data-action="k-save" id="d-k-save">Valider le contrôle</button></div><p class="small" id="d-k-msg" aria-live="polite"></p>`;
+  } else if (tab === 'dis') {
+    h += `<div class="field"><label for="d-k-dtype">Type</label><select id="d-k-dtype">${Object.entries(DIS_TYPES).map(([k, t]) => `<option value="${k}">${t}</option>`).join('')}</select></div>
+      <div class="field"><label for="d-k-dwho">Ambulancier</label><input type="text" id="d-k-dwho" value="${esc(state.kWho || '')}" placeholder="Nom et prénom"></div>
+      <div class="field"><label for="d-k-dprod">Produit utilisé</label><input type="text" id="d-k-dprod" value="${esc(state.kProd || '')}" placeholder="Ex. détergent-désinfectant de surface"></div>
+      <div class="row"><button class="btn primary" data-action="k-dis" id="d-k-dis">Enregistrer</button></div><p class="small" id="d-k-msg" aria-live="polite"></p>
+      <h4>Dernières opérations</h4>${d.dis.slice(-8).reverse().map(x => `<div class="qrrow"><span>${dfmt(x.t)}</span><b>${esc(DIS_TYPES[x.type])} · ${esc(x.who || '?')}</b></div>`).join('') || '<p class="small muted">Aucune pour l\'instant.</p>'}`;
+  } else if (tab === 'exp') {
+    h += `<p class="small muted">Indique la date de péremption des consommables et de l'oxygène. Une alerte s'affiche 30 jours avant.</p>
+      ${allItems().map(i => i.name).filter((n, k, a) => a.indexOf(n) === k).map((n, k) => { const ymd = d.exp[n] || '', dd = ymd ? daysTo(ymd) : null;
+        const st = dd === null ? '' : dd < 0 ? '<span class="pill bad">Périmé</span>' : dd <= 30 ? '<span class="pill warn">Bientôt</span>' : '<span class="pill ok">OK</span>';
+        return `<div class="kexp"><label for="d-k-exp-${k}">${esc(n)}</label><input type="date" id="d-k-exp-${k}" data-k-exp="${esc(n)}" value="${ymd}"> ${st}</div>`; }).join('')}`;
+  } else {
+    const rows = [...d.log.map(x => ({t:x.t, what:'Contrôle de prise de poste', who:x.who, det:x.missing.length ? 'Manquant : ' + x.missing.join(', ') : 'Complet'})),
+      ...d.dis.map(x => ({t:x.t, what:DIS_TYPES[x.type], who:x.who, det:x.prod || ''}))].sort((a, b) => a.t < b.t ? 1 : -1);
+    h += `<p class="small muted">Registre chronologique de cette ambulance, à présenter lors d'un contrôle.</p>
+      <div class="row"><button class="btn primary" data-action="k-print" id="d-k-print">Imprimer ou enregistrer en PDF</button><button class="btn" data-action="k-csv" id="d-k-csv">Exporter pour Excel</button></div>
+      ${rows.slice(0, 30).map(r => `<div class="qrrow"><span>${dfmt(r.t)}</span><b>${esc(r.what)} · ${esc(r.who || '?')}${r.det ? '<br><small>' + esc(r.det) + '</small>' : ''}</b></div>`).join('') || '<p class="small muted">Registre vide.</p>'}
+      <p class="small muted">Démo : les données restent dans ce navigateur. En service réel, elles seraient partagées par toute l'équipe et sauvegardées.</p>`;
+  }
+  return h;
+}
+function kRows(){ const d = kData();
+  return [...d.log.map(x => [x.t, 'Contrôle de prise de poste', x.who, x.missing.length ? 'Manquant : ' + x.missing.join(', ') : 'Complet']),
+    ...d.dis.map(x => [x.t, DIS_TYPES[x.type], x.who, x.prod || ''])].sort((a, b) => a[0] < b[0] ? -1 : 1); }
+function onCheck(act, a){
+  const d = kData(), msg = () => $('#d-k-msg');
+  if (act === 'k-tab') { state.kTab = a.dataset.tab; renderPanel(); return; }
+  if (act === 'k-all') { const c = state.v.coffres.find(x => x.id === a.dataset.id); state.kMiss = state.kMiss || {};
+    c.shelves.flat().forEach(n => { state.kMiss[n] = false; const cb = panel.querySelector(`input[data-k-item="${CSS.escape(n)}"]`); if (cb) cb.checked = true; }); return; }
+  if (act === 'k-save') { const who = ($('#d-k-who').value || '').trim(); if (!who) { msg().textContent = 'Indique le nom de l\'ambulancier.'; return; }
+    const missing = [...panel.querySelectorAll('input[data-k-item]')].filter(x => !x.checked).map(x => x.dataset.kItem);
+    d.log.push({t:new Date().toISOString(), who, missing}); state.kWho = who; state.kMiss = {}; persist(); renderPanel();
+    const m = msg(); if (m) m.textContent = missing.length ? `Contrôle enregistré : ${missing.length} manquant(s) signalé(s).` : 'Contrôle enregistré : tout est complet.'; return; }
+  if (act === 'k-dis') { const who = ($('#d-k-dwho').value || '').trim(); if (!who) { msg().textContent = 'Indique le nom de l\'ambulancier.'; return; }
+    d.dis.push({t:new Date().toISOString(), type:$('#d-k-dtype').value, who, prod:$('#d-k-dprod').value.trim()}); state.kWho = who; state.kProd = $('#d-k-dprod').value.trim(); persist(); renderPanel();
+    const m = msg(); if (m) m.textContent = 'Opération enregistrée.'; return; }
+  if (act === 'k-csv') { const csv = '﻿Date;Opération;Ambulancier;Détail\n' + kRows().map(r => [dfmt(r[0]), r[1], r[2], r[3]].map(x => '"' + String(x || '').replace(/"/g, '""') + '"').join(';')).join('\n');
+    const url = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'})), l = document.createElement('a'); l.href = url; l.download = `registre-${vName().replace(/\W+/g, '-')}.csv`; document.body.appendChild(l); l.click(); l.remove(); return; }
+  if (act === 'k-print') { const w = window.open('', '_blank'); if (!w) return;
+    w.document.write(`<!doctype html><meta charset="utf-8"><title>Registre ${esc(vName())}</title><style>body{font:13px Arial,sans-serif;margin:24px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #999;padding:5px 7px;text-align:left;vertical-align:top}th{background:#eee}</style>
+      <h2>Registre de contrôle et de désinfection · ${esc(vName())}</h2><p>Édité le ${dfmt(new Date().toISOString())}</p>
+      <table><tr><th>Date</th><th>Opération</th><th>Ambulancier</th><th>Détail</th></tr>${kRows().map(r => `<tr><td>${dfmt(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2] || '')}</td><td>${esc(r[3] || '')}</td></tr>`).join('')}</table>`);
+    w.document.close(); w.focus(); w.print(); return; }
+}
+panel.addEventListener('change', e => { const n = e.target.dataset && e.target.dataset.kExp; if (n !== undefined) { kData().exp[n] = e.target.value; persist(); renderPanel(); }
+  const it = e.target.dataset && e.target.dataset.kItem; if (it !== undefined) { state.kMiss = state.kMiss || {}; state.kMiss[it] = e.target.checked ? false : true; } });
+
 function renderPanel(){
   const v = state.v; paintTop();
+  if (state.mode === 'check') { panel.innerHTML = renderCheck(); return; }
   if (state.mode === 'learn') {
     const m = vehicleMastery(), n = allItems().length, qc = state.qr && v.coffres.find(c => c.code === state.qr);
     const qrCard = qc ? `<div class="qrcard"><span class="lbl">Locker scanned</span><h3 class="ph">${esc(qc.code)} · ${esc(qc.name)}</h3>
@@ -1703,6 +1882,7 @@ function selectCoffre(id){ state.sel = id; state.confirmDel = false; E.setOpen(i
 const changed = (rb = true) => { if (rb) build(); persist(); };
 panel.addEventListener('click', e => {
   const a = e.target.closest('[data-action]'); if (!a) return; const act = a.dataset.action, v = state.v;
+  if (act.startsWith('k-')) { onCheck(act, a); return; }
   if (act === 'focus') { if (state.mode === 'edit') selectCoffre(a.dataset.id); else { E.setOpen(a.dataset.id, true); E.focusCoffre(a.dataset.id); state.sel = a.dataset.id; renderPanel(); } }
   if (act === 'openall') E.openAll();
   if (act === 'closeall') E.closeAll();
@@ -1794,7 +1974,7 @@ const thumbOf = k => { const b = (PRESETS[k] && PRESETS[k].body) || {}; return b
 function paintCards(){ const box = root.querySelector('#d-cards'); if (!box) return;
   box.innerHTML = Object.entries(PRESETS).map(([k, p]) => `<button class="vcard" data-preset="${k}" aria-pressed="${k === store.current}" id="d-card-${k}">${thumbOf(k)}<span>${esc(store.vehicles[k] && store.vehicles[k].name || p.label)}<small>${esc(p.group || '')} · ${(store.vehicles[k] || p).coffres.length} lockers</small></span></button>`).join(''); }
 root.querySelector('#d-cards').addEventListener('click', e => { const b = e.target.closest('[data-preset]'); if (b && b.dataset.preset !== store.current) loadPreset(b.dataset.preset); });
-function paintTop(){ const n = root.querySelector('#d-vname'); if (n) n.textContent = vName(); const cn = root.querySelector('#d-card-' + store.current + ' span'); if (cn && cn.firstChild) cn.firstChild.textContent = vName();
+function paintTop(){ paintStations(); const n = root.querySelector('#d-vname'); if (n) n.textContent = vName(); const cn = root.querySelector('#d-card-' + store.current + ' span'); if (cn && cn.firstChild) cn.firstChild.textContent = vName();
   const m = vehicleMastery(), bar = root.querySelector('#d-chip-bar'), val = root.querySelector('#d-chip-v'); if (bar) bar.style.width = m + '%'; if (val) val.textContent = m + ' %'; }
 const coBox = root.querySelector('.d-callouts'); let coEls = {};
 const showCallouts = () => state.mode !== 'train';
@@ -1819,11 +1999,13 @@ function moveCallouts(){ if (!showCallouts()) return; const r = viewport.getBoun
     const dot = el.querySelector('.dot'); dot.style.top = len + 'px'; dot.style.left = dx + 'px';
     const ln = el.querySelector('.ln'); ln.style.top = '0px'; ln.style.height = len + 'px'; ln.style.left = dx + 'px'; } }
 /* ---------- feuille de QR codes imprimable ---------- */
+window.__rxQrSheet = () => openQrSheet();
 async function openQrSheet(){
   if (typeof qrcode !== 'function') { const m = $('#d-share-msg'); if (m) m.textContent = 'The QR code generator could not load.'; return; }
   const payload = await RX.packVehicle(state.v, false), base = pageBase();
   let ov = document.getElementById('qr-sheet'); if (!ov) { ov = document.createElement('div'); ov.id = 'qr-sheet'; ov.className = 'qr-sheet'; document.body.appendChild(ov); }
-  const cards = sortedCoffres().map(c => { const q = qrcode(0, 'L'); q.addData(base + '#q=' + payload + '&c=' + encodeURIComponent(c.code)); q.make();
+  const sig = v => JSON.stringify((v.coffres || []).map(c => [c.code, c.name, c.zone || '', c.shelves])), pre = PRESETS[store.current], short = store.current !== 'shared' && pre && sig(pre) === sig(state.v);
+  const cards = sortedCoffres().map(c => { const q = qrcode(0, short ? 'M' : 'L'); q.addData(short ? base + '#p=' + store.current + '&c=' + encodeURIComponent(c.code) : base + '#q=' + payload + '&c=' + encodeURIComponent(c.code)); q.make();
     const its = [...new Set(c.shelves.flat().filter(Boolean))];
     return `<div class="qr-card"><div class="qr-img">${q.createSvgTag({cellSize: 3, margin: 2, scalable: true})}</div>
       <div class="qr-txt"><span class="qr-code">${esc(c.code)}</span><b>${esc(c.name)}</b><span class="qr-veh">${esc(vName())} · ${SIDE[c.side]}</span>
@@ -1870,7 +2052,7 @@ let script = [];
 const fmt = s => s.toFixed(1) + ' s';
 function loadHero(k){
   const v = JSON.parse(JSON.stringify(RX.PRESETS[k])); v.preset = k; H.build(v); H.beaconsOn = !!v.body.beacons;
-  const visible = v.coffres.filter(c => c.side !== 'R');
+  const visible = v.body.interior ? v.coffres.filter(c => c.zone !== 'C') : v.coffres.filter(c => c.side !== 'R');
   script = [];
   visible.forEach((c, i) => script.push({at:1 + i*1.3, open:c.id}));
   const pick = visible.slice(0, 2).map(c => ({cid:c.id, name:c.shelves.flat()[1] || c.shelves.flat()[0]}));
@@ -1888,6 +2070,8 @@ function heroTick(dt){
     if (s.found) { const o = H.objs[s.found.cid]; const d = o && o.items.find(x => x.name === s.found.name); if (d) H.flash(d.main, '#3ecf7f'); hcOk.classList.add('on'); hcT.textContent = fmt(askT); ask = null; } }
   if (ask) { askT += dt; hcT.textContent = fmt(askT); }
   if (cycleT > 13) { si = (si + 1) % seq.length; loadHero(seq[si]); }
+  if (H.interior && H.stations) { const s = H.stations.arriere, w = Math.sin(cycleT/13*Math.PI*2);
+    H.camera.position.set(s.pos.x + 0.5, s.pos.y - 0.05, s.pos.z + w*0.3); H.camera.lookAt(s.target.x, s.target.y, s.target.z - w*0.35); return; }
   const L = H.totalL || 6, a = H.aspect || 1.6, narrow = a < 1.05;
   const phi = phi0 - 0.5*Math.sin(Math.min(1, cycleT/13)*Math.PI*0.9);
   const R = (L*1.25 + 3.2)*(narrow ? 1.55 : 1), y = narrow ? 3.6 : 3.0;
@@ -1913,9 +2097,10 @@ function initDemo(){
   engines.push({E:D, active:() => demoVisible && !document.hidden, tick:dt => demo.frame()});
 }
 let pendingShare = null;
-window.addEventListener('hashchange', () => { if (/(^#|&)(q|v)=/.test(location.hash)) location.reload(); });
+window.addEventListener('hashchange', () => { if (/(^#|&)(q|v|p)=/.test(location.hash)) location.reload(); });
 { const h = location.hash.slice(1), prm = Object.fromEntries(h.split('&').map(kv => kv.split('=')).filter(x => x.length === 2));
   const pl = prm.q || prm.v;
+  if (prm.p && !pl) { window.RX_START_PRESET = prm.p; if (prm.c) window.RX_SHARED_COFFRE = decodeURIComponent(prm.c); setTimeout(() => { initDemo(); droot.scrollIntoView({block: 'start'}); }, 50); }
   if (pl) pendingShare = RX.unpackVehicle(pl).then(sv => { window.RX_SHARED = sv; if (prm.c) window.RX_SHARED_COFFRE = decodeURIComponent(prm.c); })
     .catch(() => {}).then(() => { pendingShare = null; initDemo(); droot.scrollIntoView({block: 'start'}); }); }
 new IntersectionObserver(es => es.forEach(e => { demoVisible = e.isIntersecting; if (demoVisible && !pendingShare) initDemo(); }), {rootMargin:'300px 0px'}).observe(droot);
@@ -1938,5 +2123,4 @@ window.__rx = {H, get D(){ return D; }, heroTick, loadHero};
 })();
 </script>
 
-</body>
-</html>
+</body></html>
