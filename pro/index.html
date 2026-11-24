@@ -138,6 +138,7 @@ section.s{padding-block:clamp(72px,9vw,112px) 0}
 .demo textarea{font-family:var(--mono);font-size:12.5px;line-height:1.6;resize:vertical}
 .d-view{grid-area:view;position:relative;min-height:0;min-width:0;background:var(--scene);overflow:hidden}
 .d-view canvas{display:block;width:100%;height:100%;touch-action:none}
+.d-load{position:absolute;inset:0;display:grid;place-items:center;background:var(--scene);z-index:4;transition:opacity .5s ease}.d-load span{font:500 12px/1.4 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:#5d646c;padding:10px 14px;border:1px solid rgba(0,0,0,.15);background:rgba(255,255,255,.7)}.d-load.off{opacity:0;pointer-events:none}
 .d-panel{grid-area:panel;border-left:var(--b);overflow:auto;padding:18px;min-height:0;min-width:0;display:flex;flex-direction:column;gap:18px;background:var(--white)}
 .d-strip{grid-area:strip;border-top:var(--b);background:var(--white);display:flex;align-items:center;gap:14px;padding:10px 14px;min-width:0}
 .d-cards{display:flex;gap:8px;overflow-x:auto;min-width:0;padding-bottom:2px}
@@ -165,6 +166,7 @@ section.s{padding-block:clamp(72px,9vw,112px) 0}
 .is-interior .d-hint{bottom:12px;max-width:calc(50% - 170px)}
 .is-interior .d-hud{top:64px}
 @media (max-width:760px){.d-stations{top:6px}.d-stations .st-l{display:none}.d-stations button{font-size:12px;padding:8px 8px}}
+@media (max-width:480px){.d-chip{display:none}.d-stations button{padding:8px 7px}}
 .ib{display:grid;place-items:center;min-width:38px;height:36px;border:0;background:var(--white);color:var(--ink);cursor:pointer;font:500 12.5px var(--body);padding:0 10px;border-radius:0}
 .ib + .ib{border-left:1px solid var(--ink)}
 .ib:hover{background:var(--paper)}
@@ -479,6 +481,7 @@ footer .mark{border-color:#fff}footer .mark i{background:#fff}footer .mark i:fir
         </div>
         <div class="d-view">
           <canvas id="demo-canvas" aria-label="Vue 3D interactive de l'engin"></canvas>
+          <div class="d-load" id="d-load" aria-hidden="true"><span>Chargement de la 3D…</span></div>
           <div class="d-callouts" aria-hidden="false"></div>
           <div class="d-hud" hidden></div>
           <div class="d-hint">Glisser : tourner · molette : zoomer · clic sur un coffre : ouvrir</div>
@@ -1865,8 +1868,7 @@ function doorTex(code, w, h, doorHex, style, mid){
   if (style === 'rideau') { for (let y = 0; y < ch; y += 26) { x.fillStyle = 'rgba(0,0,0,0.07)'; x.fillRect(0, y, cw, 5); x.fillStyle = 'rgba(255,255,255,0.18)'; x.fillRect(0, y + 5, cw, 3); } }
   const fs = Math.round(Math.min(cw, ch)*0.13);
   x.font = `700 ${fs}px ${DF}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.shadowColor = 'rgba(0,0,0,0.3)'; x.shadowBlur = 3;
-  if (mid) { x.shadowBlur = 0; let f2 = Math.round(Math.min(ch*0.34, cw*0.2)); x.font = `700 ${f2}px ${DF}`; const tw = x.measureText(code).width + f2*0.8, th = f2*1.35;
-    rr(x, cw/2 - tw/2, ch/2 - th/2, tw, th, f2*0.18); x.fillStyle = 'rgba(20,24,30,0.88)'; x.fill(); x.fillStyle = '#ffffff'; x.fillText(code, cw/2, ch/2 + f2*0.04); return tex(c); }
+  if (mid) return tex(c);
   x.fillStyle = light ? 'rgba(22,24,28,0.9)' : 'rgba(255,255,255,0.95)'; x.fillText(code, cw/2, ch*0.1);
   return tex(c);
 }
@@ -2013,6 +2015,13 @@ function createEngine(opts){
           const pk = new THREE.Mesh(new THREE.BoxGeometry(sw - 0.03, ph, 0.004), pm); pk.position.set(ix, yBot + 0.0125 + ph/2, 0.004); g.add(pk);
           const el = new THREE.Mesh(new THREE.BoxGeometry(sw - 0.026, 0.014, 0.008), em); el.position.set(ix, yBot + 0.0125 + ph, 0.004); g.add(el);
           [-1, 1].forEach(sg => { const sd = new THREE.Mesh(new THREE.BoxGeometry(0.01, ph, 0.01), em); sd.position.set(ix + sg*(sw - 0.03)/2, yBot + 0.0125 + ph/2, 0.002); g.add(sd); }); }
+        if (E.interior && opt.open && !opt.pockets && /-mur$/.test(c.zone || '')) {
+          const bm = mats.bracket || (mats.bracket = new THREE.MeshStandardMaterial({color:col('#4a5058'), roughness:0.45, metalness:0.6}));
+          const bw = Math.min(sw - 0.04, (it.w || sw*0.6)*kS + 0.04), bh = Math.min(sh - 0.03, Math.max(0.08, (it.h || 0.2)*kS*0.75));
+          const bp = new THREE.Mesh(RBox(bw, bh, 0.01, 0.004), bm); bp.position.set(ix, yBot + 0.0125 + bh/2, -depth + 0.006); g.add(bp);
+          const tr = new THREE.Mesh(RBox(bw, 0.014, depth - 0.012, 0.004), bm); tr.position.set(ix, yBot + 0.004, -depth/2 + 0.002); g.add(tr);
+          const lp = new THREE.Mesh(RBox(bw, 0.03, 0.01, 0.003), bm); lp.position.set(ix, yBot + 0.018, 0); g.add(lp);
+          [-1, 1].forEach(sg => { const st = new THREE.Mesh(new THREE.BoxGeometry(0.012, 0.028, depth - 0.02), bm); st.position.set(ix + sg*(bw/2 - 0.012), yBot - 0.01, -depth/2); g.add(st); }); }
         const d = {type:'item', name, coffreId:c.id, group:it.g, main:it.main};
         it.g.traverse(o => { if (o.isMesh) { o.userData = Object.assign({}, d); E.pickables.push(o); } });
         items.push(d);
@@ -2051,6 +2060,7 @@ function createEngine(opts){
       const door = new THREE.Mesh(RBox(w*0.985, h*0.985, 0.022, 0.008), doorMat); door.position.y = -h/2; door.castShadow = true; pivot.add(door);
       const lab = new THREE.Mesh(new THREE.PlaneGeometry(w*0.94, h*0.94), new THREE.MeshBasicMaterial({map:codeTex, transparent:true, toneMapped:false})); lab.position.z = 0.0115; door.add(lab); lab.position.z = 0.015;
       const hb = new THREE.Mesh(RBox(w*0.9, 0.04, 0.035, 0.012), chromeM); hb.position.set(0, -h*0.985/2 + 0.035, 0.022); door.add(hb);
+      if (opt.interiorDoor) { const pl = new THREE.Mesh(new THREE.PlaneGeometry(0.17, 0.085), new THREE.MeshBasicMaterial({map:plateTex(c.code || '?'), transparent:true, toneMapped:false})); pl.position.set(-w*0.985/2 + 0.125, h*0.985/2 - 0.09, 0.0175); door.add(pl); pl.userData = {type:'door', coffreId:c.id}; E.pickables.push(pl); }
       const box = new THREE.Mesh(RBox(w + 0.02, 0.08, 0.08, 0.02), mats.alu); box.position.set(0, h/2 - 0.02, 0.035); box.castShadow = true; g.add(box);
       door.userData = {type:'door', coffreId:c.id}; lab.userData = door.userData; E.pickables.push(door, lab);
       mainDoor = door; leaves.push({pivot, rideau:true, door});
@@ -2060,6 +2070,7 @@ function createEngine(opts){
       const hr = opt.hingeRight; mainDoor = mkLeaf(w*0.985, hr ? -1 : 1, hr ? w/2 : -w/2, true);
     }
     E.objs[c.id] = {c, g, leaves, door:mainDoor, doorMat, led, innerMat, items, w, h, style, p:opt.open ? 1 : 0, target:opt.open ? 1 : 0, fixed:!!opt.open};
+    if (E.interior) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:plateTex(c.code || '?'), depthTest:false, toneMapped:false})); sp.scale.set(0.26, 0.13, 1); sp.position.set(0, c.zone === 'C' ? 1.0 : h/2 + 0.03, c.zone === 'C' ? -depth/2 : -Math.min(0.1, depth/2)); sp.renderOrder = 10; sp.visible = false; g.add(sp); E.planTags.push(sp); }
     if (opt.open) { const lab = new THREE.Mesh(E.interior ? new THREE.PlaneGeometry(0.15, 0.075) : new THREE.PlaneGeometry(Math.min(0.5, w*0.6), 0.09), new THREE.MeshBasicMaterial({map:E.interior ? plateTex(c.code || '?') : tagTex(c.code || '?'), transparent:true, toneMapped:false})); if (E.interior) lab.position.set(-w/2 + 0.1, /-mur$/.test(c.zone || '') ? h/2 - 0.085 : Math.min(h/2 - 0.05, -h/2 + 0.75), c.zone === 'C' ? 0.01 : -depth + 0.012); else lab.position.set(0, h/2 + 0.06, 0.01); g.add(lab); lab.userData = {type:'door', coffreId:c.id}; E.pickables.push(lab); }
   }
 
@@ -2128,16 +2139,25 @@ function createEngine(opts){
     };
     const add = (geo, mat, x, y, z, parent = truck, shadow = true) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = shadow; parent.add(m); return m; };
     // --- vue intérieure de la cellule sanitaire (ambulance, VSAV) : rangements génériques, caméra depuis les portes arrière
-    E.interior = !!b.interior;
+    E.interior = !!b.interior; E.planTags = []; E.ceil = null;
     E.stations = null; if (controls) { controls.enableRotate = true; controls.enablePan = true; controls.minAzimuthAngle = -Infinity; controls.maxAzimuthAngle = Infinity; controls.minPolarAngle = 0; controls.maxPolarAngle = Math.PI*0.47; controls.minDistance = 1.5; controls.maxDistance = 26; }
     camera.fov = E.interior ? 68 : (opts.fov || 36); camera.near = E.interior ? 0.03 : 0.2; camera.updateProjectionMatrix();
     if (E.interior) {
       const L = 4.4, Wc = 2.6, H = 2.15, x0 = -L/2;
-      const wallM = std('#eef1f3', 0.6, 0.02, {side:THREE.DoubleSide}), floorM = std('#5b6168', 0.85, 0.05), ceilM = std('#f6f7f8', 0.5, 0, {side:THREE.DoubleSide});
+      let seed = 7; const rnd = () => (seed = (seed*16807) % 2147483647)/2147483647;
+      const floorT = (() => { const [c, x] = cv(512, 512); x.fillStyle = '#5f656c'; x.fillRect(0, 0, 512, 512);
+        for (let i = 0; i < 7000; i++) { const v = rnd(), sz = 1 + rnd()*2.2; x.fillStyle = v < 0.45 ? 'rgba(255,255,255,0.12)' : v < 0.9 ? 'rgba(0,0,0,0.14)' : 'rgba(120,170,210,0.25)'; x.fillRect(rnd()*512, rnd()*512, sz, sz); }
+        const t = tex(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(5, 3); return t; })();
+      const wallT = (() => { const [c, x] = cv(1024, 512); const gr = x.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, '#f4f6f7'); gr.addColorStop(1, '#e4e8eb'); x.fillStyle = gr; x.fillRect(0, 0, 1024, 512);
+        for (let i = 1; i < 4; i++) { const X = i*256; x.fillStyle = 'rgba(0,0,0,0.10)'; x.fillRect(X - 1, 0, 2, 512); x.fillStyle = 'rgba(255,255,255,0.7)'; x.fillRect(X + 1, 0, 2, 512); }
+        for (let i = 0; i < 4; i++) for (const yy of [40, 472]) { x.fillStyle = 'rgba(0,0,0,0.13)'; for (let k = 0; k < 2; k++) { x.beginPath(); x.arc(i*256 + 20 + k*216, yy, 3, 0, 7); x.fill(); } }
+        return tex(c); })();
+      const wallM = new THREE.MeshStandardMaterial({map:wallT, roughness:0.55, metalness:0.02, side:THREE.DoubleSide}), floorM = new THREE.MeshStandardMaterial({map:floorT, roughness:0.82, metalness:0.04}), ceilM = std('#f6f7f8', 0.5, 0, {side:THREE.DoubleSide});
       const blueM = std(b.accent || '#1f4e79', 0.4, 0.1), railM = std('#c4c9ce', 0.3, 0.9), seatM = std('#2b2f34', 0.7, 0.05), ledM = std('#ffffff', 0.2, 0, {emissive:col('#eaf2ff'), emissiveIntensity:1.4});
       const wall = (w, h, x, y, z, ry, m = wallM) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m); p.position.set(x, y, z); p.rotation.y = ry; p.receiveShadow = true; truck.add(p); return p; };
       const fl = new THREE.Mesh(new THREE.PlaneGeometry(L, Wc), floorM); fl.rotation.x = -Math.PI/2; fl.position.set(0, 0.002, 0); truck.add(fl);
-      const ce = new THREE.Mesh(new THREE.PlaneGeometry(L, Wc), ceilM); ce.rotation.x = Math.PI/2; ce.position.set(0, H, 0); truck.add(ce);
+      const ceil = new THREE.Group(); ceil.userData.dynamic = true; truck.add(ceil); E.ceil = ceil;
+      const ce = new THREE.Mesh(new THREE.PlaneGeometry(L, Wc), ceilM); ce.rotation.x = Math.PI/2; ce.position.set(0, H, 0); ceil.add(ce);
       wall(L, H, 0, H/2, Wc/2, Math.PI); wall(L, H, 0, H/2, -Wc/2, 0); wall(Wc, H, L/2, H/2, 0, -Math.PI/2);
       // cadre des portes arrière, bande bleue, rail central au sol, spots au plafond
       add(new THREE.BoxGeometry(0.06, H, 0.12), railM, x0, H/2, Wc/2 - 0.06, truck, false); add(new THREE.BoxGeometry(0.06, H, 0.12), railM, x0, H/2, -Wc/2 + 0.06, truck, false);
@@ -2153,12 +2173,22 @@ function createEngine(opts){
         const inner = new THREE.Mesh(new THREE.PlaneGeometry(Wc/2 - 0.1, 0.9), std('#e3e7ea', 0.6, 0)); inner.position.set(-(Wc/2 - 0.06)/2, 0.75, -0.027); inner.rotation.y = Math.PI; d.add(inner); });
       { const p = add(new THREE.BoxGeometry(0.5, 0.16, 0.02), std('#f7f8f8', 0.4, 0.05), 1.05, 1.08, Wc/2 - 0.01, truck, false);
         [-0.15, 0, 0.15].forEach((dx, i) => { const o = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.03, 18), std(i < 2 ? '#2f8a4a' : '#f2c500', 0.35, 0.1)); o.rotation.x = Math.PI/2; o.position.set(1.05 + dx, 1.08, Wc/2 - 0.03); truck.add(o); }); }
-      { const rl = add(new THREE.CylinderGeometry(0.014, 0.014, 2.6, 12), railM, -0.5, H - 0.07, -0.3, truck, false); rl.rotation.z = Math.PI/2;
-        [-1.7, -0.5, 0.7].forEach(xx => add(new THREE.BoxGeometry(0.026, 0.07, 0.026), railM, xx, H - 0.035, -0.3, truck, false));
-        [-1.1, 0.1].forEach(xx => { const h = new THREE.Mesh(new THREE.TorusGeometry(0.025, 0.004, 8, 16, Math.PI*1.4), railM); h.position.set(xx, H - 0.11, -0.3); truck.add(h); }); }
-      [-1.4, 0, 1.4].forEach(x => [0.55, -0.55].forEach(z => { const s = add(new THREE.CylinderGeometry(0.05, 0.05, 0.012, 16), ledM, x, H - 0.006, z, truck, false); }));
+      { const rl = add(new THREE.CylinderGeometry(0.014, 0.014, 2.6, 12), railM, -0.5, H - 0.07, -0.3, ceil, false); rl.rotation.z = Math.PI/2;
+        [-1.7, -0.5, 0.7].forEach(xx => add(new THREE.BoxGeometry(0.026, 0.07, 0.026), railM, xx, H - 0.035, -0.3, ceil, false));
+        [-1.1, 0.1].forEach(xx => { const h = new THREE.Mesh(new THREE.TorusGeometry(0.025, 0.004, 8, 16, Math.PI*1.4), railM); h.position.set(xx, H - 0.11, -0.3); ceil.add(h); }); }
+      const ledFrame = std('#d9dde1', 0.4, 0.3);
+      [-1.4, 0, 1.4].forEach(x => [0.6, -0.75].forEach(z => { add(new THREE.BoxGeometry(0.62, 0.014, 0.2), ledFrame, x, H - 0.007, z, ceil, false); add(new THREE.BoxGeometry(0.56, 0.016, 0.14), ledM, x, H - 0.008, z, ceil, false); }));
+      // plinthe remontée (sol en vinyle relevé sur les murs), ombres de contact au sol
+      const skirtM = std('#596067', 0.75, 0.05);
+      add(new THREE.BoxGeometry(L, 0.09, 0.01), skirtM, 0, 0.045, Wc/2 - 0.005, truck, false); add(new THREE.BoxGeometry(L, 0.09, 0.01), skirtM, 0, 0.045, -Wc/2 + 0.005, truck, false); add(new THREE.BoxGeometry(0.01, 0.09, Wc), skirtM, L/2 - 0.005, 0.045, 0, truck, false);
+      const shadowAt = (w, d, x, z, op) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({map:SHADOW, transparent:true, opacity:op, depthWrite:false})); m.rotation.x = -Math.PI/2; m.position.set(x, 0.005, z); m.userData.sharedMat = false; truck.add(m); return m; };
+      shadowAt(2.9, 1.05, -0.5, -0.29, 0.45); shadowAt(0.85, 0.8, 1.3, Wc/2 - 0.36, 0.5);
       const pl1 = new THREE.PointLight(0xffffff, 0.9, 6, 1.6); pl1.position.set(-0.6, H - 0.15, 0); truck.add(pl1);
       const pl2 = new THREE.PointLight(0xffffff, 0.7, 6, 1.6); pl2.position.set(1.0, H - 0.15, 0); truck.add(pl2);
+      // tableau de commande de la cellule (éclairage, chauffage) sur le mur droit
+      { const [c, x] = cv(256, 160); x.fillStyle = '#23272c'; rr(x, 2, 2, 252, 156, 14); x.fill(); x.fillStyle = '#0f1a14'; x.fillRect(18, 16, 104, 46); x.fillStyle = '#7dffa8'; x.font = '700 30px Arial, sans-serif'; x.textBaseline = 'middle'; x.fillText('21°C', 30, 41);
+        [[150, 30, '#ffd23d'], [196, 30, '#e9eef3'], [150, 78, '#e9eef3'], [196, 78, '#5ec8ff'], [30, 112, '#e9eef3'], [76, 112, '#e9eef3'], [122, 112, '#ff6b5e'], [196, 122, '#e9eef3']].forEach(([X, Y, cc]) => { x.fillStyle = '#3a3f46'; rr(x, X - 18, Y - 16, 36, 32, 6); x.fill(); x.fillStyle = cc; x.beginPath(); x.arc(X, Y, 5, 0, 7); x.fill(); });
+        const cp = add(new THREE.PlaneGeometry(0.26, 0.16), new THREE.MeshStandardMaterial({map:tex(c), roughness:0.4, metalness:0.2}), 1.95, 1.34, Wc/2 - 0.012, truck, false); cp.rotation.y = Math.PI; }
       // siège du côté droit (décor)
       const seat = new THREE.Group(); seat.position.set(1.3, 0, Wc/2 - 0.34); truck.add(seat);
       [[0.5, 0.1, 0.5, 0, 0.48, 0], [0.5, 0.65, 0.1, 0, 0.85, -0.22], [0.08, 0.45, 0.4, 0.2, 0.24, -0.02], [0.08, 0.45, 0.4, -0.2, 0.24, -0.02]].forEach(([w, h, d, x, y, z]) => { const m = new THREE.Mesh(RBox(w, h, d, 0.03), seatM); m.position.set(x, y, z); seat.add(m); });
@@ -2185,6 +2215,7 @@ function createEngine(opts){
       Object.keys(Z).forEach(zk => {
         const z = Z[zk], wdef = Object.assign({}, W2[z.wall], z.span ? {span:z.span} : {}), list = v.coffres.filter(c => zoneOf(c) === zk); if (!list.length) return;
         const frame = new THREE.Group(); frame.position.set(...wdef.pos(z.depth)); frame.rotation.y = wdef.rot; truck.add(frame);
+        if (/-bas$/.test(zk)) { const len = wdef.span[1] - wdef.span[0], pm = mats.plinth || (mats.plinth = std('#2e3237', 0.7, 0.1)); const pl = new THREE.Mesh(new THREE.BoxGeometry(len, z.y[0], z.depth - 0.06), pm); pl.position.set((wdef.span[0] + wdef.span[1])/2, z.y[0]/2, -0.06 - (z.depth - 0.06)/2); frame.add(pl); }
         if (zk === 'G-mur') { const len = wdef.span[1] - wdef.span[0], pan = new THREE.Mesh(new THREE.BoxGeometry(len, z.y[1] - z.y[0] + 0.06, 0.02), std(b.panel || '#e8641e', 0.8, 0)); pan.position.set((wdef.span[0] + wdef.span[1])/2, (z.y[0] + z.y[1])/2, -z.depth + 0.012); frame.add(pan); }
         if (zk.endsWith('-mur')) { const len = wdef.span[1] - wdef.span[0], bar = new THREE.Mesh(new THREE.BoxGeometry(len, 0.035, 0.035), railM); bar.position.set((wdef.span[0] + wdef.span[1])/2, z.y[1] - 0.02, -0.03); frame.add(bar); [0.1, 0.5, 0.9].forEach(f => { const k = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.06, 0.06), railM); k.position.set(wdef.span[0] + len*f, z.y[1] - 0.02, -0.06); frame.add(k); }); }
         const sum = list.reduce((a, c) => a + (+c.weight || 1), 0) || 1, gap = 0.04, avail = (wdef.span[1] - wdef.span[0]) - gap*Math.max(0, list.length - 1);
@@ -2199,9 +2230,10 @@ function createEngine(opts){
       E.totalL = L; E.centerX = 0; E.markDoors(); key.position.set(0.3, H - 0.08, 0.2); key.target.position.set(0.3, 0, -0.1); key.angle = 1.25; key.penumbra = 1; key.intensity = 1.1; key.distance = 6; key.decay = 1.2; key.shadow.camera.near = 0.05; key.shadow.camera.far = 4; key.shadow.bias = -0.0006; key.shadow.normalBias = 0.015;
       E.stations = {
         arriere: {pos:new THREE.Vector3(x0 - 1.0, 1.65, 0), target:new THREE.Vector3(0.6, 1.15, 0)},
-        gauche: {pos:new THREE.Vector3(-0.1, 1.72, 0.86), target:new THREE.Vector3(-0.1, 1.08, -Wc/2)},
-        droite: {pos:new THREE.Vector3(-0.55, 1.32, -0.7), target:new THREE.Vector3(-0.55, 1.15, Wc/2)},
-        avant: {pos:new THREE.Vector3(-0.9, 1.55, 0), target:new THREE.Vector3(L/2, 1.2, 0)}
+        gauche: {pos:new THREE.Vector3(-0.05, 1.74, 0.88), target:new THREE.Vector3(-0.05, 1.1, -Wc/2), fov:80},
+        droite: {pos:new THREE.Vector3(-0.25, 1.36, -0.86), target:new THREE.Vector3(-0.25, 1.2, Wc/2), fov:80},
+        avant: {pos:new THREE.Vector3(-0.9, 1.55, 0), target:new THREE.Vector3(L/2, 1.2, 0)},
+        dessus: {pos:new THREE.Vector3(0, 6.85, 0.03), target:new THREE.Vector3(0, 2.72, 0), plan:true}
       };
       E.cell = {L, Wc, H};
       if (controls) { controls.enableRotate = false; controls.enablePan = false; controls.minDistance = 0.35; controls.maxDistance = 4.2; }
@@ -2510,12 +2542,14 @@ function createEngine(opts){
     const L = (E.totalL || 6)*0.92, a = E.aspect || 1.6, k = a < 1 ? 1.45/a*0.75 : 1;
     return {pos:new THREE.Vector3(-L*0.95*k, 3.7*Math.min(k, 1.3), L*1.15*k), target:new THREE.Vector3(0, 1.5, 0)}; };
   E.overview = () => { camGoal = E.overviewPose(); };
-  E.goStation = k => { if (E.stations && E.stations[k]) camGoal = {pos:E.stations[k].pos.clone(), target:E.stations[k].target.clone()}; };
+  E.goStation = k => { const st = E.stations && E.stations[k]; if (!st) return; let fov = st.fov;
+    if (st.plan) { const C = E.cell || {L:4.4, Wc:2.6}, a = E.aspect || 1.6, d = 5.1, need = Math.max((C.Wc + 0.5)/2/d, (C.L + 0.5)/2/d/a); fov = Math.min(95, 2*Math.atan(need)*180/Math.PI); }
+    camGoal = {pos:st.pos.clone(), target:st.target.clone(), fov}; };
   E.coffrePose = (id, distMul = 1) => { const o = E.objs[id]; if (!o) return null;
     const p = new THREE.Vector3(), q = new THREE.Quaternion(); o.g.getWorldPosition(p); o.g.getWorldQuaternion(q);
     const nrm = new THREE.Vector3(0, 0, 1).applyQuaternion(q), a = E.aspect || 1.6;
     if (E.interior) { const C = E.cell || {L:4.4, Wc:2.6}, tgt = p.clone(), n2 = nrm.clone().setY(0).normalize();
-      const vf = camera.fov*Math.PI/360, hf = Math.atan(Math.tan(vf)*a), oh = Math.min(Math.max(o.h || 0.4, 0.3), 1.4), ow = Math.min(Math.max(o.w || 0.6, 0.3), 2.6);
+      const vf = 68*Math.PI/360, hf = Math.atan(Math.tan(vf)*a), oh = Math.min(Math.max(o.h || 0.4, 0.3), 1.4), ow = Math.min(Math.max(o.w || 0.6, 0.3), 2.6);
       let d = Math.max((oh/2 + 0.1)/Math.tan(vf), (ow/2 + 0.08)/Math.tan(hf))*distMul; d = Math.max(0.7, Math.min(2.3, d));
       const low = tgt.y < 1.0, high = tgt.y > 1.55, pos = tgt.clone().add(n2.multiplyScalar(d));
       pos.y = low ? tgt.y + 0.42 + d*0.12 : high ? Math.min(1.8, tgt.y - 0.05) : tgt.y + 0.08; if (low) tgt.y -= 0.04;
@@ -2556,6 +2590,7 @@ function createEngine(opts){
   E.resize = (w, h) => { if (!w || !h) return; renderer.setSize(w, h, false); camera.aspect = w/h; E.aspect = w/h; camera.updateProjectionMatrix(); };
   E.update = dt => {
     E.time += dt;
+    if (E.ceil) { const plan = E.interior && E.cell && camera.position.y > E.cell.H + 0.25; E.ceil.visible = !plan; if (E.planTags) E.planTags.forEach(t => t.visible = plan && E.labels); }
     for (const o of Object.values(E.objs)) {
       o.p += (o.target - o.p)*Math.min(1, dt*(E.doorSpeed || 8));
       o.leaves.forEach(l => { if (l.flap) { l.pivot.rotation.x = -1.42*o.p; return; } if (l.rideau) { const s = Math.max(0.06, 1 - 0.94*o.p); l.door.scale.y = s; l.door.position.y = -o.h*0.985*s/2; } else l.pivot.rotation.y = l.sign*1.62*o.p; });
@@ -2564,7 +2599,9 @@ function createEngine(opts){
     const on = E.beaconsOn;
     E.beacons.forEach(b => { const f = on ? Math.max(0, Math.sin((E.time*2.2 + b.phase*0.5)*Math.PI*2)) ** 3 : 0; b.mesh.material.emissiveIntensity = 0.3 + f*4; b.spr.material.opacity = f*0.75*(LIGHT ? 0.18 : 1); });
     E.beaconLights.forEach(b => { const f = on ? Math.max(0, Math.sin((E.time*2.2 + b.phase*0.5)*Math.PI*2)) ** 3 : 0; b.pl.intensity = f*3; });
-    if (camGoal) { const k = Math.min(1, dt*3.5); camera.position.lerp(camGoal.pos, k); if (controls) controls.target.lerp(camGoal.target, k); if (camera.position.distanceTo(camGoal.pos) < 0.01) camGoal = null; }
+    if (camGoal) { const k = Math.min(1, dt*3.5); camera.position.lerp(camGoal.pos, k); if (controls) controls.target.lerp(camGoal.target, k);
+      const gf = camGoal.fov || (E.interior ? 68 : 0); if (gf && Math.abs(camera.fov - gf) > 0.02) { camera.fov += (gf - camera.fov)*k; camera.updateProjectionMatrix(); }
+      if (camera.position.distanceTo(camGoal.pos) < 0.01) { camera.position.copy(camGoal.pos); if (controls) controls.target.copy(camGoal.target); if (gf) { camera.fov = gf; camera.updateProjectionMatrix(); } camGoal = null; } }
     if (controls && controls.enabled) controls.update();
   };
   E.render = () => renderer.render(scene, camera);
@@ -2645,7 +2682,7 @@ const build = () => { E.build(state.v); applyLabels(); paintCallouts(); paintTop
 $('#d-view').addEventListener('click', () => E.overview());
 /* vues fixes à l'intérieur de la cellule : un clic pour se placer face à un mur */
 const stBox = document.createElement('div'); stBox.className = 'd-stations'; stBox.setAttribute('role', 'group'); stBox.setAttribute('aria-label', 'Se placer');
-stBox.innerHTML = '<span class="st-l">Se placer</span>' + [['arriere', 'Arrière'], ['gauche', 'Mur gauche'], ['droite', 'Mur droit'], ['avant', 'Avant']].map(([k, t]) => `<button data-station="${k}" id="d-st-${k}" aria-pressed="${k === 'arriere'}">${t}</button>`).join('');
+stBox.innerHTML = '<span class="st-l">Se placer</span>' + [['arriere', 'Arrière'], ['gauche', 'Mur gauche'], ['droite', 'Mur droit'], ['avant', 'Avant'], ['dessus', 'Plan']].map(([k, t]) => `<button data-station="${k}" id="d-st-${k}" aria-pressed="${k === 'arriere'}">${t}</button>`).join('');
 const stView = root.querySelector('.d-view'); if (stView) stView.appendChild(stBox);
 const markSt = k => stBox.querySelectorAll('[data-station]').forEach(x => x.setAttribute('aria-pressed', x.dataset.station === k ? 'true' : 'false'));
 { const _ov = E.overview, _fc = E.focusCoffre; E.overview = (...x) => { markSt('arriere'); return _ov(...x); }; E.focusCoffre = (...x) => { markSt(''); return _fc(...x); }; }
@@ -3206,7 +3243,8 @@ function initDemo(){
   demo = RXDemo(droot, D);
   const rs = () => { const r = dview.getBoundingClientRect(); D.resize(r.width, r.height); };
   new ResizeObserver(rs).observe(dview); rs(); demo.start();
-  engines.push({E:D, active:() => demoVisible && !document.hidden, tick:dt => demo.frame()});
+  let firstFrame = true;
+  engines.push({E:D, active:() => demoVisible && !document.hidden, tick:dt => { demo.frame(); if (firstFrame) { firstFrame = false; requestAnimationFrame(() => { const l = document.getElementById('d-load'); if (l) l.classList.add('off'); }); } }});
 }
 let pendingShare = null;
 window.addEventListener('hashchange', () => { if (/(^#|&)(q|v|p)=/.test(location.hash)) location.reload(); });
