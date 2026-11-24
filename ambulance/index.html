@@ -681,7 +681,7 @@ function hose(P, pts, r, mat, parent, seg){ const c = new THREE.CatmullRomCurve3
 function lathe(P, pts, mat, x, y, z, parent, seg, phiStart, phiLen){ return mesh(P, new THREE.LatheGeometry(pts.map(([r, h]) => new THREE.Vector2(Math.max(0.0004, r), h)), seg || 32, phiStart || 0, phiLen || Math.PI*2), mat, x, y, z, parent); }
 const ell = (R, L, n, squash) => { const p = []; for (let i = 0; i <= n; i++) { const a = i/n*Math.PI; p.push([Math.sin(a)*R*(squash ? 1 - squash*i/n : 1), -Math.cos(a)*L/2]); } return p; };
 /* étiquette enroulée sur un cylindre (face avant) */
-function wrap(P, r, h, tex, x, y, z, parent, arc){ const a = arc || Math.PI*1.1; return mesh(P, new THREE.CylinderGeometry(r, r, h, 28, 1, true, -a/2, a), STD(tex, 0.5, {side: THREE.FrontSide}), x, y, z, parent); }
+function wrap(P, r, h, tex, x, y, z, parent, arc){ const a = arc || Math.PI*1.1; r += 0.0015; return mesh(P, new THREE.CylinderGeometry(r, r, h, 28, 1, true, -a/2, a), STD(tex, 0.5, {side: THREE.FrontSide}), x, y, z, parent); }
 
 /* ---------- objets ---------- */
 function bavu(P, ped){
@@ -1006,6 +1006,7 @@ function collier(P, ped){
   return {w: 0.5*k, h: 0.2*k, d: 0.09, front: 0, tagY: 0.04, tagW: 0.2};
 }
 
+window.RX_MK = {ctex, fit, rr, icon, pkgTex, lcdTex, dialTex, spiralTex, STD, mesh, sub, RBG, carton, sachet, pouch, hose, lathe, wrap, folded, gloveBoxes, nettoyage, coussin};
 window.RX_MED = () => [
   [/insufflateur/, (P, n) => bavu(P, /pédia|enfant/.test(n))],
   [/masques haute|lunettes à oxyg|masque haute/, (P, n) => maskSachets(P, n)],
@@ -1021,7 +1022,7 @@ window.RX_MED = () => [
   [/compresses/, P => compresses(P)],
   [/pansements? américain/, P => americains(P)],
   [/gants stériles/, P => gantsSteriles(P)],
-  [/gants non stériles|gants à usage unique/, P => gloveBoxes(P)],
+  [/gants non stériles|gants à usage unique|^ gants $/, P => gloveBoxes(P)],
   [/sacs? vomitoire/, P => vomi(P)],
   [/haricot/, P => haricots(P)],
   [/matelas de transfert|drap portoir/, P => slideRoll(P)],
@@ -1030,12 +1031,12 @@ window.RX_MED = () => [
   [/ffp2/, P => ffp2(P)],
   [/tenues? de protection|surblouse/, P => folded(P, ['#9fc6e8', '#8bb8de', '#9fc6e8'], 0.3, 0.22, 0.05, {film: true, label: pkgTex({ar: 0.45, bg: '#ffffff', icon: 'gown', iconCol: '#2a6fb5', title: 'SURBLOUSE'})})],
   [/gilets? rétro/, P => folded(P, ['#d7f21d', '#cfe81b', '#d7f21d'], 0.28, 0.22, 0.035, {stripes: true, rough: 0.7})],
-  [/couverture bactério|couverture (?!de survie)/, P => folded(P, ['#4a6d94', '#7d8189', '#4a6d94'], 0.42, 0.3, 0.06, {binding: '#2b3a4d'})],
+  [/couverture bactério|couvertures? (?!de survie)/, P => folded(P, ['#4a6d94', '#7d8189', '#4a6d94'], 0.42, 0.3, 0.06, {binding: '#2b3a4d'})],
   [/coussin/, P => coussin(P)],
   [/draps?\b|drap à usage/, P => folded(P, ['#f6f6f3', '#e9eef3', '#f6f6f3', '#e9eef3', '#f6f6f3'], 0.34, 0.26, 0.028, {film: true, label: pkgTex({ar: 0.45, bg: '#ffffff', band: '#2a6fb5', bandText: 'USAGE UNIQUE', bandH: 0.38, icon: null, title: 'DRAP x 5'})})],
   [/défibrillateur|\(dsa\)| dsa /, P => dsa(P)],
   [/aspirateur de mucos/, P => aspirateur(P)],
-  [/kit nettoyage|désinfection/, P => nettoyage(P)],
+  [/kit nettoyage(?! fibre)|désinfection|désinfectant/, P => nettoyage(P)],
   [/dasri/, P => dasri(P)],
   [/daom/, P => daom(P)],
   [/extincteur/, P => extincteur(P)],
@@ -1048,6 +1049,498 @@ window.RX_MED = () => [
   [/matelas immobilisateur|matelas à dépression/, P => matelasRoll(P)],
   [/attelles? à dépression/, P => attelles(P)],
   [/colliers? cervica/, (P, n) => collier(P, /pédia|enfant/.test(n))],
+];
+})();
+
+;
+/* Rangement Express : matériel sapeurs-pompiers modélisé (FPT, VSAV). Mètres. Origine : bas, face avant à z = 0, profondeur vers -z.
+   Liste de référence : fiche FPT (armement type) et matériel de secours à personne. */
+(function(){
+const K = window.RX_MK; if (!K) return;
+const {ctex, fit, rr, icon, pkgTex, lcdTex, dialTex, spiralTex, STD, mesh, sub, RBG, pouch, hose, lathe, wrap, folded} = K;
+const FONT = 'Arial, Helvetica, sans-serif';
+const CY = (r, h, seg, rt) => new THREE.CylinderGeometry(rt == null ? r : rt, r, h, seg || 20);
+const cylX = (P, r, len, mat, x, y, z, parent, seg, rt) => { const o = mesh(P, CY(r, len, seg, rt), mat, x, y, z, parent); o.rotation.z = Math.PI/2; return o; };
+const cylZ = (P, r, len, mat, x, y, z, parent, seg, rt) => { const o = mesh(P, CY(r, len, seg, rt), mat, x, y, z, parent); o.rotation.x = Math.PI/2; return o; };
+const alu = P => P.M('#cdd2d6', 0.26, 0.9), chrome = P => P.M('#e4e8eb', 0.1, 1), blk = P => P.M('#1d2024', 0.7), rub = P => P.M('#141516', 0.92);
+
+/* ---------- textures ---------- */
+const ribTex = (col, n) => ctex('rib' + col + n, 64, 256, x => { x.fillStyle = col; x.fillRect(0, 0, 64, 256); for (let i = 0; i < n; i++) { const y = i*256/n; x.fillStyle = 'rgba(255,255,255,0.10)'; x.fillRect(0, y, 64, 256/n*0.35); x.fillStyle = 'rgba(0,0,0,0.35)'; x.fillRect(0, y + 256/n*0.65, 64, 256/n*0.35); } });
+const holesTex = () => ctex('holes', 256, 256, x => { x.fillStyle = '#c9ced2'; x.fillRect(0, 0, 256, 256); x.fillStyle = '#2a2e33'; for (let i = 0; i < 12; i++) for (let j = 0; j < 12; j++) { x.beginPath(); x.arc(12 + i*21 + (j % 2)*10, 12 + j*21, 6, 0, 7); x.fill(); } });
+const hoseFaceTex = (col, line) => ctex('hface' + col + line, 256, 256, x => { x.fillStyle = col; x.fillRect(0, 0, 256, 256); x.strokeStyle = 'rgba(0,0,0,0.3)'; x.lineWidth = 3; x.beginPath(); for (let a = 0; a < Math.PI*18; a += 0.04) { const r = 20 + a*1.85; x.lineTo(128 + Math.cos(a)*r, 128 + Math.sin(a)*r); } x.stroke(); if (line) { x.strokeStyle = line; x.lineWidth = 2; x.beginPath(); for (let a = 0.3; a < Math.PI*18; a += 0.04) { const r = 21.5 + a*1.85; x.lineTo(128 + Math.cos(a)*r, 128 + Math.sin(a)*r); } x.stroke(); } });
+const thermalTex = () => ctex('thermal', 256, 192, x => { const g = x.createLinearGradient(0, 0, 256, 192); g.addColorStop(0, '#1a0b4a'); g.addColorStop(0.45, '#8a1f7a'); g.addColorStop(0.7, '#f06a1d'); g.addColorStop(1, '#ffe46a'); x.fillStyle = g; x.fillRect(0, 0, 256, 192);
+  x.fillStyle = 'rgba(255,240,180,0.9)'; x.beginPath(); x.ellipse(150, 110, 36, 54, 0.2, 0, 7); x.fill(); x.fillStyle = '#fff'; x.font = `700 26px ${FONT}`; x.fillText('312 °C', 14, 34); x.strokeStyle = '#fff'; x.lineWidth = 3; x.strokeRect(118, 76, 20, 20); });
+const panelTex = () => ctex('gasdet', 256, 160, x => { x.fillStyle = '#0f1a16'; x.fillRect(0, 0, 256, 160); x.fillStyle = '#9ff7c8'; x.font = `700 30px ${FONT}`; x.textAlign = 'left';
+  [['O2', '20.9'], ['CO', '0'], ['H2S', '0'], ['LIE', '0']].forEach(([a, b], i) => { x.fillText(a, 14 + (i % 2)*124, 52 + Math.floor(i/2)*64); x.fillText(b, 70 + (i % 2)*124, 52 + Math.floor(i/2)*64); }); });
+const stripeTex = (a, b) => ctex('stripe' + a + b, 256, 64, x => { x.fillStyle = a; x.fillRect(0, 0, 256, 64); x.fillStyle = b; for (let i = -2; i < 12; i++) { x.beginPath(); x.moveTo(i*32, 64); x.lineTo(i*32 + 16, 64); x.lineTo(i*32 + 48, 0); x.lineTo(i*32 + 32, 0); x.closePath(); x.fill(); } });
+
+/* ---------- pièces communes ---------- */
+/* raccord symétrique (type DSP) : axe +y */
+function raccord(P, D, x, y, z, rx, ry, rz, parent, cap){
+  const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.set(rx || 0, ry || 0, rz || 0); (parent || P.g).add(g);
+  const A = alu(P), r = D*0.62;
+  mesh(P, CY(r*0.74, D*0.55, 18), A, 0, D*0.27, 0, g);
+  mesh(P, CY(r, D*0.42, 24), A, 0, D*0.74, 0, g);
+  const ring = mesh(P, new THREE.TorusGeometry(r*1.02, D*0.07, 8, 24), A, 0, D*0.62, 0, g); ring.rotation.x = Math.PI/2;
+  [-1, 1].forEach(s => mesh(P, RBG(D*0.3, D*0.32, D*0.24, D*0.05), A, s*r*0.7, D*1.05, 0, g));
+  if (cap) mesh(P, CY(r*1.04, D*0.22, 24), P.M(cap, 0.5), 0, D*1.05, 0, g);
+  return g;
+}
+/* panneau de fixation (outils clipsés sur un fond noir) */
+const perfTex = () => ctex('perf', 256, 256, x => { x.fillStyle = '#b9bfc5'; x.fillRect(0, 0, 256, 256); x.fillStyle = '#6b7178'; for (let i = 0; i < 16; i++) for (let j = 0; j < 16; j++) { x.beginPath(); x.arc(8 + i*16, 8 + j*16, 3, 0, 7); x.fill(); } });
+function board(P, w, h){ const t = perfTex(); mesh(P, RBG(w, h, 0.018, 0.006), [P.M('#b9bfc5', 0.5, 0.4), P.M('#b9bfc5', 0.5, 0.4), P.M('#b9bfc5', 0.5, 0.4), P.M('#b9bfc5', 0.5, 0.4), STD(t, 0.5, {metalness: 0.4}), P.M('#b9bfc5', 0.5, 0.4)], 0, h/2, -0.1); }
+/* outil long rangé debout (le gabarit est construit à plat puis tourné) */
+function upright(P, build){ const n0 = P.g.children.length, spec = build(), grp = new THREE.Group(); P.g.children.slice(n0).forEach(o => grp.add(o)); P.g.add(grp);
+  grp.rotation.z = -Math.PI/2; grp.position.set(-spec.h/2, spec.w/2, 0); return Object.assign({}, spec, {w: spec.h, h: spec.w, tagY: 0.08}); }
+function clip(P, x, y, z){ mesh(P, RBG(0.035, 0.05, 0.03, 0.008), P.M('#121314', 0.6), x, y, z); }
+/* sac de transport à poignées */
+function holdall(P, col, w, h, d, label, opts){
+  opts = opts || {};
+  const b = mesh(P, RBG(w, h, d, Math.min(0.06, h*0.28)), P.M(col, 0.82), 0, h/2, -d/2); P.main = b;
+  const z = -d/2, blkM = P.M('#1b1d20', 0.8), refl = P.M('#dfe3e6', 0.25, 0.6);
+  mesh(P, new THREE.BoxGeometry(w*0.86, 0.008, 0.014), blkM, 0, h - 0.003, z + d*0.12);
+  mesh(P, RBG(0.016, 0.036, 0.008, 0.003), P.M('#c9cdd1', 0.25, 0.9), w*0.3, h - 0.012, z + d*0.12 + 0.01);
+  [-1, 1].forEach(s => { const hd = mesh(P, new THREE.TorusGeometry(w*0.14, 0.012, 8, 20, Math.PI), blkM, s*0.0, h - 0.004, z + s*d*0.18); hd.rotation.y = 0; });
+  [-1, 1].forEach(s => { mesh(P, new THREE.BoxGeometry(0.035, h*0.92, d + 0.02), blkM, s*w*0.3, h*0.47, z); mesh(P, new THREE.TorusGeometry(0.016, 0.004, 6, 12), P.M('#c9cdd1', 0.25, 0.9), s*w*0.5, h*0.8, z).rotation.y = Math.PI/2; });
+  if (opts.refl !== false) mesh(P, new THREE.BoxGeometry(w + 0.01, 0.022, d + 0.01), refl, 0, h*0.28, z);
+  mesh(P, RBG(w*0.42, h*0.48, 0.05, 0.02), P.M(col, 0.86), 0, h*0.34, 0.01);
+  mesh(P, new THREE.BoxGeometry(w*0.43, 0.008, 0.058), blkM, 0, h*0.57, 0.01);
+  if (opts.side) mesh(P, RBG(0.05, h*0.6, d*0.7, 0.02), P.M(col, 0.86), w/2 + 0.02, h*0.32, z);
+  if (label) mesh(P, new THREE.PlaneGeometry(Math.min(w*0.36, 0.18), Math.min(h*0.34, 0.1)), STD(label, 0.6), 0, h*0.36, 0.039);
+  return {w: w + (opts.side ? 0.08 : 0.02), h: h + 0.02, d: d + 0.06, front: 0.04, tagY: h*0.3, tagW: w*0.4};
+}
+
+/* ---------- ARI ---------- */
+function ari(P, n){
+  const num = (n.match(/(\d+)/) || [0, ''])[1], Y = P.M('#e8c300', 0.5), S = P.M('#25282c', 0.85);
+  mesh(P, RBG(0.29, 0.6, 0.035, 0.03), P.M('#1f2226', 0.55), 0, 0.36, -0.215);
+  mesh(P, RBG(0.36, 0.1, 0.09, 0.035), P.M('#1f2226', 0.7), 0, 0.12, -0.19);
+  const b = lathe(P, [[0, 0], [0.045, 0.005], [0.072, 0.03], [0.08, 0.07], [0.08, 0.47], [0.074, 0.5], [0.05, 0.525], [0, 0.53]], P.M('#2e3238', 0.4, 0.15), 0, 0.12, -0.11); P.main = b;
+  wrap(P, 0.0805, 0.16, pkgTex({ar: 0.55, bg: '#e8c300', title: ['ARI', num || '·'], fg: '#16191d', sub: '6,8 L · 300 bar', subCol: '#2b2f33'}), 0, 0.37, -0.11, null, Math.PI*1.2);
+  mesh(P, CY(0.02, 0.06, 16), chrome(P), 0, 0.095, -0.11);
+  mesh(P, new THREE.TorusGeometry(0.03, 0.009, 8, 20), P.M('#1b1d20', 0.6), 0, 0.075, -0.11).rotation.x = Math.PI/2;
+  [-1, 1].forEach(s => { hose(P, [[s*0.135, 0.66, -0.2], [s*0.165, 0.55, -0.15], [s*0.165, 0.32, -0.13], [s*0.15, 0.17, -0.14]], 0.016, S, null, 20);
+    mesh(P, RBG(0.035, 0.09, 0.012, 0.004), Y, s*0.166, 0.44, -0.122); });
+  hose(P, [[0.06, 0.09, -0.12], [0.14, 0.12, -0.08], [0.16, 0.26, -0.06], [0.15, 0.34, -0.04]], 0.006, P.M('#2a2d31', 0.6));
+  const gz = mesh(P, CY(0.026, 0.02, 20), P.M('#1b1d20', 0.5), 0.15, 0.36, -0.03); gz.rotation.x = Math.PI/2;
+  mesh(P, new THREE.CircleGeometry(0.022, 20), STD(dialTex('o2'), 0.3), 0.15, 0.36, -0.019);
+  mesh(P, RBG(0.11, 0.1, 0.07, 0.03), P.M('#24272b', 0.85), -0.12, 0.08, -0.06);
+  return {w: 0.38, h: 0.68, d: 0.26, front: 0.0, tagY: 0.1, tagW: 0.2};
+}
+function bouteillesAri(P){
+  for (let i = 0; i < 3; i++) { const x = -0.17 + i*0.17;
+    lathe(P, [[0, 0], [0.06, 0.004], [0.075, 0.03], [0.075, 0.46], [0.068, 0.49], [0.045, 0.51], [0, 0.515]], P.M('#2e3238', 0.4, 0.15), x, 0.02, -0.09);
+    wrap(P, 0.0755, 0.14, pkgTex({ar: 0.55, bg: '#f2f3f4', band: '#1d5fae', bandText: 'AIR', bandH: 0.3, title: '300 bar', sub: '6,8 L'}), x, 0.3, -0.09);
+    mesh(P, CY(0.02, 0.05, 14), chrome(P), x, 0.56, -0.09);
+    mesh(P, CY(0.04, 0.05, 16), P.M('#e8c300', 0.5), x, 0.6, -0.09); }
+  P.main = P.g.children[0];
+  mesh(P, RBG(0.54, 0.03, 0.18, 0.01), P.M('#2a2d31', 0.7), 0, 0.015, -0.09);
+  mesh(P, new THREE.BoxGeometry(0.54, 0.035, 0.012), P.M('#1b1d20', 0.8), 0, 0.33, -0.006);
+  return {w: 0.55, h: 0.63, d: 0.18, front: 0, tagY: 0.08, tagW: 0.24};
+}
+function masqueAri(P, x, z, ry){
+  const g = sub(P, x, 0, z, 0, ry || 0, 0), R = P.M('#1b1d20', 0.75);
+  const body = mesh(P, new THREE.SphereGeometry(0.1, 24, 16), R, 0, 0.12, 0, g); body.scale.set(0.95, 1.2, 0.62);
+  const vis = mesh(P, new THREE.SphereGeometry(0.092, 24, 16, Math.PI*0.08, Math.PI*0.84, Math.PI*0.18, Math.PI*0.5), P.M('#dfe9ef', 0.04, 0, {transparent:true, opacity:0.45, depthWrite:false}), 0, 0.135, 0.004, g); vis.scale.set(0.95, 1.2, 0.72);
+  mesh(P, new THREE.TorusGeometry(0.095, 0.008, 8, 32), R, 0, 0.13, 0.02, g).scale.set(0.92, 1.12, 1);
+  const dv = cylZ(P, 0.032, 0.05, P.M('#2a2d31', 0.5), 0, 0.045, 0.06, g); mesh(P, CY(0.022, 0.02, 18), P.M('#c8161d', 0.4), 0, 0.045, 0.088, g).rotation.x = Math.PI/2;
+  for (let i = 0; i < 3; i++) mesh(P, new THREE.TorusGeometry(0.085 - i*0.005, 0.006, 6, 24, Math.PI), R, 0, 0.12 + (i - 1)*0.045, -0.045, g).rotation.set(0, Math.PI/2, Math.PI/2);
+  return g;
+}
+function masquesAri(P){ masqueAri(P, -0.11, -0.1, 0.2); masqueAri(P, 0.11, -0.1, -0.2); P.main = P.g.children[0].children[0]; return {w: 0.42, h: 0.28, d: 0.22, front: 0, tagY: 0.05, tagW: 0.22}; }
+function lspcc(P){
+  const R = P.M('#c3222a', 0.8);
+  const bag = lathe(P, [[0, 0], [0.15, 0], [0.16, 0.02], [0.16, 0.34], [0.14, 0.38], [0, 0.38]], R, -0.05, 0, -0.17); P.main = bag;
+  for (let i = 0; i < 4; i++) mesh(P, new THREE.TorusGeometry(0.1 - i*0.012, 0.012, 8, 28), P.M(i % 2 ? '#e9e5d8' : '#f2efe4', 0.85), -0.05, 0.395 + i*0.018, -0.17).rotation.x = Math.PI/2;
+  wrap(P, 0.1605, 0.13, pkgTex({ar: 0.5, bg: '#ffffff', title: 'LSPCC', sub: 'sauvetage', iconCol: '#c3222a', icon: 'cross'}), -0.05, 0.2, -0.17, null, Math.PI*0.9);
+  [0, 1].forEach(i => { const c = mesh(P, new THREE.TorusGeometry(0.03, 0.006, 8, 20), alu(P), 0.13 + i*0.04, 0.25 - i*0.03, -0.08); c.scale.set(0.65, 1, 1); c.rotation.y = 0.3; });
+  holdallStrap(P, 0.13, -0.05);
+  return {w: 0.42, h: 0.47, d: 0.34, front: 0, tagY: 0.07, tagW: 0.2};
+}
+function holdallStrap(P, x, z){ hose(P, [[x - 0.05, 0.35, -0.12], [x, 0.42, -0.08], [x + 0.02, 0.3, -0.05], [x, 0.22, -0.05]], 0.008, P.M('#1b1d20', 0.8)); }
+function cameraTherm(P){
+  mesh(P, RBG(0.2, 0.05, 0.14, 0.02), P.M('#1b1d20', 0.6), 0, 0.025, -0.08);
+  const g = sub(P, 0, 0.05, -0.07, -0.35, 0, 0);
+  const b = mesh(P, RBG(0.15, 0.17, 0.11, 0.035), P.M('#f0c419', 0.45), 0, 0.085, 0, g); P.main = b;
+  mesh(P, RBG(0.155, 0.04, 0.115, 0.015), P.M('#1b1d20', 0.6), 0, 0.02, 0, g);
+  mesh(P, RBG(0.12, 0.1, 0.006, 0.01), P.M('#101214', 0.3), 0, 0.1, 0.056, g);
+  mesh(P, new THREE.PlaneGeometry(0.1, 0.075), STD(thermalTex(), 0.25, {emissive: new THREE.Color(0x221108), emissiveIntensity: 1}), 0, 0.1, 0.0596, g);
+  mesh(P, CY(0.028, 0.03, 20), P.M('#1b1d20', 0.4), 0, 0.12, -0.065, g).rotation.x = Math.PI/2;
+  mesh(P, new THREE.TorusGeometry(0.045, 0.01, 8, 20, Math.PI), P.M('#1b1d20', 0.7), 0, 0.17, -0.01, g);
+  return {w: 0.2, h: 0.27, d: 0.15, front: 0, tagY: 0.05, tagW: 0.16};
+}
+function ligneGuide(P){ const r = holdall(P, '#e8641e', 0.34, 0.2, 0.2, pkgTex({ar: 0.6, bg: '#ffffff', title: ['LIGNE', 'GUIDE'], fg: '#16191d'}), {refl: true}); return r; }
+
+/* ---------- tuyaux ---------- */
+function echeveaux(P, n, fw, col, line, rac){
+  const pitch = 0.042, layers = 10, Lz = 0.55, H = layers*pitch, gap = 0.012, W = n*(fw + gap) - gap;
+  const M = P.M(col, 0.85), lm = line ? P.M(line, 0.8) : null;
+  for (let b = 0; b < n; b++) { const x = -W/2 + fw/2 + b*(fw + gap);
+    for (let i = 0; i < layers; i++) { const y = pitch*(i + 0.5);
+      mesh(P, new THREE.BoxGeometry(fw, pitch*0.72, Lz - pitch), M, x, y, -Lz/2);
+      if (lm) mesh(P, new THREE.BoxGeometry(fw*0.18, pitch*0.73, Lz - pitch), lm, x, y, -Lz/2);
+      if (i < layers - 1) { const zf = i % 2 ? -Lz + pitch/2 : -pitch/2; mesh(P, CY(pitch*0.5, fw, 14), M, x, pitch*(i + 1), zf).rotation.z = Math.PI/2; } }
+    [-0.14, -0.41].forEach(z => mesh(P, new THREE.BoxGeometry(fw + 0.012, H + 0.01, 0.035), P.M('#1b1d20', 0.85), x, H/2, z));
+    raccord(P, rac, x, H + 0.002, -0.1, 0, 0, 0); }
+  P.main = P.g.children[0];
+  return {w: W, h: H + rac*1.3, d: Lz, front: 0, tagY: 0.08, tagW: Math.min(W*0.6, 0.24)};
+}
+function couronnes(P, R, fw, n, col, rac){
+  const D = n*(fw + 0.02);
+  for (let i = 0; i < n; i++) { const z = -fw/2 - 0.005 - i*(fw + 0.02), x = (i % 2)*0.03;
+    const c = mesh(P, CY(R, fw, 40), [P.M(col, 0.85), STD(hoseFaceTex(col, null), 0.85), STD(hoseFaceTex(col, null), 0.85)], x, R, z); c.rotation.x = Math.PI/2;
+    raccord(P, rac, x + R*0.35, 2*R - 0.03, z, 0, 0, -0.35);
+    mesh(P, CY(R*0.18, fw + 0.012, 20), P.M('#9aa0a6', 0.6), x, R, z).rotation.x = Math.PI/2; }
+  P.main = P.g.children[0];
+  return {w: 2*R + 0.06, h: 2*R + rac*1.2, d: D, front: 0, tagY: R*0.6, tagW: 0.24};
+}
+function aspiraux(P){
+  const M = STD(ribTex('#1c1e21', 26), 0.6);
+  [[0, 0.065, -0.08], [0, 0.065, -0.23], [0, 0.19, -0.155]].forEach(([x, y, z], i) => { cylX(P, 0.062, 0.86, M, x, y, z, null, 24);
+    [-1, 1].forEach(s => raccord(P, 0.1, s*0.43, y, z, 0, 0, -s*Math.PI/2)); });
+  P.main = P.g.children[0];
+  return {w: 1.12, h: 0.26, d: 0.3, front: 0, tagY: 0.06, tagW: 0.28};
+}
+function crepine(P){
+  const A = alu(P);
+  const c = mesh(P, CY(0.1, 0.24, 32), [STD(holesTex(), 0.4, {metalness: 0.6}), A, A], 0, 0.14, -0.11); P.main = c;
+  mesh(P, CY(0.104, 0.02, 32), A, 0, 0.01, -0.11);
+  lathe(P, [[0.104, 0], [0.104, 0.01], [0.06, 0.07], [0.055, 0.08]], A, 0, 0.26, -0.11);
+  raccord(P, 0.1, 0, 0.34, -0.11, 0, 0, 0);
+  for (let i = 0; i < 3; i++) mesh(P, new THREE.TorusGeometry(0.07 - i*0.01, 0.008, 6, 20), P.M('#f2efe4', 0.85), 0.16, 0.015 + i*0.016, -0.1).rotation.x = Math.PI/2;
+  return {w: 0.3, h: 0.46, d: 0.22, front: 0, tagY: 0.06, tagW: 0.16};
+}
+
+/* ---------- lances, raccords, clés ---------- */
+function lance(P, big, y, z){
+  const g = sub(P, 0, y, z, 0, 0, 0), k = big ? 1.3 : 1, B = blk(P), Rd = P.M('#c8161d', 0.45);
+  raccord(P, 0.04*k, 0.2*k, 0, 0, 0, 0, -Math.PI/2, g);
+  cylX(P, 0.03*k, 0.1*k, B, 0.11*k, 0, 0, g);
+  const lv = mesh(P, RBG(0.15*k, 0.016*k, 0.03*k, 0.006), Rd, 0.11*k, 0.045*k, 0, g); lv.rotation.z = 0.25; P.main = lv;
+  const gr = mesh(P, RBG(0.035*k, 0.1*k, 0.035*k, 0.012), B, 0.13*k, -0.06*k, 0, g); gr.rotation.z = -0.25;
+  cylX(P, 0.026*k, 0.12*k, alu(P), -0.01*k, 0, 0, g);
+  cylX(P, 0.04*k, 0.045*k, Rd, -0.09*k, 0, 0, g, 24);
+  cylX(P, 0.048*k, 0.05*k, P.M('#1b1d20', 0.8), -0.14*k, 0, 0, g, 24, 0.042*k);
+  if (big) { const h2 = mesh(P, RBG(0.03, 0.12, 0.03, 0.01), B, -0.02, 0.07, 0, g); }
+  return g;
+}
+function lances(P, big){ const k = big ? 1.3 : 1; lance(P, big, 0.115*k, -0.07); lance(P, big, 0.115*k, -0.2); return {w: 0.44*k, h: 0.2*k, d: 0.27, front: 0, tagY: 0.04, tagW: 0.2}; }
+function division(P){
+  const A = alu(P), Rd = P.M('#c8161d', 0.45), Yl = P.M('#e8c300', 0.45);
+  const b = cylX(P, 0.045, 0.16, A, 0, 0.06, -0.12); P.main = b;
+  raccord(P, 0.065, -0.1, 0.06, -0.12, 0, 0, Math.PI/2);
+  [-1, 1].forEach((s, i) => { const o = mesh(P, CY(0.028, 0.14, 16), A, 0.12, 0.06, -0.12 + s*0.06); o.rotation.set(0, 0, -Math.PI/2); o.rotation.y = -s*0.6;
+    raccord(P, 0.04, 0.2, 0.06, -0.12 + s*0.11, 0, -s*0.6, -Math.PI/2);
+    const lv = mesh(P, RBG(0.11, 0.014, 0.022, 0.005), i ? Yl : Rd, 0.11, 0.105, -0.12 + s*0.06); lv.rotation.y = -s*0.6; });
+  mesh(P, CY(0.012, 0.05, 10), A, 0.0, 0.11, -0.12);
+  return {w: 0.42, h: 0.14, d: 0.26, front: 0, tagY: 0.03, tagW: 0.18};
+}
+function tricoise(P){
+  board(P, 0.56, 0.3);
+  [0.08, 0.2].forEach((y, i) => { const g = sub(P, 0, y, -0.075, 0, 0, i ? 0.08 : -0.08), Rd = P.M('#c8161d', 0.4, 0.3);
+    mesh(P, RBG(0.46, 0.028, 0.014, 0.006), Rd, 0, 0, 0, g);
+    [-1, 1].forEach(s => { const h = mesh(P, new THREE.TorusGeometry(0.04, 0.011, 8, 18, Math.PI*1.2), Rd, s*0.21, 0.03, 0, g); h.rotation.z = s > 0 ? -0.3 : Math.PI + 0.3; });
+    mesh(P, new THREE.TorusGeometry(0.022, 0.008, 8, 16), Rd, 0, 0, 0.004, g); });
+  clip(P, -0.12, 0.14, -0.08); clip(P, 0.12, 0.14, -0.08);
+  P.main = P.g.children[1] && P.g.children[1].children ? P.g.children[1].children[0] : P.g.children[0];
+  return {w: 0.56, h: 0.3, d: 0.12, front: 0, tagY: 0.05, tagW: 0.2};
+}
+function coudes(P){
+  const A = alu(P);
+  [-0.12, 0.12].forEach((x, i) => { const t = mesh(P, new THREE.TorusGeometry(0.09, 0.05, 14, 24, Math.PI/2), A, x - 0.045, 0.16, -0.15);
+    raccord(P, 0.1, x + 0.045, 0.16, -0.15, 0, 0, Math.PI); raccord(P, 0.1, x - 0.045, 0.25, -0.15, 0, 0, Math.PI/2); });
+  P.main = P.g.children[0];
+  return {w: 0.5, h: 0.32, d: 0.2, front: 0, tagY: 0.04, tagW: 0.2};
+}
+function clePoteau(P){
+  board(P, 0.56, 0.5); const Rd = P.M('#c8161d', 0.4, 0.35);
+  mesh(P, RBG(0.48, 0.03, 0.03, 0.008), Rd, 0, 0.42, -0.07); P.main = P.g.children[1];
+  mesh(P, RBG(0.03, 0.36, 0.03, 0.008), Rd, 0, 0.24, -0.07);
+  mesh(P, CY(0.04, 0.06, 5), P.M('#2a2d31', 0.5, 0.6), 0, 0.05, -0.07);
+  clip(P, -0.16, 0.42, -0.082); clip(P, 0.16, 0.42, -0.082);
+  return {w: 0.56, h: 0.5, d: 0.12, front: 0, tagY: 0.08, tagW: 0.2};
+}
+function cleBouche(P){
+  board(P, 1.02, 0.2); const S = P.M('#2a2d31', 0.45, 0.7);
+  cylX(P, 0.014, 0.92, S, 0.02, 0.1, -0.07); P.main = P.g.children[1];
+  mesh(P, CY(0.014, 0.18, 12), S, -0.45, 0.1, -0.07);
+  mesh(P, RBG(0.05, 0.04, 0.04, 0.008), S, 0.48, 0.1, -0.07);
+  [-0.25, 0.25].forEach(x => clip(P, x, 0.1, -0.08));
+  return {w: 1.02, h: 0.2, d: 0.12, front: 0, tagY: 0.03, tagW: 0.2};
+}
+function raccordsTray(P, reduc){
+  mesh(P, RBG(0.46, 0.05, 0.26, 0.01), P.M('#2a2d31', 0.7), 0, 0.025, -0.13); P.main = P.g.children[0];
+  const D = reduc ? [[0.1, 0.065], [0.065, 0.04], [0.04, 0.02], [0.1, 0.065]] : [[0.065], [0.065], [0.04], [0.1], [0.04], [0.065]];
+  D.forEach((d, i) => { const x = -0.17 + (i % 3)*0.17, z = -0.07 - Math.floor(i/3)*0.12;
+    raccord(P, d[0], x, 0.05, z, 0, 0, 0, null, reduc ? null : (i % 2 ? '#1d5fae' : null));
+    if (d[1]) raccord(P, d[1], x, 0.05 + d[0]*1.15, z, 0, 0, 0); });
+  return {w: 0.46, h: 0.26, d: 0.26, front: 0, tagY: 0.04, tagW: 0.2};
+}
+function clesManoeuvre(P){
+  board(P, 0.6, 0.42); const S = P.M('#2a2d31', 0.45, 0.7), Rd = P.M('#c8161d', 0.4, 0.3), Y = P.M('#e8c300', 0.45);
+  const T = (x, len, m, head) => { mesh(P, RBG(0.024, len, 0.02, 0.006), m, x, 0.06 + len/2, -0.075); mesh(P, RBG(0.14, 0.024, 0.02, 0.006), m, x, 0.06 + len, -0.075); if (head) mesh(P, CY(0.025, 0.04, head), S, x, 0.06, -0.075); };
+  T(-0.19, 0.3, Rd, 4); T(0, 0.26, S, 6); T(0.19, 0.22, Y, 5);
+  P.main = P.g.children[1];
+  return {w: 0.6, h: 0.42, d: 0.12, front: 0, tagY: 0.05, tagW: 0.2};
+}
+
+/* ---------- forcement, découpe ---------- */
+function troncon(P){
+  const O = P.M('#ea6a1f', 0.42), B = blk(P), Wt = P.M('#e8e8e2', 0.5);
+  const b = mesh(P, RBG(0.3, 0.2, 0.19, 0.04), O, 0.08, 0.11, -0.11); P.main = b;
+  mesh(P, RBG(0.16, 0.08, 0.2, 0.03), Wt, 0.08, 0.24, -0.11);
+  const h = mesh(P, new THREE.TorusGeometry(0.08, 0.016, 8, 20, Math.PI), B, 0.14, 0.26, -0.11); h.rotation.y = Math.PI/2;
+  const fh = mesh(P, new THREE.TorusGeometry(0.11, 0.013, 8, 24, Math.PI*1.1), B, -0.03, 0.12, -0.11); fh.rotation.set(Math.PI/2, 0, Math.PI*0.95);
+  mesh(P, RBG(0.48, 0.075, 0.014, 0.03), P.M('#cfd4d8', 0.3, 0.85), -0.3, 0.1, -0.11);
+  mesh(P, RBG(0.494, 0.089, 0.008, 0.036), P.M('#2a2d31', 0.5, 0.6), -0.3, 0.1, -0.11);
+  mesh(P, RBG(0.04, 0.02, 0.02, 0.006), B, 0.24, 0.2, -0.04);
+  return {w: 0.86, h: 0.3, d: 0.22, front: 0, tagY: 0.05, tagW: 0.22};
+}
+function decoupeuse(P){
+  const O = P.M('#ea6a1f', 0.42), B = blk(P);
+  const b = mesh(P, RBG(0.26, 0.2, 0.18, 0.04), O, 0.2, 0.11, -0.12); P.main = b;
+  mesh(P, new THREE.TorusGeometry(0.07, 0.015, 8, 20, Math.PI), B, 0.26, 0.23, -0.12).rotation.y = Math.PI/2;
+  mesh(P, RBG(0.3, 0.05, 0.04, 0.015), P.M('#3a3f45', 0.5, 0.5), -0.02, 0.17, -0.12);
+  const disc = mesh(P, CY(0.15, 0.006, 40), P.M('#5b6168', 0.35, 0.8), -0.18, 0.17, -0.07); disc.rotation.x = Math.PI/2; P.main = b;
+  mesh(P, CY(0.04, 0.008, 20), P.M('#c8161d', 0.5), -0.18, 0.17, -0.064).rotation.x = Math.PI/2;
+  const gd = mesh(P, new THREE.CylinderGeometry(0.16, 0.16, 0.05, 32, 1, true, Math.PI*0.1, Math.PI*0.95), O, -0.18, 0.17, -0.08); gd.rotation.x = Math.PI/2;
+  mesh(P, new THREE.TorusGeometry(0.12, 0.013, 8, 24, Math.PI*0.9), B, 0.12, 0.2, -0.12).rotation.set(Math.PI/2, 0, 0.2);
+  return {w: 0.66, h: 0.34, d: 0.2, front: 0, tagY: 0.05, tagW: 0.2};
+}
+function hache(P){
+  board(P, 0.88, 0.26);
+  const hd = mesh(P, RBG(0.7, 0.032, 0.028, 0.012), STD(stripeTex('#f2c500', '#1b1d20'), 0.5), 0.06, 0.13, -0.07); P.main = hd;
+  const sh = new THREE.Shape(); sh.moveTo(0, -0.03); sh.lineTo(0.05, -0.03); sh.quadraticCurveTo(0.09, -0.08, 0.1, -0.13); sh.lineTo(0.0, -0.11); sh.lineTo(-0.02, -0.03); sh.lineTo(-0.02, 0.03); sh.lineTo(-0.12, 0.06); sh.lineTo(-0.02, 0.045); sh.lineTo(0, 0.03); sh.closePath();
+  const head = mesh(P, new THREE.ExtrudeGeometry(sh, {depth: 0.02, bevelEnabled: true, bevelThickness: 0.004, bevelSize: 0.003, bevelSegments: 1}), P.M('#c8161d', 0.4, 0.4), -0.31, 0.15, -0.082); head.rotation.z = Math.PI/2;
+  [-0.1, 0.25].forEach(x => clip(P, x, 0.13, -0.078));
+  return {w: 0.88, h: 0.26, d: 0.12, front: 0, tagY: 0.03, tagW: 0.2};
+}
+function piedBiche(P){
+  board(P, 0.7, 0.22); const M = P.M('#1f4f9a', 0.45, 0.4);
+  const b = mesh(P, CY(0.014, 0.58, 6), M, 0.02, 0.11, -0.07); b.rotation.z = Math.PI/2; P.main = b;
+  const c = mesh(P, new THREE.TorusGeometry(0.05, 0.014, 8, 18, Math.PI*0.9), M, -0.3, 0.155, -0.07); c.rotation.z = Math.PI*0.55;
+  mesh(P, RBG(0.05, 0.02, 0.016, 0.004), M, 0.33, 0.115, -0.07).rotation.z = -0.25;
+  [-0.1, 0.18].forEach(x => clip(P, x, 0.11, -0.08));
+  return {w: 0.7, h: 0.22, d: 0.12, front: 0, tagY: 0.03, tagW: 0.2};
+}
+function barreMine(P){
+  board(P, 1.5, 0.14); const M = P.M('#2a2d31', 0.4, 0.75);
+  const b = cylX(P, 0.016, 1.38, M, 0.02, 0.07, -0.07, null, 10); P.main = b;
+  mesh(P, CY(0.016, 0.08, 10, 0.003), M, -0.7, 0.07, -0.07).rotation.z = Math.PI/2;
+  [-0.4, 0.4].forEach(x => clip(P, x, 0.07, -0.08));
+  return {w: 1.5, h: 0.14, d: 0.12, front: 0, tagY: 0.02, tagW: 0.24};
+}
+function coupeBoulon(P){
+  board(P, 0.82, 0.24); const S = P.M('#2a2d31', 0.4, 0.7), Rd = P.M('#c8161d', 0.6);
+  [-1, 1].forEach(s => { const a = mesh(P, RBG(0.56, 0.02, 0.018, 0.006), S, 0.06, 0.12 + s*0.03, -0.07); a.rotation.z = -s*0.06;
+    mesh(P, RBG(0.24, 0.032, 0.03, 0.012), Rd, 0.24, 0.12 + s*0.045, -0.07).rotation.z = -s*0.06; });
+  mesh(P, RBG(0.1, 0.06, 0.03, 0.01), S, -0.27, 0.12, -0.07);
+  mesh(P, RBG(0.05, 0.04, 0.028, 0.01), P.M('#9aa1a8', 0.3, 0.8), -0.34, 0.12, -0.07);
+  P.main = P.g.children[1]; clip(P, 0.0, 0.12, -0.08);
+  return {w: 0.82, h: 0.24, d: 0.12, front: 0, tagY: 0.03, tagW: 0.2};
+}
+function lotGaz(P){
+  pouch(P, '#e8c300', 0.32, 0.2, 0.16, pkgTex({ar: 0.62, bg: '#ffffff', title: 'LOT GAZ', fg: '#16191d'}), -0.06, -0.09);
+  const rb = mesh(P, CY(0.05, 0.06, 24), STD(stripeTex('#ffffff', '#d0161f'), 0.6), 0.16, 0.05, -0.06); rb.rotation.x = Math.PI/2;
+  mesh(P, CY(0.018, 0.062, 16), P.M('#2a2d31', 0.7), 0.16, 0.05, -0.06).rotation.x = Math.PI/2;
+  P.main = P.g.children[0];
+  return {w: 0.46, h: 0.22, d: 0.18, front: 0, tagY: 0.05, tagW: 0.2};
+}
+function detecteur(P){
+  mesh(P, RBG(0.13, 0.04, 0.09, 0.012), P.M('#1b1d20', 0.6), 0, 0.02, -0.05);
+  const g = sub(P, 0, 0.035, -0.055, -0.25, 0, 0);
+  const b = mesh(P, RBG(0.075, 0.13, 0.045, 0.014), P.M('#e8c300', 0.45), 0, 0.065, 0, g); P.main = b;
+  mesh(P, RBG(0.078, 0.04, 0.047, 0.012), P.M('#1b1d20', 0.7), 0, 0.012, 0, g);
+  mesh(P, new THREE.PlaneGeometry(0.056, 0.035), STD(panelTex(), 0.3, {emissive: new THREE.Color(0x082014), emissiveIntensity: 1}), 0, 0.088, 0.0236, g);
+  [-0.015, 0.015].forEach(x => mesh(P, CY(0.006, 0.004, 12), P.M('#c8161d', 0.4), x, 0.045, 0.024, g).rotation.x = Math.PI/2);
+  for (let i = 0; i < 3; i++) mesh(P, new THREE.BoxGeometry(0.04, 0.003, 0.003), P.M('#111', 0.8), 0, 0.118 + i*0.006, 0.0235, g);
+  return {w: 0.14, h: 0.18, d: 0.1, front: 0, tagY: 0.04, tagW: 0.13};
+}
+
+/* ---------- éclairage, ventilation ---------- */
+function ventilateur(P){
+  const Rd = P.M('#c8161d', 0.4, 0.2), B = blk(P), A = alu(P), R = 0.25;
+  const sh = lathe(P, [[R + 0.02, 0], [R + 0.03, 0.02], [R + 0.025, 0.17], [R - 0.01, 0.19]], Rd, 0, R + 0.08, -0.22); sh.rotation.x = Math.PI/2; P.main = sh;
+  for (let i = 1; i < 5; i++) mesh(P, new THREE.TorusGeometry(R*i/5, 0.003, 4, 40), B, 0, R + 0.08, -0.02);
+  for (let i = 0; i < 8; i++) { const s = mesh(P, new THREE.BoxGeometry(0.004, R*2, 0.004), B, 0, R + 0.08, -0.02); s.rotation.z = i*Math.PI/8; }
+  for (let i = 0; i < 5; i++) { const bl = mesh(P, RBG(0.05, R*0.85, 0.008, 0.004), P.M('#3a3f45', 0.5, 0.4), 0, R + 0.08, -0.12); bl.geometry.translate(0, R*0.42, 0); bl.rotation.set(0.3, 0, i*Math.PI*2/5); }
+  mesh(P, CY(0.08, 0.2, 24), B, 0, R + 0.08, -0.3).rotation.x = Math.PI/2;
+  hose(P, [[-R - 0.06, 0.06, -0.05], [-R - 0.06, 2*R + 0.18, -0.05], [R + 0.06, 2*R + 0.18, -0.05], [R + 0.06, 0.06, -0.05]], 0.016, A, null, 30);
+  [-1, 1].forEach(s => { cylX(P, 0.06, 0.04, rub(P), s*(R + 0.04), 0.06, -0.36, null, 20); hose(P, [[s*(R + 0.04), 0.06, -0.36], [s*(R + 0.04), 0.06, -0.05]], 0.014, A, null, 4); });
+  return {w: 2*R + 0.16, h: 2*R + 0.2, d: 0.44, front: 0, tagY: 0.08, tagW: 0.24};
+}
+function groupe(P){
+  const B = blk(P), Rd = P.M('#c8161d', 0.4), G = P.M('#5b6168', 0.5, 0.4), A = alu(P);
+  [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => hose(P, [[sx*0.25, 0.0, -0.2 + sz*0.17], [sx*0.25, 0.42, -0.2 + sz*0.17]], 0.014, B, null, 4));
+  [0.42, 0.02].forEach(y => [-1, 1].forEach(sz => hose(P, [[-0.25, y, -0.2 + sz*0.17], [0.25, y, -0.2 + sz*0.17]], 0.014, B, null, 4)));
+  const e = mesh(P, RBG(0.3, 0.24, 0.26, 0.03), G, -0.04, 0.16, -0.2); P.main = e;
+  mesh(P, RBG(0.34, 0.1, 0.28, 0.04), Rd, 0, 0.36, -0.2);
+  mesh(P, CY(0.03, 0.03, 16), B, 0.1, 0.42, -0.2);
+  mesh(P, RBG(0.14, 0.2, 0.01, 0.01), P.M('#2a2d31', 0.6), 0.17, 0.16, -0.025);
+  [[0.13, 0.2, '#1d5fae'], [0.21, 0.2, '#1d5fae'], [0.17, 0.11, '#c8161d']].forEach(([x, y, c]) => { mesh(P, CY(0.022, 0.02, 16), P.M(c, 0.4), x, y, -0.015).rotation.x = Math.PI/2; });
+  return {w: 0.54, h: 0.45, d: 0.38, front: 0, tagY: 0.07, tagW: 0.22};
+}
+function projecteurs(P){
+  const B = blk(P), A = alu(P);
+  [-0.15, 0.15].forEach((x, i) => { const g = sub(P, x, 0.02, -0.08, -0.15, 0, 0);
+    const h = mesh(P, RBG(0.26, 0.2, 0.08, 0.02), B, 0, 0.1, 0, g); if (!i) P.main = h;
+    mesh(P, RBG(0.22, 0.16, 0.004, 0.01), P.M('#f4f6f7', 0.1, 0, {emissive: new THREE.Color(0xdfe8ff), emissiveIntensity: 0.25}), 0, 0.1, 0.041, g);
+    for (let k = 0; k < 6; k++) mesh(P, new THREE.BoxGeometry(0.003, 0.15, 0.06), B, -0.1 + k*0.04, 0.1, -0.06, g);
+    mesh(P, new THREE.TorusGeometry(0.06, 0.01, 8, 16, Math.PI), B, 0, 0.2, 0, g); });
+  [-0.06, 0, 0.06].forEach(z => cylX(P, 0.012, 0.72, A, 0, 0.012, -0.2 + z, null, 10));
+  return {w: 0.74, h: 0.26, d: 0.28, front: 0, tagY: 0.05, tagW: 0.22};
+}
+function enrouleur(P){
+  const Y = P.M('#e8c300', 0.45), O = P.M('#ea6a1f', 0.7), R = 0.15;
+  const fr = lathe(P, [[0, 0], [R + 0.02, 0], [R + 0.02, 0.012], [0, 0.012]], Y, 0, R + 0.03, -0.02); fr.rotation.x = Math.PI/2;
+  lathe(P, [[0, 0], [R + 0.02, 0], [R + 0.02, 0.012], [0, 0.012]], Y, 0, R + 0.03, -0.17).rotation.x = Math.PI/2;
+  const c = mesh(P, CY(R*0.86, 0.13, 32), O, 0, R + 0.03, -0.095); c.rotation.x = Math.PI/2; P.main = c;
+  for (let i = 0; i < 6; i++) mesh(P, new THREE.TorusGeometry(R*0.86, 0.008, 6, 36), O, 0, R + 0.03, -0.04 - i*0.02);
+  mesh(P, RBG(0.1, 0.08, 0.05, 0.015), P.M('#2a2d31', 0.6), 0, R + 0.03, -0.004);
+  [-0.025, 0.025].forEach(x => mesh(P, CY(0.016, 0.01, 14), P.M('#1d5fae', 0.4), x, R + 0.03, 0.022).rotation.x = Math.PI/2);
+  hose(P, [[-R - 0.02, 0.01, -0.02], [-R - 0.02, 2*R + 0.08, -0.02], [-R - 0.02, 2*R + 0.08, -0.17], [-R - 0.02, 0.01, -0.17]], 0.012, Y, null, 12);
+  return {w: 2*R + 0.06, h: 2*R + 0.1, d: 0.2, front: 0.03, tagY: 0.06, tagW: 0.18};
+}
+
+/* ---------- mousse, cordages, divers ---------- */
+function emulseur(P){
+  const t = pkgTex({ar: 1.25, bg: '#f2f3f1', band: '#c8161d', bandText: 'ÉMULSEUR', bandH: 0.2, title: ['AFFF 3 %', '20 L'], sub: 'classe A et B'});
+  [-0.28, 0, 0.28].forEach((x, i) => { const b = mesh(P, RBG(0.25, 0.36, 0.17, 0.03), [P.M('#e3c21a', 0.5), P.M('#e3c21a', 0.5), P.M('#e3c21a', 0.5), P.M('#e3c21a', 0.5), STD(t, 0.5), P.M('#e3c21a', 0.5)], x, 0.18, -0.1); if (!i) P.main = b;
+    mesh(P, RBG(0.12, 0.05, 0.03, 0.012), P.M('#e3c21a', 0.5), x - 0.04, 0.385, -0.1);
+    mesh(P, CY(0.03, 0.04, 16), P.M('#1d5fae', 0.45), x + 0.07, 0.38, -0.12); });
+  return {w: 0.82, h: 0.41, d: 0.18, front: 0, tagY: 0.08, tagW: 0.22};
+}
+function lanceMousse(P){
+  const A = alu(P), B = blk(P);
+  const t = cylX(P, 0.045, 0.62, A, -0.04, 0.07, -0.1, null, 24, 0.05); P.main = t;
+  cylX(P, 0.065, 0.12, A, -0.4, 0.07, -0.1, null, 28, 0.05);
+  for (let i = 0; i < 4; i++) mesh(P, new THREE.BoxGeometry(0.02, 0.012, 0.012), B, 0.18 + i*0.03, 0.12, -0.1);
+  mesh(P, RBG(0.04, 0.12, 0.04, 0.012), B, 0.1, 0.0 + 0.04, -0.1);
+  raccord(P, 0.04, 0.3, 0.07, -0.1, 0, 0, -Math.PI/2);
+  for (let i = 0; i < 3; i++) mesh(P, new THREE.TorusGeometry(0.06 - i*0.004, 0.006, 6, 24), P.M('#dfeaf0', 0.2, 0, {transparent: true, opacity: 0.7}), 0.08, 0.008 + i*0.012, -0.22).rotation.x = Math.PI/2;
+  return {w: 0.86, h: 0.16, d: 0.3, front: 0, tagY: 0.04, tagW: 0.22};
+}
+function cordes(P){
+  [['#f2efe4', -0.12], ['#c8161d', 0.12]].forEach(([c, x], j) => { const M = P.M(c, 0.85);
+    for (let i = 0; i < 6; i++) { const t = mesh(P, new THREE.TorusGeometry(0.11 + (i % 3)*0.006, 0.011, 8, 36), M, x + (i % 2)*0.006, 0.13, -0.08 - i*0.012); t.rotation.x = -0.15; t.scale.set(1, 1.15, 1); if (!i && !j) P.main = t; }
+    mesh(P, CY(0.03, 0.06, 16), M, x, 0.255, -0.11); });
+  return {w: 0.48, h: 0.29, d: 0.18, front: 0, tagY: 0.05, tagW: 0.2};
+}
+function sangles(P){
+  [['#ea6a1f', -0.13], ['#f2c500', 0.0], ['#ea6a1f', 0.13]].forEach(([c, x], i) => { const r = mesh(P, CY(0.055, 0.05, 28), [P.M(c, 0.8), STD(spiralTex(c), 0.8), STD(spiralTex(c), 0.8)], x, 0.055, -0.08); r.rotation.x = Math.PI/2; if (!i) P.main = r;
+    mesh(P, RBG(0.06, 0.03, 0.05, 0.008), P.M('#cfd4d8', 0.3, 0.85), x, 0.115, -0.08); });
+  return {w: 0.4, h: 0.13, d: 0.1, front: 0, tagY: 0.04, tagW: 0.18};
+}
+function bachage(P){ const r = folded(P, ['#2e6b3f', '#2a6239', '#2e6b3f', '#2a6239'], 0.5, 0.36, 0.06, {binding: '#1b3d24'}); [-0.15, 0.15].forEach(x => mesh(P, new THREE.BoxGeometry(0.04, r.h + 0.01, 0.37), P.M('#1b1d20', 0.85), x, r.h/2, -0.18)); return r; }
+function seauPompe(P){
+  const Rd = P.M('#c8161d', 0.45), A = alu(P);
+  const s = lathe(P, [[0, 0], [0.11, 0], [0.11, 0.004], [0.14, 0.3], [0.145, 0.31], [0.13, 0.31], [0.1, 0.01], [0, 0.01]], Rd, -0.05, 0, -0.15); P.main = s;
+  mesh(P, new THREE.TorusGeometry(0.145, 0.006, 6, 30, Math.PI), A, -0.05, 0.31, -0.15);
+  mesh(P, CY(0.025, 0.5, 16), A, 0.02, 0.27, -0.15).rotation.z = 0.2;
+  mesh(P, RBG(0.14, 0.025, 0.025, 0.008), P.M('#1b1d20', 0.6), -0.03, 0.53, -0.15).rotation.z = 0.2;
+  hose(P, [[0.05, 0.4, -0.15], [0.14, 0.35, -0.1], [0.15, 0.15, -0.08], [0.12, 0.03, -0.1]], 0.009, P.M('#2a2d31', 0.6));
+  return {w: 0.36, h: 0.55, d: 0.3, front: 0, tagY: 0.07, tagW: 0.18};
+}
+function extCO2(P){
+  mesh(P, RBG(0.08, 0.3, 0.02, 0.006), P.M('#2b2f33', 0.5), 0, 0.35, -0.16);
+  const b = lathe(P, [[0, 0], [0.07, 0], [0.074, 0.01], [0.074, 0.5], [0.06, 0.55], [0.025, 0.575], [0, 0.578]], P.M('#c8161d', 0.3, 0.1), 0, 0, -0.08); P.main = b;
+  mesh(P, CY(0.0745, 0.07, 28, 0.0745), P.M('#1b1d20', 0.5), 0, 0.46, -0.08);
+  wrap(P, 0.0745, 0.14, pkgTex({ar: 0.55, bg: '#ffffff', band: '#1b1d20', bandText: 'CO2 · 5 kg', bandH: 0.3, title: ['EXTINCTEUR', 'feux électriques']}), 0, 0.27, -0.08);
+  mesh(P, CY(0.022, 0.05, 16), P.M('#2a2d31', 0.5), 0, 0.6, -0.08);
+  mesh(P, RBG(0.11, 0.015, 0.026, 0.005), P.M('#2a2d31', 0.5), 0.03, 0.635, -0.08).rotation.z = -0.15;
+  hose(P, [[0.02, 0.6, -0.07], [0.08, 0.56, -0.05], [0.09, 0.42, -0.03]], 0.009, P.M('#1b1d20', 0.6));
+  const horn = mesh(P, CY(0.05, 0.2, 20, 0.014), P.M('#1b1d20', 0.6), 0.09, 0.3, -0.03);
+  return {w: 0.2, h: 0.65, d: 0.18, front: 0, tagY: 0.1, tagW: 0.16};
+}
+
+/* ---------- secours à personne (VSAV) ---------- */
+function sacPS(P){ return holdall(P, '#c3222a', 0.56, 0.32, 0.3, pkgTex({ar: 0.62, bg: '#ffffff', icon: 'cross', iconCol: '#c3222a', title: 'SECOURS'}), {side: true}); }
+function sacO2(P){
+  const r = holdall(P, '#1d5fae', 0.6, 0.34, 0.3, pkgTex({ar: 0.62, bg: '#ffffff', band: '#2a8a4a', bandText: 'OXYGÈNE', bandH: 0.3, title: 'O2'}), {side: true});
+  lathe(P, [[0, 0], [0.05, 0], [0.05, 0.05], [0.03, 0.08], [0.016, 0.09], [0, 0.09]], P.M('#f2f3f4', 0.3, 0.15), 0.2, 0.33, -0.15);
+  mesh(P, CY(0.022, 0.03, 16), P.M('#2a8a4a', 0.4), 0.2, 0.44, -0.15);
+  return Object.assign(r, {h: 0.47});
+}
+function kitBrules(P){ pouch(P, '#e67e22', 0.34, 0.2, 0.16, pkgTex({ar: 0.62, bg: '#ffffff', icon: 'drop', iconCol: '#1d5fae', title: 'BRÛLÉS'})); return {w: 0.35, h: 0.21, d: 0.17, front: 0, tagY: 0.05, tagW: 0.2}; }
+function kitMembre(P){ pouch(P, '#5d4ea6', 0.36, 0.2, 0.18, pkgTex({ar: 0.62, bg: '#ffffff', icon: 'cross', iconCol: '#5d4ea6', title: 'MEMBRE'})); return {w: 0.37, h: 0.21, d: 0.19, front: 0, tagY: 0.05, tagW: 0.2}; }
+function attellesMod(P){
+  [['#1d5fae', 0.0], ['#ea6a1f', 0.022], ['#1d5fae', 0.044], ['#7b8a99', 0.066]].forEach(([c, y], i) => { const b = mesh(P, RBG(0.52 - i*0.04, 0.02, 0.12, 0.009), P.M(c, 0.85), (i % 2)*0.02, y + 0.011, -0.07 - (i % 2)*0.02); if (!i) P.main = b;
+    [-0.15, 0.15].forEach(x => mesh(P, new THREE.BoxGeometry(0.04, 0.0205, 0.122), P.M('#1b1d20', 0.9), x + (i % 2)*0.02, y + 0.011, -0.07 - (i % 2)*0.02)); });
+  return {w: 0.54, h: 0.09, d: 0.16, front: 0, tagY: 0.03, tagW: 0.2};
+}
+function cones(P){
+  [-0.13, 0.13].forEach((x, i) => { mesh(P, RBG(0.24, 0.03, 0.24, 0.01), P.M('#1b1d20', 0.8), x, 0.015, -0.13);
+    const c = lathe(P, [[0.1, 0], [0.025, 0.46], [0, 0.465]], P.M('#ff6a13', 0.55), x, 0.03, -0.13, null, 28); if (!i) P.main = c;
+    [0.14, 0.26].forEach(y => mesh(P, new THREE.CylinderGeometry(0.1 - (y + 0.05)*0.163 + 0.003, 0.1 - y*0.163 + 0.003, 0.05, 28, 1, true), P.M('#f4f5f6', 0.2, 0.3), x, 0.03 + y + 0.025, -0.13)); });
+  return {w: 0.5, h: 0.5, d: 0.26, front: 0, tagY: 0.08, tagW: 0.2};
+}
+function torche(P){
+  mesh(P, RBG(0.1, 0.06, 0.24, 0.015), P.M('#1b1d20', 0.6), 0, 0.03, -0.13);
+  const b = cylZ(P, 0.022, 0.2, P.M('#2a2d31', 0.5, 0.3), 0, 0.085, -0.15, null, 18); P.main = b;
+  cylZ(P, 0.036, 0.06, P.M('#f2c500', 0.45), 0, 0.085, -0.03, null, 22, 0.024);
+  mesh(P, CY(0.03, 0.004, 22), P.M('#ffffff', 0.05, 0, {emissive: new THREE.Color(0xfff4cc), emissiveIntensity: 0.4}), 0, 0.085, 0.001).rotation.x = Math.PI/2;
+  mesh(P, CY(0.006, 0.01, 10), P.M('#2a8a4a', 0.3, 0, {emissive: new THREE.Color(0x2a8a4a), emissiveIntensity: 1}), 0.03, 0.062, -0.02);
+  return {w: 0.1, h: 0.12, d: 0.25, front: 0, tagY: 0.03, tagW: 0.13};
+}
+function planDur(P){
+  const sh = new THREE.Shape(); sh.moveTo(-0.92, -0.2); sh.lineTo(0.92, -0.2); sh.quadraticCurveTo(0.95, 0, 0.92, 0.2); sh.lineTo(-0.92, 0.2); sh.quadraticCurveTo(-0.95, 0, -0.92, -0.2);
+  for (let i = 0; i < 6; i++) [-1, 1].forEach(s => { const h = new THREE.Path(), x = -0.8 + i*0.32; h.moveTo(x - 0.06, s*0.13 - 0.025); h.lineTo(x + 0.06, s*0.13 - 0.025); h.lineTo(x + 0.06, s*0.13 + 0.025); h.lineTo(x - 0.06, s*0.13 + 0.025); h.lineTo(x - 0.06, s*0.13 - 0.025); sh.holes.push(h); });
+  const g = new THREE.ExtrudeGeometry(sh, {depth: 0.04, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.008, bevelSegments: 2}); g.rotateX(-Math.PI/2);
+  const b = mesh(P, g, P.M('#f2a516', 0.45), 0, 0.008, -0.21); P.main = b;
+  [-0.5, 0.1, 0.6].forEach(x => mesh(P, new THREE.BoxGeometry(0.05, 0.064, 0.43), P.M('#c8161d', 0.8), x, 0.03, -0.21));
+  [-0.72, -0.58].forEach(x => mesh(P, RBG(0.1, 0.1, 0.12, 0.02), P.M('#1d5fae', 0.7), x, 0.1, -0.21));
+  return {w: 1.86, h: 0.16, d: 0.42, front: 0, tagY: 0.04, tagW: 0.26};
+}
+
+window.RX_FIRE = () => [
+  [/^ ari \d| ari \d|appareil respiratoire/, (P, n) => ari(P, n)],
+  [/bouteilles? ari|bouteilles de réserve/, P => bouteillesAri(P)],
+  [/masques? ari/, P => masquesAri(P)],
+  [/lot de sauvetage|lspcc/, P => lspcc(P)],
+  [/caméra thermique/, P => cameraTherm(P)],
+  [/lignes? guides?/, P => ligneGuide(P)],
+  [/tuyaux? 45/, P => echeveaux(P, 5, 0.075, '#f1efe6', null, 0.045)],
+  [/tuyaux? 70/, P => couronnes(P, 0.26, 0.11, 2, '#f3f1ea', 0.065)],
+  [/tuyaux? 110/, P => couronnes(P, 0.28, 0.17, 2, '#f3f1ea', 0.1)],
+  [/tuyaux? d'aspiration|aspiraux/, P => aspiraux(P)],
+  [/lance à mousse/, P => lanceMousse(P)],
+  [/lances? 1000/, P => lances(P, true)],
+  [/lances? 500|lances? à débit/, P => lances(P, false)],
+  [/division/, P => division(P)],
+  [/clé tricoise|tricoises?/, P => tricoise(P)],
+  [/coudes?/, P => coudes(P)],
+  [/clé de poteau/, P => clePoteau(P)],
+  [/clé de bouche/, P => cleBouche(P)],
+  [/crépine/, P => crepine(P)],
+  [/réductions?/, P => raccordsTray(P, true)],
+  [/raccords?(?! laiton| per)/, P => raccordsTray(P, false)],
+  [/clés de manœuvre/, P => clesManoeuvre(P)],
+  [/tronçonneuse/, P => troncon(P)],
+  [/disqueuse|découpeuse/, P => decoupeuse(P)],
+  [/hache/, P => upright(P, () => hache(P))],
+  [/pied de biche|halligan/, P => upright(P, () => piedBiche(P))],
+  [/barre à mine/, P => barreMine(P)],
+  [/coupe-boulons?/, P => upright(P, () => coupeBoulon(P))],
+  [/lot gaz/, P => lotGaz(P)],
+  [/détecteur/, P => detecteur(P)],
+  [/ventilateur/, P => ventilateur(P)],
+  [/groupe électrogène/, P => groupe(P)],
+  [/projecteurs?/, P => projecteurs(P)],
+  [/enrouleur/, P => enrouleur(P)],
+  [/émulseur|bidons?/, P => emulseur(P)],
+  [/cordes?/, P => cordes(P)],
+  [/sangles?/, P => sangles(P)],
+  [/bâchage/, P => bachage(P)],
+  [/seau/, P => seauPompe(P)],
+  [/extincteur co2/, P => extCO2(P)],
+  [/sac ps|sac de premiers/, P => sacPS(P)],
+  [/sac oxyg/, P => sacO2(P)],
+  [/kit brûl/, P => kitBrules(P)],
+  [/kit membre/, P => kitMembre(P)],
+  [/attelles? modul/, P => attellesMod(P)],
+  [/cônes?|cones? de/, P => cones(P)],
+  [/lampe/, P => torche(P)],
+  [/plan dur/, P => planDur(P)],
 ];
 })();
 
@@ -1129,6 +1622,7 @@ function reel(P, R, w, drum, cable){
 const pick = (n, arr) => arr[hash(n) % arr.length];
 
 const LIB = [
+  ...(window.RX_FIRE ? window.RX_FIRE() : []),
   ...(window.RX_MED ? window.RX_MED() : []),
   /* ---- matériel sanitaire (ambulance, VSAV) ---- */
   [/brancard principal/, P => { const src = window.RX_ITEM_MODELS && window.RX_ITEM_MODELS.brancard;
@@ -1282,13 +1776,13 @@ window.RXItems = {
     if (opt && opt.strip) { const tw = Math.min(sw*0.9, 0.26), th = 0.044;
       const tag = new THREE.Mesh(new THREE.PlaneGeometry(tw, th), new THREE.MeshBasicMaterial({map:opt.strip(name), transparent:true, toneMapped:false}));
       tag.position.set(0, opt.stripY == null ? 0.0125 : opt.stripY, opt.stripZ == null ? 0.006 : opt.stripZ); tag.visible = labels; g.add(tag);
-      return {g, main: P.main, tag}; }
+      return {g, main: P.main, tag, h: spec.h*s, w: spec.w*s}; }
     let tw = small ? Math.min(sw*0.92, Math.max(0.17, spec.tagW*1.6)) : Math.min(sw*0.92, Math.max(0.22, spec.tagW*s*1.6)), th = tw*0.375;
     const tag = new THREE.Mesh(new THREE.PlaneGeometry(tw, th), new THREE.MeshBasicMaterial({map:tagTex(name), transparent:true, toneMapped:false}));
     if (spec.tagFlat) { tag.rotation.x = -Math.PI/2; tag.position.set(0, spec.h*s + 0.004, -0.03 - spec.d*s*0.35); }
     else tag.position.set(0, small ? th/2 + 0.01 : Math.max(th/2 + 0.045, spec.tagY*s), -0.03 + 0.006 + (small ? 0.01 : 0));
     tag.visible = labels; g.add(tag);
-    return {g, main: P.main, tag};
+    return {g, main: P.main, tag, h: spec.h*s, w: spec.w*s};
   }
 };
 })();
@@ -1361,8 +1855,8 @@ const PRESETS = {
     {code:'G1',name:'Armoire avant gauche',side:'L',weight:1,shelves:[['Sac PS','DSA'],['Sac oxygénothérapie','Aspirateur de mucosités'],['Kit accouchement','Kit brûlés']]},
     {code:'G2',name:'Armoire arrière gauche',side:'L',weight:1,shelves:[['Attelles à dépression','Attelles modulables'],['Colliers cervicaux','Kit membre'],['Couvertures','Draps']]},
     {code:'D1',name:'Coffre extérieur avant droit',side:'R',weight:1,shelves:[['Cônes de balisage','Lampe torche'],['Extincteur poudre','Gilets haute visibilité']]},
-    {code:'D2',name:'Coffre extérieur arrière droit',side:'R',weight:1.2,shelves:[['Matelas immobilisateur'],['Plan dur','Chaise portoir']]},
-    {code:'AR',name:'Cellule arrière',side:'B',weight:1,shelves:[['Brancard principal'],['Sacs DASRI','Désinfectant','Gants']]}
+    {code:'D2',name:'Coffre extérieur arrière droit',side:'R',weight:1.2,shelves:[['Matelas immobilisateur','Chaise portoir']]},
+    {code:'AR',name:'Rangement arrière',side:'B',weight:1,shelves:[['Plan dur'],['Sacs DASRI','Désinfectant','Gants']]}
   ]},
   vsavi: {label:'VSAV · cellule', group:'Secours', body:{length:3.9,width:2.2,height:2.45,color:'#b3121b',door:'#b3121b',doorStyle:'porte',stripe:true,beacons:true,cab:'van',casquette:true,rearWindows:true,rearChevrons:true,frontYellow:true,beltLine:true,lettering:'Sapeurs-pompiers',cabText:'VSAV',interior:true,accent:'#c8102e'}, coffres:[
     {code:'H1',name:'Armoire haute gauche 1',zone:'G-haut',side:'L',weight:1,shelves:[['Kit accouchement','Kit brûlés']]},
@@ -1375,9 +1869,9 @@ const PRESETS = {
     {code:'BR',name:'Brancard',zone:'C',side:'B',weight:1,shelves:[['Brancard principal']]}
   ]},
   fpt: {label:'FPT', group:'Secours', body:{length:4.3,width:2.5,height:2.5,color:'#b3121b',door:'#e8ebee',hoseReels:true,frontChevrons:true,beltLine:true,doorStyle:'rideau',stripe:true,beacons:true,cab:'truck',ladder:true,lettering:'Sapeurs-pompiers',cabText:'FPT'}, coffres:[
-    {code:'G1',name:'Coffre ARI',side:'L',weight:1,shelves:[['ARI 1','ARI 2','ARI 3'],['Bouteilles ARI de réserve','Masques ARI de rechange'],['Lot de sauvetage','Caméra thermique']]},
+    {code:'G1',name:'Coffre ARI',side:'L',weight:1,shelves:[['ARI 1','ARI 2','ARI 3'],['Bouteilles ARI de réserve','Masques ARI de rechange'],['Lot de sauvetage','Caméra thermique','Lignes guides']]},
     {code:'G2',name:'Coffre établissements',side:'L',weight:1.25,shelves:[['Tuyaux 45 mm','Lances 500 L/min'],['Division','Clé tricoise','Coudes d\'alimentation']]},
-    {code:'G3',name:'Coffre forcement',side:'L',weight:1,shelves:[['Tronçonneuse','Disqueuse'],['Hache','Pied de biche'],['Barre à mine'],['Lot gaz','Détecteur multigaz']]},
+    {code:'G3',name:'Coffre forcement',side:'L',weight:1,shelves:[['Tronçonneuse','Disqueuse'],['Hache','Pied de biche','Coupe-boulon'],['Barre à mine'],['Lot gaz','Détecteur multigaz']]},
     {code:'D1',name:'Coffre alimentation',side:'R',weight:1,shelves:[['Tuyaux 70 mm','Tuyaux 110 mm'],['Clé de poteau','Clé de bouche'],['Crépine','Tuyaux d\'aspiration']]},
     {code:'D2',name:'Coffre éclairage',side:'R',weight:1.25,shelves:[['Ventilateur','Groupe électrogène'],['Projecteurs','Enrouleur électrique']]},
     {code:'D3',name:'Coffre mousse',side:'R',weight:1,shelves:[['Émulseur (bidons)'],['Lance à mousse'],['Cordes','Sangles'],['Lot de bâchage']]},
@@ -1455,6 +1949,23 @@ function stripTex(text){
     const ls = best ? best.ls : [text]; f = 42; const ok = () => { x.font = `700 ${f}px ${DF}`; return ls.every(l => x.measureText(l).width < 556); }; while (!ok() && f > 20) f -= 2;
     ls.forEach((l, i) => x.fillText(l, 306, 50 + (i - (ls.length - 1)/2)*f*1.02)); }
   const t = tex(c); stripCache.set(text, t); return t;
+}
+function pumpTex(w, h){
+  const W = 1024, H = Math.round(1024*Math.min(1.6, Math.max(0.5, h/w))), [c, x] = cv(W, H);
+  const g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#d9dde1'); g.addColorStop(1, '#b9bfc5'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.fillStyle = 'rgba(0,0,0,0.06)'; for (let i = 0; i < W; i += 6) x.fillRect(i, 0, 2, H);
+  const gauge = (cx, cy, r, red) => { x.fillStyle = '#2a2d31'; x.beginPath(); x.arc(cx, cy, r + 10, 0, 7); x.fill(); x.fillStyle = '#fbfbf9'; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill();
+    x.strokeStyle = '#2a2d31'; for (let i = 0; i <= 16; i++) { const a = Math.PI*0.75 + Math.PI*1.5*i/16; x.lineWidth = i % 4 ? 2 : 5; x.beginPath(); x.moveTo(cx + Math.cos(a)*r*0.78, cy + Math.sin(a)*r*0.78); x.lineTo(cx + Math.cos(a)*r*0.92, cy + Math.sin(a)*r*0.92); x.stroke(); }
+    if (red) { x.strokeStyle = '#d9342b'; x.lineWidth = 8; x.beginPath(); x.arc(cx, cy, r*0.85, Math.PI*1.95, Math.PI*2.25); x.stroke(); }
+    const a = Math.PI*(0.9 + Math.random()*0.8); x.strokeStyle = '#c62828'; x.lineWidth = 6; x.beginPath(); x.moveTo(cx, cy); x.lineTo(cx + Math.cos(a)*r*0.8, cy + Math.sin(a)*r*0.8); x.stroke(); x.fillStyle = '#2a2d31'; x.beginPath(); x.arc(cx, cy, 9, 0, 7); x.fill(); };
+  const top = H*0.08;
+  x.fillStyle = '#1b1d20'; x.fillRect(W*0.05, top, W*0.9, H*0.3); x.fillStyle = '#e8eaec'; x.font = `700 ${Math.round(Math.min(H*0.028, 26))}px Arial, sans-serif`; x.textAlign = 'center';
+  [['PRESSION', 0.2, true], ['ENTRÉE', 0.4, false], ['RÉGIME', 0.6, false], ['NIVEAU', 0.8, false]].forEach(([t, f, red]) => { gauge(W*f, top + H*0.14, Math.min(W, H)*0.075, red); x.fillStyle = '#e8eaec'; x.fillText(t, W*f, top + H*0.27); });
+  x.fillStyle = '#2a2d31'; x.fillRect(W*0.05, H*0.45, W*0.9, H*0.06); x.fillStyle = '#5bd16b'; for (let i = 0; i < 10; i++) x.fillRect(W*0.08 + i*W*0.085, H*0.465, W*0.06, H*0.03);
+  [[0.15, '#c8161d', 'REFOUL. 1'], [0.38, '#c8161d', 'REFOUL. 2'], [0.62, '#1d5fae', 'ASPIRATION'], [0.85, '#e8c300', 'MOUSSE']].forEach(([f, col, t]) => {
+    x.fillStyle = '#9aa1a8'; x.fillRect(W*f - 6, H*0.56, 12, H*0.2); x.fillStyle = col; x.beginPath(); x.arc(W*f, H*0.56, 26, 0, 7); x.fill(); x.fillStyle = '#1b1d20'; x.font = `700 ${Math.round(Math.min(H*0.026, 24))}px Arial, sans-serif`; x.fillText(t, W*f, H*0.82); });
+  x.fillStyle = '#c8161d'; x.fillRect(W*0.05, H*0.9, W*0.9, H*0.025);
+  return tex(c);
 }
 function plateTex(code){
   if (plateCache.has(code)) return plateCache.get(code);
@@ -1547,17 +2058,21 @@ function createEngine(opts){
       const s = new THREE.Mesh(new THREE.BoxGeometry(a, b, 0.03), mats.seal); s.position.set(x, y, -0.005); g.add(s); });
     if (c.photo) { const img = new Image(); const ph = new THREE.Mesh(new THREE.PlaneGeometry(w*0.97, h*0.97), new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0.92, toneMapped:false}));
       ph.position.z = -depth + 0.006; g.add(ph); img.onload = () => { const t = new THREE.Texture(img); t.encoding = THREE.sRGBEncoding; t.needsUpdate = true; ph.material.map = t; ph.material.needsUpdate = true; }; img.src = c.photo; }
+    if (opt.pumpPanel) { const pp = new THREE.Mesh(new THREE.PlaneGeometry(w*0.96, h*0.96), new THREE.MeshStandardMaterial({map:pumpTex(w, h), roughness:0.5, metalness:0.3})); pp.position.z = -depth + 0.012; g.add(pp); }
     const led = new THREE.Mesh(new THREE.BoxGeometry(w*0.9, 0.015, 0.03), new THREE.MeshStandardMaterial({color:col('#e9f1ff'), emissive:col('#dfeaff'), emissiveIntensity:0}));
     led.position.set(0, h/2 - 0.03, -0.06); g.add(led);
     const ledLight = null;
-    const rows = c.shelves.length ? c.shelves : [[]], n = rows.length, sh = h/n, items = [];
+    const rows = c.shelves.length ? c.shelves : [[]], n = rows.length, items = [];
+    const built = rows.map(row => { const m = row.length, sw = m ? (w - 0.04)/m : w; return row.map(name => ({name, sw, it: RXItems.build(name, sw, Math.max(0.12, h - 0.05*n), depth, tagTex, E.labels, {strip: stripTex})})); });
+    const nat = built.map(r => r.length ? Math.max(...r.map(o => o.it.h || 0.2)) + 0.075 : 0.12), tot = nat.reduce((a, v) => a + v, 0), kS = Math.min(1, h/tot), extra = Math.max(0, h - tot)/n;
+    const rh = nat.map(v => v*kS + extra); let yTop = h/2;
     rows.forEach((row, i) => {
-      const yBot = h/2 - (i + 1)*sh;
+      const yBot = yTop - rh[i]; yTop = yBot; const sh = rh[i];
       if (i < n - 1) { const p = new THREE.Mesh(new THREE.BoxGeometry(w - 0.01, 0.025, depth - 0.01), mats.shelf); p.position.set(0, yBot, -depth/2); g.add(p);
         const lip = new THREE.Mesh(new THREE.BoxGeometry(w - 0.01, 0.05, 0.012), mats.shelf); lip.position.set(0, yBot + 0.025, -0.02); g.add(lip); }
       const m = row.length; if (!m) return; const sw = (w - 0.04)/m;
       row.forEach((name, j) => {
-        const it = RXItems.build(name, sw, sh - 0.04, depth, tagTex, E.labels, E.interior ? {strip: stripTex} : null); it.g.userData.item = true;
+        const it = built[i][j].it; it.g.userData.item = true; if (kS < 1) it.g.scale.setScalar(kS);
         const ix = -w/2 + 0.02 + sw*(j + 0.5); it.g.position.set(ix, yBot + 0.0125, 0); g.add(it.g); E.tags.push(it.tag);
         if (opt.pockets) { const ph = Math.min(sh*0.62, 0.2);
           const pm = mats.pocket || (mats.pocket = new THREE.MeshPhysicalMaterial({color:col('#eef4f7'), roughness:0.12, metalness:0, transparent:true, opacity:0.24, depthWrite:false, clearcoat:0.6}));
@@ -1814,7 +2329,7 @@ function createEngine(opts){
       const avail = (f.span[1] - f.span[0]) - gap*Math.max(0, list.length - 1);
       const holes = []; let u = f.span[0];
       list.forEach(c => {
-        let u0 = u, u1 = u + avail*(+c.weight || 1)/sum, y0 = sd === 'B' ? (isTruck ? 0.75 : bot + 0.18) : coffreBot, y1 = sd === 'B' ? top - 0.14 : coffreTop;
+        let u0 = u, u1 = u + avail*(+c.weight || 1)/sum, y0 = sd === 'B' ? (isTruck ? (b.hoseReels ? 1.2 : 0.75) : bot + 0.18) : coffreBot, y1 = sd === 'B' ? top - 0.14 : coffreTop;
         u += (u1 - u0) + gap;
         if (f.uAx != null && y0 < archTop + 0.06) {
           const a0 = f.uAx - ra - 0.05, a1 = f.uAx + ra + 0.05, ov = Math.min(u1, a1) - Math.max(u0, a0);
@@ -1825,7 +2340,7 @@ function createEngine(opts){
         }
         if (y1 - y0 < 0.45) y0 = y1 - 0.45;
         holes.push([u0, y0, u1, y1]);
-        buildCoffre(frame, c, u0, u1, y0, y1, f.depth, mats, {doubled: b.doorStyle !== 'rideau' && (u1 - u0) > (sd === 'B' ? 1.2 : 1.15), windows: sd === 'B' && b.rearWindows, chevrons: sd === 'B' && b.rearChevrons, hingeRight: false});
+        buildCoffre(frame, c, u0, u1, y0, y1, f.depth, mats, {pumpPanel: sd === 'B' && isTruck && !!b.hoseReels, doubled: b.doorStyle !== 'rideau' && (u1 - u0) > (sd === 'B' ? 1.2 : 1.15), windows: sd === 'B' && b.rearWindows, chevrons: sd === 'B' && b.rearChevrons, hingeRight: false});
       });
       // peau extérieure
       const sh = new THREE.Shape(), h0 = -f.F/2, h1 = f.F/2;
@@ -1923,6 +2438,37 @@ function createEngine(opts){
         const noz = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.045, 0.3, 12), mats.chrome); noz.rotation.z = Math.PI/2; noz.position.set(-0.05, R0*0.86, 0); g.add(noz);
         g.traverse(o => { if (o.isMesh) o.castShadow = true; }); });
     }
+    // --- équipements extérieurs : projecteurs de travail, poignées, marchepieds, échelle d'accès, raccords de refoulement
+    if (b.beacons) {
+      const lens = std('#eef2f5', 0.12, 0, {emissive:col('#ffffff'), emissiveIntensity:0.25}), chr = mats.chrome, sideFree = xBR + Math.min(0.55, BL*0.16) + 0.06;
+      [1, -1].forEach(sz => {
+        [xBF - 0.35, xBR + 0.32].forEach(x => { add(RBox(0.24, 0.09, 0.05, 0.015), mats.trim, x, top - 0.1, sz*(W/2 + 0.026), truck, false);
+          const l = add(new THREE.PlaneGeometry(0.2, 0.06), lens, x, top - 0.1, sz*(W/2 + 0.052), truck, false); if (sz < 0) l.rotation.y = Math.PI; });
+        [xBF - 0.07, xBR + 0.07].forEach(x => { const y0 = (isTruck ? 1.05 : 1.0), y1 = y0 + 0.75;
+          add(new THREE.CylinderGeometry(0.016, 0.016, y1 - y0, 12), chr, x, (y0 + y1)/2, sz*(W/2 + 0.05), truck, false);
+          [y0 + 0.04, y1 - 0.04].forEach(y => add(new THREE.BoxGeometry(0.03, 0.03, 0.05), chr, x, y, sz*(W/2 + 0.025), truck, false)); });
+      });
+      if (isTruck) {
+        const dm = new THREE.MeshStandardMaterial({map:diamondTex(), color:col('#c9ced3'), roughness:0.38, metalness:0.85}); dm.map.wrapS = dm.map.wrapT = THREE.RepeatWrapping; dm.map.repeat.set(1.2, 0.5);
+        [1, -1].forEach(sz => [xBF - 0.7, xbc + 0.25, xBR + 1.05].forEach(x => { if (Math.abs(x - xA2) < ra + 0.42) return;
+          add(RBox(0.55, 0.035, 0.2, 0.01), dm, x, bot - 0.07, sz*(W/2 + 0.08), truck, false);
+          [-0.24, 0.24].forEach(dx => add(new THREE.BoxGeometry(0.03, 0.08, 0.12), mats.dark, x + dx, bot - 0.03, sz*(W/2 + 0.02), truck, false)); }));
+        // échelle d'accès au toit (côté gauche, arrière)
+        { const lx = xBR + 0.28, z = W/2 + 0.06, y0 = bot + 0.05, y1 = top + 0.35;
+          [lx - 0.16, lx + 0.16].forEach(x => add(RBox(0.03, y1 - y0, 0.03, 0.008), mats.alu, x, (y0 + y1)/2, z, truck, false));
+          for (let y = y0 + 0.2; y < top; y += 0.28) add(RBox(0.32, 0.025, 0.05, 0.006), mats.alu, lx, y, z, truck, false);
+          [y0 + 0.4, top - 0.2].forEach(y => [lx - 0.16, lx + 0.16].forEach(x => add(new THREE.BoxGeometry(0.03, 0.03, 0.06), mats.dark, x, y, W/2 + 0.03, truck, false))); }
+        // raccords de refoulement et d'alimentation (côté droit, arrière)
+        { const z = -(W/2 + 0.005), x = xBR + 0.3, ym = (bot + coffreBot)/2 + 0.45;
+          [[ym + 0.3, 0.05, '#c8161d'], [ym, 0.05, '#c8161d'], [ym - 0.32, 0.075, '#1d5fae']].forEach(([y, r, capc]) => {
+            const body = add(new THREE.CylinderGeometry(r, r, 0.1, 22), mats.alu, x, y, z - 0.05, truck, false); body.rotation.x = Math.PI/2;
+            const ring = add(new THREE.TorusGeometry(r*1.05, 0.009, 8, 22), mats.alu, x, y, z - 0.08, truck, false);
+            const cap = add(new THREE.CylinderGeometry(r*1.08, r*1.08, 0.035, 22), std(capc, 0.5, 0), x, y, z - 0.115, truck, false); cap.rotation.x = Math.PI/2;
+            if (r < 0.07) { const hw = add(new THREE.TorusGeometry(0.05, 0.008, 8, 22), std('#1b1d20', 0.5, 0.3), x + 0.13, y, z - 0.03, truck, false); add(new THREE.CylinderGeometry(0.01, 0.01, 0.06, 8).rotateX(Math.PI/2), mats.alu, x + 0.13, y, z - 0.01, truck, false); }
+          });
+          const pl = add(RBox(0.42, 1.0, 0.012, 0.01), std('#2a2d31', 0.6, 0.3), x + 0.04, ym, z + 0.0, truck, false); }
+      }
+    }
     // casquette au-dessus de la cabine (VSAV)
     if (b.casquette) {
       const cq = new THREE.Shape(), L0 = 0.55, y0 = S.Hc + 0.03;
@@ -1934,12 +2480,51 @@ function createEngine(opts){
     }
     // toit
     if (b.ladder) {
-      const lx0 = xBR + 0.2, lx1 = xCab + S.Lc*0.75, lz = 0.3, ly = top + 0.22;
-      [lz, -lz].forEach(z => add(new THREE.BoxGeometry(lx1 - lx0, 0.08, 0.045), mats.alu, (lx0 + lx1)/2, ly, z));
-      for (let x = lx0 + 0.15; x < lx1; x += 0.28) add(new THREE.CylinderGeometry(0.016, 0.016, 2*lz, 8).rotateX(Math.PI/2), mats.alu, x, ly, 0, truck, false);
-      [xBR + 0.4, xbc, xBF - 0.3].forEach(x => { add(new THREE.BoxGeometry(0.06, 0.1, 0.06), mats.dark, x, top + 0.06, lz); add(new THREE.BoxGeometry(0.06, 0.1, 0.06), mats.dark, x, top + 0.06, -lz); add(new THREE.BoxGeometry(0.08, 0.03, 2*lz + 0.1), mats.alu, x, top + 0.125, 0); });
-      add(new THREE.BoxGeometry(0.05, 0.05, W*0.86), mats.dark, xCab + S.Lc*0.6, S.Hc + 0.04, 0);
-      add(RBox(1.1, 0.25, 0.7, 0.04), mats.alu, xbc - 0.6, top + 0.14, -W*0.25);
+      // --- toit d'un FPT : échelle à coulisse 3 plans, échelle à crochets, aspiraux, outils à manche, coffre de toit, garde-corps
+      const R0 = top + 0.03, A = mats.alu, Dk = mats.dark, red = std('#c8161d', 0.45, 0.1);
+      const lx0 = xBR + 0.15, lx1 = xCab + S.Lc*0.72;
+      const ladder = (x0, x1, zc, wd, y, step, off) => {
+        [zc - wd/2, zc + wd/2].forEach(z => { add(RBox(x1 - x0, 0.072, 0.026, 0.008), A, (x0 + x1)/2, y, z, truck, false); [x0, x1].forEach(x => add(RBox(0.05, 0.078, 0.03, 0.01), red, x, y, z, truck, false)); });
+        for (let x = x0 + (off || 0.14); x < x1 - 0.06; x += step) add(new THREE.CylinderGeometry(0.013, 0.013, wd, 8).rotateX(Math.PI/2), A, x, y, zc, truck, false);
+      };
+      ladder(lx0, lx1, 0.28, 0.5, R0 + 0.17, 0.28, 0.14);
+      ladder(lx0 + 0.18, lx1 - 0.12, 0.28, 0.44, R0 + 0.255, 0.28, 0.24);
+      ladder(lx0 + 0.36, lx1 - 0.24, 0.28, 0.38, R0 + 0.34, 0.28, 0.1);
+      [xBR + 0.45, xbc + 0.2, xBF - 0.25].forEach(x => { [0.0, 0.56].forEach(z => add(new THREE.BoxGeometry(0.05, 0.13, 0.05), Dk, x, R0 + 0.065, z, truck, false));
+        add(RBox(0.08, 0.03, 0.66, 0.01), A, x, R0 + 0.13, 0.28, truck, false); });
+      add(new THREE.BoxGeometry(0.05, 0.05, W*0.86), Dk, xCab + S.Lc*0.6, S.Hc + 0.04, 0, truck, false);
+      [0.08, 0.48].forEach(z => add(new THREE.BoxGeometry(0.05, top + 0.13 - S.Hc - 0.06, 0.05), Dk, xCab + S.Lc*0.6, (S.Hc + 0.065 + top + 0.13)/2, z, truck, false));
+      // échelle à crochets
+      const hx0 = xBR + 0.3, hx1 = Math.min(xBR + 4.2, xBF - 0.12), hz = -0.42;
+      ladder(hx0, hx1, hz, 0.3, R0 + 0.12, 0.3, 0.18);
+      [hz - 0.15, hz + 0.15].forEach(z => { const hk = add(new THREE.TorusGeometry(0.11, 0.018, 8, 18, Math.PI*1.15), std('#2a2d31', 0.4, 0.7), hx1 + 0.02, R0 + 0.2, z, truck, false); hk.rotation.z = -Math.PI*0.62;
+        for (let k = 0; k < 3; k++) add(new THREE.BoxGeometry(0.02, 0.03, 0.02), std('#2a2d31', 0.4, 0.7), hx1 + 0.11 - k*0.025, R0 + 0.26 - k*0.04, z, truck, false); });
+      [hx0 + 0.3, hx1 - 0.4].forEach(x => add(new THREE.BoxGeometry(0.06, 0.09, 0.38), Dk, x, R0 + 0.045, hz, truck, false));
+      // aspiraux (4 x 2 m, diamètre 110)
+      { const [c, x] = cv(64, 512); x.fillStyle = '#1c1e21'; x.fillRect(0, 0, 64, 512); for (let i = 0; i < 64; i++) { x.fillStyle = 'rgba(255,255,255,0.12)'; x.fillRect(0, i*8, 64, 3); x.fillStyle = 'rgba(0,0,0,0.45)'; x.fillRect(0, i*8 + 5, 64, 3); }
+        const rt = tex(c); rt.wrapS = rt.wrapT = THREE.RepeatWrapping; rt.repeat.set(2, 5); const rm = new THREE.MeshStandardMaterial({map:rt, roughness:0.6});
+        const ax0 = xBR + 0.3, ax1 = ax0 + 2.0, axm = (ax0 + ax1)/2;
+        [[-0.84, 0], [-0.98, 0], [-0.91, 0.125]].concat([[-0.77, 0.125]]).forEach(([z, dy]) => { const y = R0 + 0.085 + dy;
+          const t = add(new THREE.CylinderGeometry(0.062, 0.062, 2.0, 22), rm, axm, y, z, truck, false); t.rotation.z = Math.PI/2;
+          [ax0, ax1].forEach(xx => { const cp = add(new THREE.CylinderGeometry(0.075, 0.075, 0.1, 22), A, xx, y, z, truck, false); cp.rotation.z = Math.PI/2; }); });
+        [ax0 + 0.4, ax1 - 0.4].forEach(xx => { add(RBox(0.07, 0.06, 0.36, 0.01), Dk, xx, R0 + 0.03, -0.87, truck, false); add(new THREE.BoxGeometry(0.04, 0.012, 0.4), std('#1b1d20', 0.85, 0), xx, R0 + 0.275, -0.87, truck, false); }); }
+      // gaffe, fourche, pelle
+      { const hz2 = [0.92, 1.0, 1.08], wood = std('#a06b3a', 0.6, 0), steel = std('#2a2d31', 0.4, 0.7), tx0 = xBR + 0.2, tx1 = tx0 + 1.9;
+        hz2.forEach((z, i) => { const h = add(new THREE.CylinderGeometry(0.016, 0.016, 1.9, 10), i === 1 ? std('#f2c500', 0.5, 0) : wood, (tx0 + tx1)/2, R0 + 0.07, z, truck, false); h.rotation.z = Math.PI/2; });
+        add(RBox(0.26, 0.02, 0.07, 0.006), steel, tx0 - 0.1, R0 + 0.07, hz2[0], truck, false);
+        for (let k = 0; k < 4; k++) add(new THREE.BoxGeometry(0.24, 0.008, 0.008), steel, tx0 - 0.12, R0 + 0.07, hz2[1] - 0.03 + k*0.02, truck, false);
+        const hk = add(new THREE.TorusGeometry(0.05, 0.01, 8, 14, Math.PI*1.2), steel, tx0 - 0.04, R0 + 0.07, hz2[2], truck, false); hk.rotation.x = Math.PI/2;
+        add(new THREE.ConeGeometry(0.018, 0.1, 10).rotateZ(Math.PI/2), steel, tx0 - 0.05, R0 + 0.07, hz2[2], truck, false);
+        [tx0 + 0.3, tx1 - 0.3].forEach(x => add(RBox(0.06, 0.09, 0.26, 0.01), Dk, x, R0 + 0.045, 1.0, truck, false)); }
+      // coffre de toit
+      { const bx = xBF - 0.65, bz = 0.86; add(RBox(0.95, 0.3, 0.5, 0.03), A, bx, R0 + 0.15, bz, truck, false);
+        add(new THREE.BoxGeometry(0.952, 0.012, 0.502), Dk, bx, R0 + 0.25, bz, truck, false);
+        add(RBox(0.18, 0.025, 0.03, 0.008), mats.chrome, bx, R0 + 0.2, bz + 0.26, truck, false); }
+      // garde-corps
+      { const gx0 = xBR + 0.06, gx1 = xBF - 0.06, gh = 0.3;
+        [1, -1].forEach(sz => { const zz = sz*(W/2 - 0.035);
+          const rl = add(new THREE.CylinderGeometry(0.016, 0.016, gx1 - gx0, 10), std('#f2c500', 0.45, 0.2), (gx0 + gx1)/2, R0 + gh, zz, truck, false); rl.rotation.z = Math.PI/2;
+          for (let k = 0; k <= 4; k++) add(new THREE.CylinderGeometry(0.013, 0.013, gh, 8), std('#f2c500', 0.45, 0.2), gx0 + (gx1 - gx0)*k/4, R0 + gh/2, zz, truck, false); }); }
     } else if (b.beacons) {
       add(RBox(0.95, 0.2, 0.85, 0.07), std('#e9ebee', 0.4, 0.3), xBR + 0.75, top + 0.11, 0);
     }
@@ -1973,7 +2558,7 @@ function createEngine(opts){
     cs.rotation.x = -Math.PI/2; cs.position.set(0, 0.004, 0); truck.add(cs);
     for (const id of wasOpen) if (E.objs[id]) { E.objs[id].target = 1; E.objs[id].p = 1; }
     mergeStatic();
-    truck.traverse(o => { if (o.isMesh && o.material && (o.material.map || o.material.transparent)) { o.material.polygonOffset = true; o.material.polygonOffsetFactor = -2; o.material.polygonOffsetUnits = -4; } });
+    (function decal(o){ if (o.userData.item) return; if (o.isMesh && o.material && !Array.isArray(o.material) && (o.material.map || o.material.transparent)) { o.material.polygonOffset = true; o.material.polygonOffsetFactor = -2; o.material.polygonOffsetUnits = -4; } o.children.forEach(decal); })(truck);
     E.totalL = T; E.centerX = 0; E.markDoors(); key.position.set(-6, 12, 9); key.target.position.set(0, 0, 0); key.angle = 0.6; key.penumbra = 0.85; key.intensity = 1.7; key.distance = 45; key.shadow.camera.near = 2; key.shadow.camera.far = 45; key.shadow.bias = -0.0004; key.shadow.normalBias = 0;
     key.target.position.set(0, 1, 0);
   };
