@@ -1435,7 +1435,7 @@ function doorTex(code, w, h, doorHex, style, mid){
   if (style === 'none') { let fs = Math.round(ch*0.62); x.font = `700 ${fs}px ${DF}`;
     while (x.measureText(code.toUpperCase()).width > cw*0.92 && fs > 20) { fs -= 4; x.font = `700 ${fs}px ${DF}`; }
     x.fillStyle = light ? 'rgba(18,20,24,0.85)' : 'rgba(255,255,255,0.95)'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(code.toUpperCase(), cw/2, ch/2); return tex(c); }
-  if (style === 'rideau') { for (let y = 0; y < ch; y += 14) { x.fillStyle = 'rgba(0,0,0,0.18)'; x.fillRect(0, y, cw, 2); x.fillStyle = 'rgba(255,255,255,0.3)'; x.fillRect(0, y + 2, cw, 1); } }
+  if (style === 'rideau') { for (let y = 0; y < ch; y += 26) { x.fillStyle = 'rgba(0,0,0,0.07)'; x.fillRect(0, y, cw, 5); x.fillStyle = 'rgba(255,255,255,0.18)'; x.fillRect(0, y + 5, cw, 3); } }
   const fs = Math.round(Math.min(cw, ch)*0.13);
   x.font = `700 ${fs}px ${DF}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.shadowColor = 'rgba(0,0,0,0.3)'; x.shadowBlur = 3;
   if (mid) { x.shadowBlur = 0; let f2 = Math.round(Math.min(ch*0.34, cw*0.2)); x.font = `700 ${f2}px ${DF}`; const tw = x.measureText(code).width + f2*0.8, th = f2*1.35;
@@ -1539,7 +1539,7 @@ function createEngine(opts){
     const w = u1 - u0, h = yt - yb, style = c.doorStyle || (opt.interiorDoor ? 'rideau' : E.v.body.doorStyle) || 'porte';
     const g = new THREE.Group(); g.position.set((u0 + u1)/2, (yb + yt)/2, 0); frame.add(g);
     const innerMat = mats.interior.clone(); innerMat.emissive = col('#dfe8f2'); innerMat.emissiveIntensity = 0;
-    const inner = new THREE.Mesh(new THREE.BoxGeometry(w, h, depth - 0.008), innerMat); inner.position.z = -(depth - 0.008)/2; g.add(inner);
+    const inner = new THREE.Mesh(new THREE.BoxGeometry(w - 0.006, h - 0.006, depth - 0.008), innerMat); inner.position.z = -(depth - 0.008)/2; g.add(inner);
     if (opt.interiorDoor && !opt.open) { const cm = mats.carcass || (mats.carcass = new THREE.MeshStandardMaterial({color:col('#e9ecef'), roughness:0.55, metalness:0.05})), cd = depth - 0.05, cz = -0.04 - cd/2;
       [[w + 0.004, 0.018, 0, h/2 + 0.011], [w + 0.004, 0.018, 0, -h/2 - 0.011], [0.018, h + 0.04, -w/2 - 0.011, 0], [0.018, h + 0.04, w/2 + 0.011, 0]].forEach(([a, b, x, y]) => {
         const p = new THREE.Mesh(new THREE.BoxGeometry(a, b, cd), cm); p.position.set(x, y, cz); g.add(p); }); }
@@ -1682,7 +1682,7 @@ function createEngine(opts){
     // --- vue intérieure de la cellule sanitaire (ambulance, VSAV) : rangements génériques, caméra depuis les portes arrière
     E.interior = !!b.interior;
     E.stations = null; if (controls) { controls.enableRotate = true; controls.enablePan = true; controls.minAzimuthAngle = -Infinity; controls.maxAzimuthAngle = Infinity; controls.minPolarAngle = 0; controls.maxPolarAngle = Math.PI*0.47; controls.minDistance = 1.5; controls.maxDistance = 26; }
-    camera.fov = E.interior ? 68 : (opts.fov || 36); camera.updateProjectionMatrix();
+    camera.fov = E.interior ? 68 : (opts.fov || 36); camera.near = E.interior ? 0.03 : 0.2; camera.updateProjectionMatrix();
     if (E.interior) {
       const L = 4.4, Wc = 2.6, H = 2.15, x0 = -L/2;
       const wallM = std('#eef1f3', 0.6, 0.02, {side:THREE.DoubleSide}), floorM = std('#5b6168', 0.85, 0.05), ceilM = std('#f6f7f8', 0.5, 0, {side:THREE.DoubleSide});
@@ -1696,9 +1696,6 @@ function createEngine(opts){
       add(new THREE.BoxGeometry(L, 0.06, 0.012), blueM, 0, 1.4, Wc/2 - 0.006, truck, false); add(new THREE.BoxGeometry(L, 0.06, 0.012), blueM, 0, 1.4, -Wc/2 + 0.006, truck, false);
       add(new THREE.BoxGeometry(2.5, 0.03, 0.12), railM, -0.5, 0.017, -0.3, truck, false); add(new THREE.BoxGeometry(2.4, 0.05, 0.66), std('#c9ced3', 0.5, 0.3), -0.5, 0.03, -0.3, truck, false);
       // sol antidérapant (texture), portes arrière ouvertes, prises d'oxygène murales, main courante au plafond
-      { const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d'); x.fillStyle = '#5d636a'; x.fillRect(0, 0, 256, 256);
-        for (let i = 0; i < 1400; i++) { x.fillStyle = Math.random() < 0.5 ? 'rgba(255,255,255,0.035)' : 'rgba(0,0,0,0.05)'; x.beginPath(); x.arc(Math.random()*256, Math.random()*256, 1.6, 0, 7); x.fill(); }
-        const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(6, 3.5); if (THREE.sRGBEncoding) t.encoding = THREE.sRGBEncoding; floorM.map = t; floorM.color = col('#ffffff'); floorM.needsUpdate = true; }
       add(new THREE.BoxGeometry(0.08, 0.03, Wc - 0.1), std('#d8dde2', 0.4, 0.6), x0 - 0.02, 0.015, 0, truck, false);
       const doorM = std('#f4f5f6', 0.45, 0.05), chevA = std('#c8161d', 0.5, 0), chevB = std('#f2c500', 0.5, 0);
       [1, -1].forEach(sd => { const d = new THREE.Group(); d.position.set(x0, 0, sd*(Wc/2 - 0.02)); d.rotation.y = sd*1.4; truck.add(d);
@@ -1708,9 +1705,9 @@ function createEngine(opts){
         const inner = new THREE.Mesh(new THREE.PlaneGeometry(Wc/2 - 0.1, 0.9), std('#e3e7ea', 0.6, 0)); inner.position.set(-(Wc/2 - 0.06)/2, 0.75, -0.027); inner.rotation.y = Math.PI; d.add(inner); });
       { const p = add(new THREE.BoxGeometry(0.5, 0.16, 0.02), std('#f7f8f8', 0.4, 0.05), 1.05, 1.08, Wc/2 - 0.01, truck, false);
         [-0.15, 0, 0.15].forEach((dx, i) => { const o = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.03, 18), std(i < 2 ? '#2f8a4a' : '#f2c500', 0.35, 0.1)); o.rotation.x = Math.PI/2; o.position.set(1.05 + dx, 1.08, Wc/2 - 0.03); truck.add(o); }); }
-      { const rl = add(new THREE.CylinderGeometry(0.016, 0.016, 2.6, 12), railM, -0.5, H - 0.12, -0.3, truck, false); rl.rotation.z = Math.PI/2;
-        [-1.7, -0.5, 0.7].forEach(xx => add(new THREE.BoxGeometry(0.03, 0.12, 0.03), railM, xx, H - 0.06, -0.3, truck, false));
-        [-1.1, 0.1].forEach(xx => { const h = new THREE.Mesh(new THREE.TorusGeometry(0.03, 0.005, 8, 16, Math.PI*1.4), railM); h.position.set(xx, H - 0.17, -0.3); truck.add(h); }); }
+      { const rl = add(new THREE.CylinderGeometry(0.014, 0.014, 2.6, 12), railM, -0.5, H - 0.07, -0.3, truck, false); rl.rotation.z = Math.PI/2;
+        [-1.7, -0.5, 0.7].forEach(xx => add(new THREE.BoxGeometry(0.026, 0.07, 0.026), railM, xx, H - 0.035, -0.3, truck, false));
+        [-1.1, 0.1].forEach(xx => { const h = new THREE.Mesh(new THREE.TorusGeometry(0.025, 0.004, 8, 16, Math.PI*1.4), railM); h.position.set(xx, H - 0.11, -0.3); truck.add(h); }); }
       [-1.4, 0, 1.4].forEach(x => [0.55, -0.55].forEach(z => { const s = add(new THREE.CylinderGeometry(0.05, 0.05, 0.012, 16), ledM, x, H - 0.006, z, truck, false); }));
       const pl1 = new THREE.PointLight(0xffffff, 0.9, 6, 1.6); pl1.position.set(-0.6, H - 0.15, 0); truck.add(pl1);
       const pl2 = new THREE.PointLight(0xffffff, 0.7, 6, 1.6); pl2.position.set(1.0, H - 0.15, 0); truck.add(pl2);
@@ -1751,7 +1748,7 @@ function createEngine(opts){
       for (const id of wasOpen) if (E.objs[id]) { E.objs[id].target = 1; E.objs[id].p = 1; }
       mergeStatic();
       truck.traverse(o => { if (o.isMesh && o.material && o.material.isMeshBasicMaterial && o.material.map) { o.material.polygonOffset = true; o.material.polygonOffsetFactor = -1; o.material.polygonOffsetUnits = -2; } });
-      E.totalL = L; E.centerX = 0; E.markDoors(); key.target.position.set(0, 1, 0);
+      E.totalL = L; E.centerX = 0; E.markDoors(); key.position.set(0.3, H - 0.08, 0.2); key.target.position.set(0.3, 0, -0.1); key.angle = 1.25; key.penumbra = 1; key.intensity = 1.1; key.distance = 6; key.decay = 1.2; key.shadow.camera.near = 0.05; key.shadow.camera.far = 4; key.shadow.bias = -0.0006; key.shadow.normalBias = 0.015;
       E.stations = {
         arriere: {pos:new THREE.Vector3(x0 - 1.0, 1.65, 0), target:new THREE.Vector3(0.6, 1.15, 0)},
         gauche: {pos:new THREE.Vector3(-0.1, 1.72, 0.86), target:new THREE.Vector3(-0.1, 1.08, -Wc/2)},
@@ -1977,7 +1974,7 @@ function createEngine(opts){
     for (const id of wasOpen) if (E.objs[id]) { E.objs[id].target = 1; E.objs[id].p = 1; }
     mergeStatic();
     truck.traverse(o => { if (o.isMesh && o.material && (o.material.map || o.material.transparent)) { o.material.polygonOffset = true; o.material.polygonOffsetFactor = -2; o.material.polygonOffsetUnits = -4; } });
-    E.totalL = T; E.centerX = 0; E.markDoors();
+    E.totalL = T; E.centerX = 0; E.markDoors(); key.position.set(-6, 12, 9); key.target.position.set(0, 0, 0); key.angle = 0.6; key.penumbra = 0.85; key.intensity = 1.7; key.distance = 45; key.shadow.camera.near = 2; key.shadow.camera.far = 45; key.shadow.bias = -0.0004; key.shadow.normalBias = 0;
     key.target.position.set(0, 1, 0);
   };
 
@@ -2003,7 +2000,7 @@ function createEngine(opts){
       const vf = camera.fov*Math.PI/360, hf = Math.atan(Math.tan(vf)*a), oh = Math.min(Math.max(o.h || 0.4, 0.3), 1.4), ow = Math.min(Math.max(o.w || 0.6, 0.3), 2.6);
       let d = Math.max((oh/2 + 0.1)/Math.tan(vf), (ow/2 + 0.08)/Math.tan(hf))*distMul; d = Math.max(0.7, Math.min(2.3, d));
       const low = tgt.y < 1.0, high = tgt.y > 1.55, pos = tgt.clone().add(n2.multiplyScalar(d));
-      pos.y = low ? tgt.y + 0.42 + d*0.12 : high ? Math.min(1.95, tgt.y) : tgt.y + 0.08; if (low) tgt.y -= 0.04;
+      pos.y = low ? tgt.y + 0.42 + d*0.12 : high ? Math.min(1.8, tgt.y - 0.05) : tgt.y + 0.08; if (low) tgt.y -= 0.04;
       pos.z = Math.max(-C.Wc/2 + 0.22, Math.min(C.Wc/2 - 0.22, pos.z)); pos.x = Math.max(-C.L/2 - 1.2, Math.min(C.L/2 - 0.28, pos.x)); return {target:tgt, pos}; }
     const dist = Math.max(2.3, Math.max(o.w, o.h)*2 + 0.8)*distMul*(a < 1 ? 1.5 : 1);
     return {target:p.clone(), pos:p.clone().add(nrm.multiplyScalar(dist)).add(new THREE.Vector3(0, 0.5, 0))}; };
